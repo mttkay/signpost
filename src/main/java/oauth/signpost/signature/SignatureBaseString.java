@@ -70,8 +70,8 @@ public class SignatureBaseString {
             collectBodyParameters(params);
             String requestUrl = collectQueryParameters(params);
 
-            return OAuth.percentEncode(request.getRequestLine().getMethod())
-                    + '&' + OAuth.percentEncode(normalizeUrl(requestUrl)) + '&'
+            return request.getRequestLine().getMethod() + '&'
+                    + OAuth.percentEncode(normalizeUrl(requestUrl)) + '&'
                     + OAuth.percentEncode(normalizeParameters(params));
         } catch (Exception e) {
             throw new OAuthMessageSignerException(e);
