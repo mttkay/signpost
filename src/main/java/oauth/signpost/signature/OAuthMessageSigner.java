@@ -33,17 +33,7 @@ public abstract class OAuthMessageSigner {
         this.base64 = new Base64();
     }
 
-    public final String getSignature(HttpRequest request,
-            Map<String, String> oauthParameters)
-            throws OAuthMessageSignerException {
-        if (consumerSecret == null) {
-            throw new OAuthMessageSignerException("consumer secret not set");
-        }
-
-        return sign(request, oauthParameters);
-    }
-
-    protected abstract String sign(HttpRequest request,
+    public abstract String sign(HttpRequest request,
             Map<String, String> oauthParameters)
             throws OAuthMessageSignerException;
 

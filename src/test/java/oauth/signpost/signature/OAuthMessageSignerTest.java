@@ -5,7 +5,6 @@ import static org.junit.Assert.assertEquals;
 import java.util.HashMap;
 
 import oauth.signpost.SignpostTestBase;
-import oauth.signpost.exception.OAuthMessageSignerException;
 
 import org.apache.http.client.methods.HttpGet;
 import org.junit.Test;
@@ -15,20 +14,13 @@ import org.mockito.runners.MockitoJUnit44Runner;
 @RunWith(MockitoJUnit44Runner.class)
 public class OAuthMessageSignerTest extends SignpostTestBase {
 
-    @Test(expected = OAuthMessageSignerException.class)
-    public void shouldThrowIfConsumerSecretNotSet() throws Exception {
-
-        OAuthMessageSigner signer = OAuthMessageSigner.create(SignatureMethod.PLAINTEXT);
-        signer.getSignature(new HttpGet(), new HashMap<String, String>());
-    }
-
     @Test
     public void shouldCreateCorrectPlaintextSignature() throws Exception {
         OAuthMessageSigner signer = OAuthMessageSigner.create(SignatureMethod.PLAINTEXT);
         signer.setConsumerSecret(CONSUMER_SECRET);
         signer.setTokenSecret(TOKEN_SECRET);
 
-        assertEquals(CONSUMER_SECRET + "&" + TOKEN_SECRET, signer.getSignature(
+        assertEquals(CONSUMER_SECRET + "&" + TOKEN_SECRET, signer.sign(
                 new HttpGet("http://example.net"), OAUTH_PARAMS));
     }
 
@@ -45,7 +37,7 @@ public class OAuthMessageSignerTest extends SignpostTestBase {
                 OAUTH_PARAMS);
         oauthParams.put("oauth_signature_method", "HMAC-SHA1");
 
-        assertEquals("tR3+Ty81lMeYAr/Fid0kMTYa/WM=", signer.getSignature(
-                request, oauthParams));
+        assertEquals("tR3+Ty81lMeYAr/Fid0kMTYa/WM=", signer.sign(request,
+                oauthParams));
     }
 }

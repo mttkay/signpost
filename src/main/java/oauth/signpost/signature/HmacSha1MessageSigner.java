@@ -18,8 +18,7 @@ public class HmacSha1MessageSigner extends OAuthMessageSigner {
     private static final String MAC_NAME = "HmacSHA1";
 
     @Override
-    protected String sign(HttpRequest request,
-            Map<String, String> oauthParameters)
+    public String sign(HttpRequest request, Map<String, String> oauthParameters)
             throws OAuthMessageSignerException {
         try {
             String keyString = OAuth.percentEncode(getConsumerSecret()) + '&'

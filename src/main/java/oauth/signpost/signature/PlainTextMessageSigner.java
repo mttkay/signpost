@@ -10,8 +10,7 @@ import org.apache.http.HttpRequest;
 public class PlainTextMessageSigner extends OAuthMessageSigner {
 
     @Override
-    protected String sign(HttpRequest request,
-            Map<String, String> oauthParameters)
+    public String sign(HttpRequest request, Map<String, String> oauthParameters)
             throws OAuthMessageSignerException {
         return OAuth.percentEncode(getConsumerSecret()) + '&'
                 + OAuth.percentEncode(getTokenSecret());

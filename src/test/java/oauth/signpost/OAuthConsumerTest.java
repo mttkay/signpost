@@ -40,11 +40,6 @@ public class OAuthConsumerTest extends SignpostTestBase {
         consumer.sign(request);
     }
 
-    @Test(expected = OAuthExpectationFailedException.class)
-    public void shouldThrowIfTokenSecretNotSet() throws Exception {
-        consumer.sign(request);
-    }
-
     @Test
     public void shouldSignHttpRequestMessage() throws Exception {
 

@@ -43,13 +43,10 @@ public class DefaultOAuthConsumer implements OAuthConsumer {
         if (consumerSecret == null) {
             throw new OAuthExpectationFailedException("consumer secret not set");
         }
-        if (messageSigner.getTokenSecret() == null) {
-            throw new OAuthExpectationFailedException("token secret not set");
-        }
 
         Map<String, String> oauthParams = buildOAuthParameterMap();
 
-        String signature = messageSigner.getSignature(request, oauthParams);
+        String signature = messageSigner.sign(request, oauthParams);
 
         request.setHeader(buildOAuthHeader(oauthParams, signature));
 

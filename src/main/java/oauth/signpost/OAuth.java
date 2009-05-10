@@ -47,11 +47,17 @@ public class OAuth {
             "-._~", false);
 
     public static String percentEncode(String s) {
+        if (s == null) {
+            return "";
+        }
         return percentEncoder.escape(s);
     }
 
     public static String percentDecode(String s) {
         try {
+            if (s == null) {
+                return "";
+            }
             return URLDecoder.decode(s, ENCODING);
             // This implements http://oauth.pbwiki.com/FlexibleDecoding
         } catch (java.io.UnsupportedEncodingException wow) {
