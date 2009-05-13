@@ -6,10 +6,29 @@
   <packaging>jar</packaging>
   <version>1.0-SNAPSHOT</version>
   <name>oauth-signpost</name>
-  <url>http://maven.apache.org</url>
+  <description>Signpost is the easy and intuitive solution for signing HTTP messages on the Java platform in conformance with the OAuth Core 1.0 standard.
+
+Signpost has been designed to work in conjunction with the Apache HttpComponents library, a proven, well-established HTTP library for the Java programming language. </description>
+  <url>http://code.google.com/p/oauth-signpost/</url>
+  <issueManagement>
+  	<system>Google Code Issue Tracker</system>
+  	<url>http://code.google.com/p/oauth-signpost/issues/list</url>
+  </issueManagement>
+  <developers>
+  	<developer>
+  		<id>mk</id>
+  		<name>Matthias Käppler</name>
+  		<email>matthias@qype.com</email>
+  		<url>http://matthiaskaeppler.de</url>
+  		<organization>Qype GmbH</organization>
+  		<organizationUrl>http://www.qype.com</organizationUrl>
+  		<timezone>+1</timezone>
+  	</developer>
+  </developers>
   
   <!-- build settings -->
   <build>
+  	<defaultGoal>package</defaultGoal>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
