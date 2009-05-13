@@ -80,7 +80,7 @@ public class DefaultOAuthConsumer implements OAuthConsumer {
         map.put(OAuth.OAUTH_CONSUMER_KEY, consumerKey);
         map.put(OAuth.OAUTH_SIGNATURE_METHOD, signatureMethod.toString());
         map.put(OAuth.OAUTH_TIMESTAMP,
-                Long.toString(System.currentTimeMillis()));
+                Long.toString(System.currentTimeMillis() / 1000L));
         map.put(OAuth.OAUTH_NONCE, Long.toString(System.nanoTime()));
         map.put(OAuth.OAUTH_VERSION, OAuth.VERSION_1_0);
         if (token != null) {
