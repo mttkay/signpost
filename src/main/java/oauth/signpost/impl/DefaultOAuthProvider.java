@@ -81,9 +81,7 @@ public class DefaultOAuthProvider implements OAuthProvider {
                             + "Did you retrieve an authorized request token before?");
         }
 
-        retrieveToken(accessTokenEndpointUrl + "?" + OAuth.OAUTH_TOKEN + "="
-                + consumer.getToken() + "&" + OAuth.OAUTH_TOKEN_SECRET + "="
-                + consumer.getTokenSecret());
+        retrieveToken(accessTokenEndpointUrl);
     }
 
     private void retrieveToken(String endpointUrl)
