@@ -12,7 +12,7 @@ import org.junit.Test;
 
 public abstract class HttpRequestAdapterTestBase {
 
-    protected static final String URL = "http://www.example.com";
+    protected static final String URL = "http://www.example.com/protected";
 
     protected static final String HTTP_POST_METHOD = "POST";
 

@@ -31,11 +31,11 @@ public class HttpRequestAdapter implements HttpRequest {
     }
 
     public InputStream getMessagePayload() throws IOException {
-        return connection.getInputStream();
+        return null;
     }
 
     public boolean hasPayload() throws IOException {
-        return connection.getInputStream() != null;
+        return false;
     }
 
     public String getContentType() {
