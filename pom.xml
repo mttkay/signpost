@@ -1,0 +1,83 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>oauth.signpost</groupId>
+  <artifactId>oauth-signpost</artifactId>
+  <packaging>pom</packaging>
+  <version>1.0-SNAPSHOT</version>
+  <name>oauth-signpost</name>
+  <description>
+    A simple, light-weight, and modular OAuth client library for the
+    Java platform.
+  </description>
+  <url>http://code.google.com/p/oauth-signpost/</url>
+  <issueManagement>
+    <system>Google Code Issue Tracker</system>
+    <url>http://code.google.com/p/oauth-signpost/issues/list</url>
+  </issueManagement>
+  <developers>
+    <developer>
+      <id>mk</id>
+      <name>Matthias Käppler</name>
+      <email>matthias@qype.com</email>
+      <url>http://matthiaskaeppler.de</url>
+      <organization>Qype GmbH</organization>
+      <organizationUrl>http://www.qype.com</organizationUrl>
+      <timezone>+1</timezone>
+    </developer>
+  </developers>
+  <modules>
+    <module>signpost-core</module>
+    <module>signpost-commonshttp4</module>
+    <module>signpost-jetty6</module>
+  </modules>
+
+  <!-- build settings -->
+  <build>
+    <defaultGoal>package</defaultGoal>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <source>1.5</source>
+          <target>1.5</target>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>2.2</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>test-jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
+  <!-- external repositories -->
+  <repositories>
+    <repository>
+      <releases>
+        <enabled>true</enabled>
+        <updatePolicy>daily</updatePolicy>
+        <checksumPolicy>warn</checksumPolicy>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+        <updatePolicy>daily</updatePolicy>
+        <checksumPolicy>warn</checksumPolicy>
+      </snapshots>
+      <id>repo2.maven.org</id>
+      <name>repo2.maven.org</name>
+      <url>http://repo2.maven.org/maven2</url>
+      <layout>default</layout>
+    </repository> 
+  </repositories>
+
+</project>
