@@ -5,7 +5,7 @@
   <groupId>oauth.signpost</groupId>
   <artifactId>oauth-signpost</artifactId>
   <packaging>pom</packaging>
-  <version>1.0-SNAPSHOT</version>
+  <version>1.1-SNAPSHOT</version>
   <name>oauth-signpost</name>
   <description>
     A simple, light-weight, and modular OAuth client library for the

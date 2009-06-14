@@ -4,19 +4,19 @@
   <parent>
     <artifactId>oauth-signpost</artifactId>
     <groupId>oauth.signpost</groupId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.1-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>oauth.signpost</groupId>
   <artifactId>signpost-commonshttp4</artifactId>
   <name>signpost-commonshttp4</name>
-  <version>1.0-SNAPSHOT</version>
+  <version>1.1-SNAPSHOT</version>
 
   <dependencies>
     <dependency>
       <groupId>oauth.signpost</groupId>
       <artifactId>signpost-core</artifactId>
-      <version>1.0-SNAPSHOT</version>
+      <version>1.1-SNAPSHOT</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
@@ -46,7 +46,7 @@
     <dependency>
       <groupId>oauth.signpost</groupId>
       <artifactId>signpost-core</artifactId>
-      <version>1.0-SNAPSHOT</version>
+      <version>1.1-SNAPSHOT</version>
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>    
