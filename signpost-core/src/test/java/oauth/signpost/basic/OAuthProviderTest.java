@@ -1,6 +1,7 @@
 package oauth.signpost.basic;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -8,6 +9,7 @@ import static org.mockito.Mockito.when;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
+import java.net.URL;
 
 import oauth.signpost.OAuth;
 import oauth.signpost.OAuthConsumer;
@@ -92,6 +94,20 @@ public class OAuthProviderTest extends SignpostTestBase {
                 + "http%3A%2F%2Fwww.example.com", result);
     }
 
+    @Test
+    public void shouldRespectCustomQueryParametersInAuthWebsiteUrl()
+            throws Exception {
+        provider = new DefaultOAuthProvider(consumerMock,
+                REQUEST_TOKEN_ENDPOINT_URL, ACCESS_TOKEN_ENDPOINT_URL,
+                "http://provider.com/authorize?q=1");
+        provider.setHttpUrlConnection(connectionMock);
+
+        String callbackUrl = "http://www.example.com";
+        // the URL ctor checks for URL validity
+        URL url = new URL(provider.retrieveRequestToken(callbackUrl));
+        assertTrue(url.getQuery().startsWith("q=1&oauth_token="));
+    }
+
     @Test(expected = OAuthExpectationFailedException.class)
     public void shouldThrowWhenGettingAccessTokenAndRequestTokenNotSet()
             throws Exception {
@@ -114,5 +130,4 @@ public class OAuthProviderTest extends SignpostTestBase {
         verify(consumerMock).sign((HttpRequest) anyObject());
         verify(consumerMock).setTokenWithSecret(TOKEN, TOKEN_SECRET);
     }
-
 }

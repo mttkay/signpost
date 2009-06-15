@@ -59,7 +59,8 @@ public class DefaultOAuthProvider implements OAuthProvider {
 
         retrieveToken(requestTokenEndpointUrl);
 
-        return authorizationWebsiteUrl + "?oauth_token="
+        String queryDelim = authorizationWebsiteUrl.contains("?") ? "&" : "?";
+        return authorizationWebsiteUrl + queryDelim + "oauth_token="
                 + OAuth.percentEncode(consumer.getToken()) + "&"
                 + OAuth.OAUTH_CALLBACK + "=" + OAuth.percentEncode(callbackUrl);
     }
