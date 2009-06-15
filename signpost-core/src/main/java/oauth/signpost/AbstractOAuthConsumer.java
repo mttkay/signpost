@@ -44,7 +44,7 @@ public abstract class AbstractOAuthConsumer implements OAuthConsumer {
     }
 
     public HttpRequest sign(HttpRequest request)
-            throws OAuthMessageSignerException {
+            throws OAuthMessageSignerException, OAuthExpectationFailedException {
         if (consumerKey == null) {
             throw new OAuthExpectationFailedException("consumer key not set");
         }

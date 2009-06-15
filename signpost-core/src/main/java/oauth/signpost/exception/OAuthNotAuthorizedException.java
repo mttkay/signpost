@@ -15,7 +15,7 @@
 package oauth.signpost.exception;
 
 @SuppressWarnings("serial")
-public class OAuthNotAuthorizedException extends Exception {
+public class OAuthNotAuthorizedException extends OAuthException {
 
     public OAuthNotAuthorizedException() {
         super("Authorization failed (server replied with a 401). "

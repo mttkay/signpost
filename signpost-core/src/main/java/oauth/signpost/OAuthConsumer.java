@@ -14,15 +14,17 @@
  */
 package oauth.signpost;
 
+import oauth.signpost.exception.OAuthExpectationFailedException;
 import oauth.signpost.exception.OAuthMessageSignerException;
 import oauth.signpost.http.HttpRequest;
 
 public interface OAuthConsumer {
 
     public HttpRequest sign(HttpRequest request)
-            throws OAuthMessageSignerException;
+            throws OAuthMessageSignerException, OAuthExpectationFailedException;
 
-    public HttpRequest sign(Object request) throws OAuthMessageSignerException;
+    public HttpRequest sign(Object request) throws OAuthMessageSignerException,
+            OAuthExpectationFailedException;
 
     public void setTokenWithSecret(String token, String tokenSecret);
 

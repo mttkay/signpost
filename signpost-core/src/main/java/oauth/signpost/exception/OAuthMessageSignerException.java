@@ -15,7 +15,7 @@
 package oauth.signpost.exception;
 
 @SuppressWarnings("serial")
-public class OAuthMessageSignerException extends Exception {
+public class OAuthMessageSignerException extends OAuthException {
 
     public OAuthMessageSignerException(String message) {
         super(message);
