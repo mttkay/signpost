@@ -14,6 +14,8 @@
  */
 package oauth.signpost;
 
+import java.util.Map;
+
 import oauth.signpost.exception.OAuthCommunicationException;
 import oauth.signpost.exception.OAuthExpectationFailedException;
 import oauth.signpost.exception.OAuthMessageSignerException;
@@ -78,4 +80,12 @@ public interface OAuthProvider {
     public void retrieveAccessToken() throws OAuthMessageSignerException,
             OAuthNotAuthorizedException, OAuthExpectationFailedException,
             OAuthCommunicationException;
+
+    /**
+     * Any additional non-OAuth parameters returned in the response body of a
+     * token request can be obtained through this method. These parameters will
+     * be preserved until the next token request is issued. The return value is
+     * never null.
+     */
+    public Map<String, String> getResponseParameters();
 }

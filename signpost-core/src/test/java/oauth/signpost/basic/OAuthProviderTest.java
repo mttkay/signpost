@@ -130,4 +130,35 @@ public class OAuthProviderTest extends SignpostTestBase {
         verify(consumerMock).sign((HttpRequest) anyObject());
         verify(consumerMock).setTokenWithSecret(TOKEN, TOKEN_SECRET);
     }
+
+    @Test
+    public void shouldMakeSpecialResponseParametersAvailableToConsumer()
+            throws Exception {
+
+        assertTrue(provider.getResponseParameters().isEmpty());
+
+        String responseBody = OAuth.OAUTH_TOKEN + "=" + TOKEN + "&"
+                + OAuth.OAUTH_TOKEN_SECRET + "=" + TOKEN_SECRET + "&a=1";
+        InputStream is = new ByteArrayInputStream(responseBody.getBytes());
+        when(connectionMock.getInputStream()).thenReturn(is);
+
+        provider.retrieveRequestToken(null);
+
+        assertEquals(1, provider.getResponseParameters().size());
+        assertTrue(provider.getResponseParameters().containsKey("a"));
+        assertEquals("1", provider.getResponseParameters().get("a"));
+
+        responseBody = OAuth.OAUTH_TOKEN + "=" + TOKEN + "&"
+                + OAuth.OAUTH_TOKEN_SECRET + "=" + TOKEN_SECRET + "&b=2&c=3";
+        is = new ByteArrayInputStream(responseBody.getBytes());
+        when(connectionMock.getInputStream()).thenReturn(is);
+
+        provider.retrieveAccessToken();
+
+        assertEquals(2, provider.getResponseParameters().size());
+        assertTrue(provider.getResponseParameters().containsKey("b"));
+        assertTrue(provider.getResponseParameters().containsKey("c"));
+        assertEquals("2", provider.getResponseParameters().get("b"));
+        assertEquals("3", provider.getResponseParameters().get("c"));
+    }
 }

@@ -16,6 +16,7 @@ package oauth.signpost.basic;
 
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -41,6 +42,8 @@ public class DefaultOAuthProvider implements OAuthProvider {
 
     private HttpURLConnection connection;
 
+    private Map<String, String> responseParameters;
+
     public DefaultOAuthProvider(OAuthConsumer consumer,
             String requestTokenEndpointUrl, String accessTokenEndpointUrl,
             String authorizationWebsiteUrl) {
@@ -48,6 +51,7 @@ public class DefaultOAuthProvider implements OAuthProvider {
         this.requestTokenEndpointUrl = requestTokenEndpointUrl;
         this.accessTokenEndpointUrl = accessTokenEndpointUrl;
         this.authorizationWebsiteUrl = authorizationWebsiteUrl;
+        this.responseParameters = new HashMap<String, String>();
     }
 
     public String retrieveRequestToken(String callbackUrl)
@@ -89,7 +93,6 @@ public class DefaultOAuthProvider implements OAuthProvider {
         }
 
         try {
-
             if (connection == null) {
                 connection = (HttpURLConnection) new URL(endpointUrl).openConnection();
             }
@@ -106,10 +109,12 @@ public class DefaultOAuthProvider implements OAuthProvider {
             }
 
             List<Parameter> params = OAuth.decodeForm(connection.getInputStream());
-            Map<String, String> paramMap = OAuth.toMap(params);
+            responseParameters = OAuth.toMap(params);
 
-            String token = paramMap.get(OAuth.OAUTH_TOKEN);
-            String secret = paramMap.get(OAuth.OAUTH_TOKEN_SECRET);
+            String token = responseParameters.get(OAuth.OAUTH_TOKEN);
+            responseParameters.remove(OAuth.OAUTH_TOKEN);
+            String secret = responseParameters.get(OAuth.OAUTH_TOKEN_SECRET);
+            responseParameters.remove(OAuth.OAUTH_TOKEN_SECRET);
 
             if (token == null || secret == null) {
                 throw new OAuthExpectationFailedException(
@@ -126,6 +131,10 @@ public class DefaultOAuthProvider implements OAuthProvider {
         } catch (Exception e) {
             throw new OAuthCommunicationException(e);
         }
+    }
+
+    public Map<String, String> getResponseParameters() {
+        return responseParameters;
     }
 
     void setHttpUrlConnection(HttpURLConnection connection) {
