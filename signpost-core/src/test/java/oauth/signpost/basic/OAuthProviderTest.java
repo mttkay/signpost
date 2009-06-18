@@ -88,6 +88,7 @@ public class OAuthProviderTest extends SignpostTestBase {
 
         verify(consumerMock).sign((HttpRequest) anyObject());
         verify(consumerMock).setTokenWithSecret(TOKEN, TOKEN_SECRET);
+        verify(connectionMock).disconnect();
 
         assertEquals(AUTHORIZE_WEBSITE_URL + "?" + OAuth.OAUTH_TOKEN + "="
                 + TOKEN + "&" + OAuth.OAUTH_CALLBACK + "="
@@ -129,6 +130,7 @@ public class OAuthProviderTest extends SignpostTestBase {
 
         verify(consumerMock).sign((HttpRequest) anyObject());
         verify(consumerMock).setTokenWithSecret(TOKEN, TOKEN_SECRET);
+        verify(connectionMock).disconnect();
     }
 
     @Test
@@ -153,6 +155,7 @@ public class OAuthProviderTest extends SignpostTestBase {
         is = new ByteArrayInputStream(responseBody.getBytes());
         when(connectionMock.getInputStream()).thenReturn(is);
 
+        provider.setHttpUrlConnection(connectionMock);
         provider.retrieveAccessToken();
 
         assertEquals(2, provider.getResponseParameters().size());

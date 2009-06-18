@@ -95,6 +95,7 @@ public class DefaultOAuthProvider implements OAuthProvider {
         try {
             if (connection == null) {
                 connection = (HttpURLConnection) new URL(endpointUrl).openConnection();
+                connection.setRequestMethod("GET");
             }
             HttpRequest request = new HttpRequestAdapter(connection);
 
@@ -130,6 +131,11 @@ public class DefaultOAuthProvider implements OAuthProvider {
             throw e;
         } catch (Exception e) {
             throw new OAuthCommunicationException(e);
+        } finally {
+            if (connection != null) {
+                connection.disconnect();
+                connection = null;
+            }
         }
     }
 
