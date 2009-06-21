@@ -188,7 +188,8 @@ public class OAuth {
             if (i > 0) {
                 sb.append("&");
             }
-            sb.append(kvPairs[i] + "=" + kvPairs[i + 1]);
+            sb.append(OAuth.percentEncode(kvPairs[i]) + "="
+                    + OAuth.percentEncode(kvPairs[i + 1]));
         }
         return sb.toString();
     }

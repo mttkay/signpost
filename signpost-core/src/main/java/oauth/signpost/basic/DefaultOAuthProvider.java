@@ -44,6 +44,8 @@ public class DefaultOAuthProvider implements OAuthProvider {
 
     private Map<String, String> responseParameters;
 
+    private boolean isOAuth10a;
+
     public DefaultOAuthProvider(OAuthConsumer consumer,
             String requestTokenEndpointUrl, String accessTokenEndpointUrl,
             String authorizationWebsiteUrl) {
@@ -68,18 +70,17 @@ public class DefaultOAuthProvider implements OAuthProvider {
 
         String callbackConfirmed = responseParameters.get(OAuth.OAUTH_CALLBACK_CONFIRMED);
         responseParameters.remove(OAuth.OAUTH_CALLBACK_CONFIRMED);
-        boolean isOAuth10a = Boolean.TRUE.toString().equals(callbackConfirmed);
+        isOAuth10a = Boolean.TRUE.toString().equals(callbackConfirmed);
 
         // 1.0 service providers expect the callback as part of the auth URL,
         // Do not send when 1.0a.
         if (isOAuth10a) {
             return OAuth.addQueryParameters(authorizationWebsiteUrl,
-                    OAuth.OAUTH_TOKEN, OAuth.percentEncode(consumer.getToken()));
+                    OAuth.OAUTH_TOKEN, consumer.getToken());
         } else {
             return OAuth.addQueryParameters(authorizationWebsiteUrl,
-                    OAuth.OAUTH_TOKEN,
-                    OAuth.percentEncode(consumer.getToken()),
-                    OAuth.OAUTH_CALLBACK, OAuth.percentEncode(callbackUrl));
+                    OAuth.OAUTH_TOKEN, consumer.getToken(),
+                    OAuth.OAUTH_CALLBACK, callbackUrl);
         }
     }
 
@@ -93,10 +94,10 @@ public class DefaultOAuthProvider implements OAuthProvider {
                             + "Did you retrieve an authorized request token before?");
         }
 
-        retrieveToken(oauthVerifier == null
-                ? accessTokenEndpointUrl
-                : OAuth.addQueryParameters(accessTokenEndpointUrl,
-                        OAuth.OAUTH_VERIFIER, oauthVerifier));
+        retrieveToken(isOAuth10a && oauthVerifier != null
+                ? OAuth.addQueryParameters(accessTokenEndpointUrl,
+                        OAuth.OAUTH_VERIFIER, oauthVerifier)
+                : accessTokenEndpointUrl);
     }
 
     private void retrieveToken(String endpointUrl)
