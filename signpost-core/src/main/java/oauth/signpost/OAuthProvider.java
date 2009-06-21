@@ -37,7 +37,12 @@ public interface OAuthProvider {
      * </p>
      * 
      * @param callbackUrl
-     *            Used to construct the return value, see below
+     *            Pass an actual URL if your app can receive callbacks and you
+     *            want to get informed about the result of the authorization
+     *            process. Pass {@link OAuth.OUT_OF_BAND} if the service
+     *            provider implements OAuth 1.0a and your app cannot receive
+     *            callbacks. Pass null if the service provider implements OAuth
+     *            1.0 and your app cannot receive callbacks.
      * @return The URL to which the user must be sent in order to authorize the
      *         consumer. It include the unauthorized request token and the
      *         callback URL.
@@ -67,6 +72,15 @@ public interface OAuthProvider {
      * this provider will have an access token and token secret set.
      * </p>
      * 
+     * @param oauthVerifier
+     *            <b>NOTE: Only applies to service providers implementing OAuth
+     *            1.0a. Set to null if the service provider is still using OAuth
+     *            1.0.</b> The verification code issued by the service provider
+     *            after the the user has granted the consumer authorization. If
+     *            the callback method provided in the previous step was
+     *            {@link OAuth.OUT_OF_BAND}, then you must ask the user for
+     *            this value. If your app has received a callback, the
+     *            verfication code was passed as part of that request instead.
      * @throws OAuthMessageSignerException
      *             if signing the request failed
      * @throws OAuthNotAuthorizedException
@@ -77,9 +91,9 @@ public interface OAuthProvider {
      * @throws OAuthCommunicationException
      *             if server communication failed
      */
-    public void retrieveAccessToken() throws OAuthMessageSignerException,
-            OAuthNotAuthorizedException, OAuthExpectationFailedException,
-            OAuthCommunicationException;
+    public void retrieveAccessToken(String oauthVerifier)
+            throws OAuthMessageSignerException, OAuthNotAuthorizedException,
+            OAuthExpectationFailedException, OAuthCommunicationException;
 
     /**
      * Any additional non-OAuth parameters returned in the response body of a

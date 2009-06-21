@@ -61,17 +61,31 @@ public class DefaultOAuthProvider implements OAuthProvider {
         // invalidate current credentials, if any
         consumer.setTokenWithSecret(null, null);
 
-        retrieveToken(requestTokenEndpointUrl);
+        // 1.0a expects the callback to be sent while getting the request token.
+        // 1.0 service providers would simply ignore this parameter.
+        retrieveToken(OAuth.addQueryParameters(requestTokenEndpointUrl,
+                OAuth.OAUTH_CALLBACK, OAuth.percentEncode(callbackUrl)));
 
-        String queryDelim = authorizationWebsiteUrl.contains("?") ? "&" : "?";
-        return authorizationWebsiteUrl + queryDelim + "oauth_token="
-                + OAuth.percentEncode(consumer.getToken()) + "&"
-                + OAuth.OAUTH_CALLBACK + "=" + OAuth.percentEncode(callbackUrl);
+        String callbackConfirmed = responseParameters.get(OAuth.OAUTH_CALLBACK_CONFIRMED);
+        responseParameters.remove(OAuth.OAUTH_CALLBACK_CONFIRMED);
+        boolean isOAuth10a = Boolean.TRUE.toString().equals(callbackConfirmed);
+
+        // 1.0 service providers expect the callback as part of the auth URL,
+        // Do not send when 1.0a.
+        if (isOAuth10a) {
+            return OAuth.addQueryParameters(authorizationWebsiteUrl,
+                    OAuth.OAUTH_TOKEN, OAuth.percentEncode(consumer.getToken()));
+        } else {
+            return OAuth.addQueryParameters(authorizationWebsiteUrl,
+                    OAuth.OAUTH_TOKEN,
+                    OAuth.percentEncode(consumer.getToken()),
+                    OAuth.OAUTH_CALLBACK, OAuth.percentEncode(callbackUrl));
+        }
     }
 
-    public void retrieveAccessToken() throws OAuthMessageSignerException,
-            OAuthNotAuthorizedException, OAuthExpectationFailedException,
-            OAuthCommunicationException {
+    public void retrieveAccessToken(String oauthVerifier)
+            throws OAuthMessageSignerException, OAuthNotAuthorizedException,
+            OAuthExpectationFailedException, OAuthCommunicationException {
 
         if (consumer.getToken() == null || consumer.getTokenSecret() == null) {
             throw new OAuthExpectationFailedException(
@@ -79,7 +93,10 @@ public class DefaultOAuthProvider implements OAuthProvider {
                             + "Did you retrieve an authorized request token before?");
         }
 
-        retrieveToken(accessTokenEndpointUrl);
+        retrieveToken(oauthVerifier == null
+                ? accessTokenEndpointUrl
+                : OAuth.addQueryParameters(accessTokenEndpointUrl,
+                        OAuth.OAUTH_VERIFIER, oauthVerifier));
     }
 
     private void retrieveToken(String endpointUrl)

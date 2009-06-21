@@ -57,6 +57,12 @@ public class OAuth {
 
     public static final String OAUTH_CALLBACK = "oauth_callback";
 
+    public static final String OAUTH_CALLBACK_CONFIRMED = "oauth_callback_confirmed";
+
+    public static final String OAUTH_VERIFIER = "oauth_verifier";
+
+    public static final String OUT_OF_BAND = "oob";
+
     private static final PercentEscaper percentEncoder = new PercentEscaper(
             "-._~", false);
 
@@ -173,5 +179,17 @@ public class OAuth {
 
     private static boolean isEmpty(String str) {
         return (str == null) || (str.length() == 0);
+    }
+
+    public static String addQueryParameters(String url, String... kvPairs) {
+        String queryDelim = url.contains("?") ? "&" : "?";
+        StringBuilder sb = new StringBuilder(url + queryDelim);
+        for (int i = 0; i < kvPairs.length; i += 2) {
+            if (i > 0) {
+                sb.append("&");
+            }
+            sb.append(kvPairs[i] + "=" + kvPairs[i + 1]);
+        }
+        return sb.toString();
     }
 }

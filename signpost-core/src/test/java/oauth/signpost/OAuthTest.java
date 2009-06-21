@@ -76,4 +76,15 @@ public class OAuthTest {
         assertEquals(rfc3986ReservedCharacters, two.getKey());
         assertEquals(rfc3986UnreservedCharacters, two.getValue());
     }
+
+    @Test
+    public void shouldCorrectlyAppendQueryParameters() {
+        String url1 = "http://www.example.com";
+        assertEquals("http://www.example.com?a=1&b=2",
+                OAuth.addQueryParameters(url1, "a", "1", "b", "2"));
+
+        String url2 = "http://www.example.com?x=1";
+        assertEquals("http://www.example.com?x=1&a=1&b=2",
+                OAuth.addQueryParameters(url2, "a", "1", "b", "2"));
+    }
 }

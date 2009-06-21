@@ -113,20 +113,20 @@ public class OAuthProviderTest extends SignpostTestBase {
     public void shouldThrowWhenGettingAccessTokenAndRequestTokenNotSet()
             throws Exception {
         when(consumerMock.getToken()).thenReturn(null);
-        provider.retrieveAccessToken();
+        provider.retrieveAccessToken(null);
     }
 
     @Test(expected = OAuthExpectationFailedException.class)
     public void shouldThrowWhenGettingAccessTokenAndRequestTokenSecretNotSet()
             throws Exception {
         when(consumerMock.getTokenSecret()).thenReturn(null);
-        provider.retrieveAccessToken();
+        provider.retrieveAccessToken(null);
     }
 
     @Test
     public void shouldRetrieveAccessTokenAndUpdateConsumer() throws Exception {
 
-        provider.retrieveAccessToken();
+        provider.retrieveAccessToken(null);
 
         verify(consumerMock).sign((HttpRequest) anyObject());
         verify(consumerMock).setTokenWithSecret(TOKEN, TOKEN_SECRET);
@@ -156,7 +156,7 @@ public class OAuthProviderTest extends SignpostTestBase {
         when(connectionMock.getInputStream()).thenReturn(is);
 
         provider.setHttpUrlConnection(connectionMock);
-        provider.retrieveAccessToken();
+        provider.retrieveAccessToken(null);
 
         assertEquals(2, provider.getResponseParameters().size());
         assertTrue(provider.getResponseParameters().containsKey("b"));
