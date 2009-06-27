@@ -102,4 +102,26 @@ public interface OAuthProvider {
      * never null.
      */
     public Map<String, String> getResponseParameters();
+
+    /**
+     * @param isOAuth10aProvider
+     *            set to true if the service provider supports OAuth 1.0a. Note
+     *            that you need only call this method if you reconstruct a
+     *            provider object in between calls to retrieveRequestToken() and
+     *            retrieveAccessToken() (i.e. if the object state isn't
+     *            preserved). If instead those two methods are called on the
+     *            same provider instance, this flag will be deducted
+     *            automatically based on the server response during
+     *            retrieveRequestToken(), so you can simply ignore this method.
+     */
+    public void setOAuth10a(boolean isOAuth10aProvider);
+
+    /**
+     * @return true if the service provider supports OAuth 1.0a. Note that the
+     *         value returned here is only meaningful after you have already
+     *         performed the token handshake, otherwise there is no way to
+     *         determine what version of the OAuth protocol the service provider
+     *         implements.
+     */
+    public boolean isOAuth10a();
 }

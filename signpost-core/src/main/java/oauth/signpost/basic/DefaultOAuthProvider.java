@@ -164,4 +164,12 @@ public class DefaultOAuthProvider implements OAuthProvider {
     void setHttpUrlConnection(HttpURLConnection connection) {
         this.connection = connection;
     }
+
+    public void setOAuth10a(boolean isOAuth10aProvider) {
+        this.isOAuth10a = isOAuth10aProvider;
+    }
+
+    public boolean isOAuth10a() {
+        return isOAuth10a;
+    }
 }
