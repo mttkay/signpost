@@ -20,6 +20,7 @@ import oauth.signpost.OAuth;
 import oauth.signpost.exception.OAuthMessageSignerException;
 import oauth.signpost.http.HttpRequest;
 
+@SuppressWarnings("serial")
 public class PlainTextMessageSigner extends OAuthMessageSigner {
 
     @Override

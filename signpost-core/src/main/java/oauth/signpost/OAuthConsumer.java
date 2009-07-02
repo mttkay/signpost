@@ -14,11 +14,13 @@
  */
 package oauth.signpost;
 
+import java.io.Serializable;
+
 import oauth.signpost.exception.OAuthExpectationFailedException;
 import oauth.signpost.exception.OAuthMessageSignerException;
 import oauth.signpost.http.HttpRequest;
 
-public interface OAuthConsumer {
+public interface OAuthConsumer extends Serializable {
 
     public HttpRequest sign(HttpRequest request)
             throws OAuthMessageSignerException, OAuthExpectationFailedException;

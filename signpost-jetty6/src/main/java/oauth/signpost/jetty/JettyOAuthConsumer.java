@@ -6,6 +6,7 @@ import oauth.signpost.signature.SignatureMethod;
 
 import org.mortbay.jetty.client.HttpExchange;
 
+@SuppressWarnings("serial")
 public class JettyOAuthConsumer extends AbstractOAuthConsumer {
 
     public JettyOAuthConsumer(String consumerKey, String consumerSecret,

@@ -14,6 +14,7 @@
  */
 package oauth.signpost;
 
+import java.io.Serializable;
 import java.util.Map;
 
 import oauth.signpost.exception.OAuthCommunicationException;
@@ -21,7 +22,7 @@ import oauth.signpost.exception.OAuthExpectationFailedException;
 import oauth.signpost.exception.OAuthMessageSignerException;
 import oauth.signpost.exception.OAuthNotAuthorizedException;
 
-public interface OAuthProvider {
+public interface OAuthProvider extends Serializable {
 
     /**
      * Queries the service provider for a request token.
@@ -124,4 +125,14 @@ public interface OAuthProvider {
      *         implements.
      */
     public boolean isOAuth10a();
+
+    public String getRequestTokenEndpointUrl();
+
+    public String getAccessTokenEndpointUrl();
+
+    public String getAuthorizationWebsiteUrl();
+
+    public OAuthConsumer getConsumer();
+
+    public void setConsumer(OAuthConsumer consumer);
 }

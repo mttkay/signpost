@@ -30,6 +30,7 @@ import oauth.signpost.exception.OAuthMessageSignerException;
 import oauth.signpost.exception.OAuthNotAuthorizedException;
 import oauth.signpost.http.HttpRequest;
 
+@SuppressWarnings("serial")
 public class DefaultOAuthProvider implements OAuthProvider {
 
     private String requestTokenEndpointUrl;
@@ -40,7 +41,7 @@ public class DefaultOAuthProvider implements OAuthProvider {
 
     private OAuthConsumer consumer;
 
-    private HttpURLConnection connection;
+    private transient HttpURLConnection connection;
 
     private Map<String, String> responseParameters;
 
@@ -171,5 +172,25 @@ public class DefaultOAuthProvider implements OAuthProvider {
 
     public boolean isOAuth10a() {
         return isOAuth10a;
+    }
+
+    public String getRequestTokenEndpointUrl() {
+        return this.requestTokenEndpointUrl;
+    }
+
+    public String getAccessTokenEndpointUrl() {
+        return this.accessTokenEndpointUrl;
+    }
+
+    public String getAuthorizationWebsiteUrl() {
+        return this.authorizationWebsiteUrl;
+    }
+
+    public OAuthConsumer getConsumer() {
+        return this.consumer;
+    }
+
+    public void setConsumer(OAuthConsumer consumer) {
+        this.consumer = consumer;
     }
 }

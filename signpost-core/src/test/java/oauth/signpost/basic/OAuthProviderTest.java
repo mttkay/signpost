@@ -1,13 +1,17 @@
 package oauth.signpost.basic;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
@@ -163,5 +167,45 @@ public class OAuthProviderTest extends SignpostTestBase {
         assertTrue(provider.getResponseParameters().containsKey("c"));
         assertEquals("2", provider.getResponseParameters().get("b"));
         assertEquals("3", provider.getResponseParameters().get("c"));
+    }
+
+    @Test
+    public void shouldBeSerializable() throws Exception {
+        // prepare a provider that has response params set
+        DefaultOAuthProvider provider = new DefaultOAuthProvider(consumerMock,
+                REQUEST_TOKEN_ENDPOINT_URL, ACCESS_TOKEN_ENDPOINT_URL,
+                AUTHORIZE_WEBSITE_URL);
+        String responseBody = OAuth.OAUTH_TOKEN + "=" + TOKEN + "&"
+                + OAuth.OAUTH_TOKEN_SECRET + "=" + TOKEN_SECRET + "&a=1";
+        InputStream is = new ByteArrayInputStream(responseBody.getBytes());
+        when(connectionMock.getInputStream()).thenReturn(is);
+        provider.setHttpUrlConnection(connectionMock);
+        provider.retrieveRequestToken(null);
+
+        // the mock consumer isn't serializable, thus set a normal one
+        OAuthConsumer consumer = new DefaultOAuthConsumer(CONSUMER_KEY,
+                CONSUMER_SECRET, SignatureMethod.HMAC_SHA1);
+        consumer.setTokenWithSecret(TOKEN, TOKEN_SECRET);
+        provider.setConsumer(consumer);
+        provider.setOAuth10a(true);
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ObjectOutputStream ostream = new ObjectOutputStream(baos);
+        ostream.writeObject(provider);
+
+        ObjectInputStream istream = new ObjectInputStream(
+                new ByteArrayInputStream(baos.toByteArray()));
+        provider = (DefaultOAuthProvider) istream.readObject();
+
+        assertEquals(REQUEST_TOKEN_ENDPOINT_URL,
+                provider.getRequestTokenEndpointUrl());
+        assertEquals(ACCESS_TOKEN_ENDPOINT_URL,
+                provider.getAccessTokenEndpointUrl());
+        assertEquals(AUTHORIZE_WEBSITE_URL,
+                provider.getAuthorizationWebsiteUrl());
+        assertEquals(true, provider.isOAuth10a());
+        assertNotNull(provider.getConsumer());
+        assertNotNull(provider.getResponseParameters());
+        assertEquals("1", provider.getResponseParameters().get("a"));
     }
 }

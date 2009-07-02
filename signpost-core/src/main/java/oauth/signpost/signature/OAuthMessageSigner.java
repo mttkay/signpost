@@ -14,6 +14,8 @@
  */
 package oauth.signpost.signature;
 
+import java.io.IOException;
+import java.io.Serializable;
 import java.util.Map;
 
 import oauth.signpost.exception.OAuthMessageSignerException;
@@ -21,9 +23,9 @@ import oauth.signpost.http.HttpRequest;
 
 import org.apache.commons.codec.binary.Base64;
 
-public abstract class OAuthMessageSigner {
+public abstract class OAuthMessageSigner implements Serializable {
 
-    private Base64 base64;
+    private transient Base64 base64;
 
     private String consumerSecret;
 
@@ -81,5 +83,11 @@ public abstract class OAuthMessageSigner {
         SignatureBaseString sbs = new SignatureBaseString(request,
                 oauthParameters);
         return sbs.compute();
+    }
+
+    private void readObject(java.io.ObjectInputStream stream)
+            throws IOException, ClassNotFoundException {
+        stream.defaultReadObject();
+        this.base64 = new Base64();
     }
 }

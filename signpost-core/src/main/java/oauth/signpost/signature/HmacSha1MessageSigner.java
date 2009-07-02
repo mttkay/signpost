@@ -26,6 +26,7 @@ import oauth.signpost.OAuth;
 import oauth.signpost.exception.OAuthMessageSignerException;
 import oauth.signpost.http.HttpRequest;
 
+@SuppressWarnings("serial")
 public class HmacSha1MessageSigner extends OAuthMessageSigner {
 
     private static final String MAC_NAME = "HmacSHA1";

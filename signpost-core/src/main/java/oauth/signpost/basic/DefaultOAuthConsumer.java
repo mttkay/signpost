@@ -6,6 +6,7 @@ import oauth.signpost.AbstractOAuthConsumer;
 import oauth.signpost.http.HttpRequest;
 import oauth.signpost.signature.SignatureMethod;
 
+@SuppressWarnings("serial")
 public class DefaultOAuthConsumer extends AbstractOAuthConsumer {
 
     public DefaultOAuthConsumer(String consumerKey, String consumerSecret,

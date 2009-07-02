@@ -7,6 +7,10 @@ import static org.mockito.Matchers.argThat;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.HashMap;
 
 import oauth.signpost.OAuthConsumer;
@@ -65,6 +69,29 @@ public class OAuthConsumerTest extends SignpostTestBase {
 
         verify(httpGetMock).setHeader(eq("Authorization"),
                 argThat(new HasValuesPercentEncoded()));
+    }
+
+    @Test
+    public void shouldBeSerializable() throws Exception {
+        OAuthConsumer consumer = new DefaultOAuthConsumer(CONSUMER_KEY,
+                CONSUMER_SECRET, SignatureMethod.HMAC_SHA1);
+        consumer.setTokenWithSecret(TOKEN, TOKEN_SECRET);
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ObjectOutputStream ostream = new ObjectOutputStream(baos);
+        ostream.writeObject(consumer);
+
+        ObjectInputStream istream = new ObjectInputStream(
+                new ByteArrayInputStream(baos.toByteArray()));
+        consumer = (DefaultOAuthConsumer) istream.readObject();
+
+        assertEquals(CONSUMER_KEY, consumer.getConsumerKey());
+        assertEquals(CONSUMER_SECRET, consumer.getConsumerSecret());
+        assertEquals(TOKEN, consumer.getToken());
+        assertEquals(TOKEN_SECRET, consumer.getTokenSecret());
+
+        // signing messages should still work
+        consumer.sign(httpGetMock);
     }
 
     private class IsCompleteListOfOAuthParameters extends

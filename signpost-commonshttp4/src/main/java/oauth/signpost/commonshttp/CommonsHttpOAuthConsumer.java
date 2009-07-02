@@ -4,6 +4,7 @@ import oauth.signpost.AbstractOAuthConsumer;
 import oauth.signpost.http.HttpRequest;
 import oauth.signpost.signature.SignatureMethod;
 
+@SuppressWarnings("serial")
 public class CommonsHttpOAuthConsumer extends AbstractOAuthConsumer {
 
     public CommonsHttpOAuthConsumer(String consumerKey, String consumerSecret,
