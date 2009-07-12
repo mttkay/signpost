@@ -67,7 +67,7 @@ public class DefaultOAuthProvider implements OAuthProvider {
         // 1.0a expects the callback to be sent while getting the request token.
         // 1.0 service providers would simply ignore this parameter.
         retrieveToken(OAuth.addQueryParameters(requestTokenEndpointUrl,
-                OAuth.OAUTH_CALLBACK, OAuth.percentEncode(callbackUrl)));
+                OAuth.OAUTH_CALLBACK, callbackUrl));
 
         String callbackConfirmed = responseParameters.get(OAuth.OAUTH_CALLBACK_CONFIRMED);
         responseParameters.remove(OAuth.OAUTH_CALLBACK_CONFIRMED);
