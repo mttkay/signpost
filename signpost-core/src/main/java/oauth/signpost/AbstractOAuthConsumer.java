@@ -104,9 +104,7 @@ public abstract class AbstractOAuthConsumer implements OAuthConsumer {
                 Long.toString(System.currentTimeMillis() / 1000L));
         map.put(OAuth.OAUTH_NONCE, Long.toString(System.nanoTime()));
         map.put(OAuth.OAUTH_VERSION, OAuth.VERSION_1_0);
-        if (token != null) {
-            map.put(OAuth.OAUTH_TOKEN, token);
-        }
+        map.put(OAuth.OAUTH_TOKEN, token);
         return map;
     }
 

@@ -11,6 +11,7 @@ import java.io.ByteArrayInputStream;
 import java.util.HashMap;
 import java.util.HashSet;
 
+import oauth.signpost.OAuth;
 import oauth.signpost.Parameter;
 import oauth.signpost.SignpostTestBase;
 import oauth.signpost.http.HttpRequest;
@@ -137,6 +138,19 @@ public class SignatureBaseStringTest extends SignpostTestBase {
         when(request.getContentType()).thenReturn(null);
         sbs = new SignatureBaseString(request, oauthParams);
         assertFalse(sbs.compute().contains("b%3D2"));
+    }
+
+    @Test
+    public void shouldAlwaysIncludeTokenParamEvenWhenEmpty() throws Exception {
+        HashMap<String, String> oauthParams = new HashMap<String, String>(
+                OAUTH_PARAMS);
+        oauthParams.put("oauth_token", null);
+
+        SignatureBaseString sbs = new SignatureBaseString(httpGetMock,
+                oauthParams);
+        String result = sbs.compute();
+
+        assertTrue(result.contains(OAuth.percentEncode("oauth_token=&")));
     }
 
     @Test
