@@ -58,8 +58,4 @@ public class HttpRequestAdapter implements oauth.signpost.http.HttpRequest {
         }
         return entity.getContent();
     }
-
-    public boolean hasPayload() {
-        return entity != null;
-    }
 }

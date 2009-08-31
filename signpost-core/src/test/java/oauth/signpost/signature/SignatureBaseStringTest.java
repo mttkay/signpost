@@ -105,7 +105,6 @@ public class SignatureBaseStringTest extends SignpostTestBase {
         when(request.getRequestUrl()).thenReturn("http://example.com?a=1");
         ByteArrayInputStream body = new ByteArrayInputStream("b=2".getBytes());
         when(request.getMessagePayload()).thenReturn(body);
-        when(request.hasPayload()).thenReturn(true);
         when(request.getContentType()).thenReturn(
                 "application/x-www-form-urlencoded");
         //FIXME: this currently doesn't test anything, since Signpost currently

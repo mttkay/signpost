@@ -34,10 +34,6 @@ public class HttpRequestAdapter implements HttpRequest {
         return null;
     }
 
-    public boolean hasPayload() throws IOException {
-        return false;
-    }
-
     public String getContentType() {
         return connection.getRequestProperty("Content-Type");
     }

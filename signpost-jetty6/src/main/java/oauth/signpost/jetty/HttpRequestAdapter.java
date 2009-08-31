@@ -42,10 +42,6 @@ public class HttpRequestAdapter implements HttpRequest {
         return requestUrl;
     }
 
-    public boolean hasPayload() {
-        return request.getRequestContent() != null;
-    }
-
     public void setHeader(String name, String value) {
         request.setRequestHeader(name, value);
     }

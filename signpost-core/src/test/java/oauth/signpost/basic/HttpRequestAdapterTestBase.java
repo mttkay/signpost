@@ -58,9 +58,4 @@ public abstract class HttpRequestAdapterTestBase {
                 request.getMessagePayload())).readLine();
         assertEquals(PAYLOAD, actual);
     }
-
-    @Test
-    public void shouldCorrectlyAnswerIfPayloadAvailable() throws Exception {
-        assertEquals(request.hasPayload(), request.getMessagePayload() != null);
-    }
 }

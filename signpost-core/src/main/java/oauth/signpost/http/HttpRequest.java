@@ -15,7 +15,5 @@ public interface HttpRequest {
 
     InputStream getMessagePayload() throws IOException;
 
-    boolean hasPayload() throws IOException;
-
     String getContentType();
 }
