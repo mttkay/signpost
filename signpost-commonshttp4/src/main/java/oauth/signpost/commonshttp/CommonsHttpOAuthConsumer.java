@@ -20,7 +20,7 @@ public class CommonsHttpOAuthConsumer extends AbstractOAuthConsumer {
                             + org.apache.http.HttpRequest.class.getCanonicalName());
         }
 
-        return new HttpRequestAdapter((org.apache.http.HttpRequest) request);
+        return new HttpRequestAdapter((org.apache.http.client.methods.HttpUriRequest) request);
     }
 
 }

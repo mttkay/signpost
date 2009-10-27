@@ -78,6 +78,22 @@
       <url>http://repo2.maven.org/maven2</url>
       <layout>default</layout>
     </repository>
+    <repository>
+      <releases>
+        <enabled>false</enabled>
+        <updatePolicy>daily</updatePolicy>
+        <checksumPolicy>warn</checksumPolicy>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+        <updatePolicy>daily</updatePolicy>
+        <checksumPolicy>warn</checksumPolicy>
+      </snapshots>
+      <id>signpost-snapshots</id>
+      <name>Signpost Snapshot Repository</name>
+      <url>http://oss.sonatype.org/content/repositories/signpost-snapshots/</url>
+      <layout>default</layout>
+    </repository>    
   </repositories>
 
   <distributionManagement>

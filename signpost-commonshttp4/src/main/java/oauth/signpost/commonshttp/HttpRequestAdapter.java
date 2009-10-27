@@ -6,15 +6,15 @@ import java.io.InputStream;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpEntityEnclosingRequest;
-import org.apache.http.HttpRequest;
+import org.apache.http.client.methods.HttpUriRequest;
 
 public class HttpRequestAdapter implements oauth.signpost.http.HttpRequest {
 
-    private HttpRequest request;
+    private HttpUriRequest request;
 
     private HttpEntity entity;
 
-    public HttpRequestAdapter(HttpRequest request) {
+    public HttpRequestAdapter(HttpUriRequest request) {
         this.request = request;
         if (request instanceof HttpEntityEnclosingRequest) {
             entity = ((HttpEntityEnclosingRequest) request).getEntity();
@@ -34,7 +34,7 @@ public class HttpRequestAdapter implements oauth.signpost.http.HttpRequest {
     }
 
     public String getRequestUrl() {
-        return request.getRequestLine().getUri();
+        return request.getURI().toString();
     }
 
     public void setHeader(String name, String value) {
