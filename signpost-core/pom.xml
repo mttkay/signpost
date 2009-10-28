@@ -2,13 +2,13 @@
   <parent>
     <artifactId>oauth-signpost</artifactId>
     <groupId>oauth.signpost</groupId>
-    <version>1.1-SNAPSHOT</version>
+    <version>1.1</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>oauth.signpost</groupId>
   <artifactId>signpost-core</artifactId>
   <name>signpost-core</name>
-  <version>1.1-SNAPSHOT</version>
+  <version>1.1</version>
    
   <!-- dependencies -->
   <dependencies>

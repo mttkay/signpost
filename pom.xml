@@ -1,11 +1,9 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>oauth.signpost</groupId>
   <artifactId>oauth-signpost</artifactId>
   <packaging>pom</packaging>
-  <version>1.1-SNAPSHOT</version>
+  <version>1.1</version>
   <name>oauth-signpost</name>
   <description>
     A simple, light-weight, and modular OAuth client library for the
@@ -34,7 +32,7 @@
   </modules>
 
   <scm>
-    <developerConnection>scm:svn:https://oauth-signpost.googlecode.com/svn/trunk</developerConnection>
+    <developerConnection>scm:svn:https://oauth-signpost.googlecode.com/svn/tags/oauth-signpost-1.1</developerConnection>
   </scm>
 
   <!-- build settings -->
