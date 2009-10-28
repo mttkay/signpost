@@ -9,7 +9,7 @@
   <artifactId>signpost-core</artifactId>
   <name>signpost-core</name>
   <version>1.1-SNAPSHOT</version>
-  
+   
   <!-- dependencies -->
   <dependencies>
     <dependency>
