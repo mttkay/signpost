@@ -31,6 +31,14 @@
     <module>signpost-jetty6</module>
   </modules>
 
+  <licenses>
+    <license>
+      <name>The Apache Software License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+
   <scm>
     <developerConnection>scm:svn:https://oauth-signpost.googlecode.com/svn/tags/oauth-signpost-1.1</developerConnection>
   </scm>
