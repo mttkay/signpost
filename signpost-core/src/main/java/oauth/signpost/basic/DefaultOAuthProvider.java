@@ -33,164 +33,177 @@ import oauth.signpost.http.HttpRequest;
 @SuppressWarnings("serial")
 public class DefaultOAuthProvider implements OAuthProvider {
 
-    private String requestTokenEndpointUrl;
+	private String requestTokenEndpointUrl;
 
-    private String accessTokenEndpointUrl;
+	private String accessTokenEndpointUrl;
 
-    private String authorizationWebsiteUrl;
+	private String authorizationWebsiteUrl;
 
-    private OAuthConsumer consumer;
+	private OAuthConsumer consumer;
 
-    private transient HttpURLConnection connection;
+	private transient HttpURLConnection connection;
 
-    private Map<String, String> responseParameters;
+	private Map<String, String> responseParameters;
 
-    private boolean isOAuth10a;
+	private Map<String, String> defaultHeaders;
 
-    public DefaultOAuthProvider(OAuthConsumer consumer,
-            String requestTokenEndpointUrl, String accessTokenEndpointUrl,
-            String authorizationWebsiteUrl) {
-        this.consumer = consumer;
-        this.requestTokenEndpointUrl = requestTokenEndpointUrl;
-        this.accessTokenEndpointUrl = accessTokenEndpointUrl;
-        this.authorizationWebsiteUrl = authorizationWebsiteUrl;
-        this.responseParameters = new HashMap<String, String>();
-    }
+	private boolean isOAuth10a;
 
-    public String retrieveRequestToken(String callbackUrl)
-            throws OAuthMessageSignerException, OAuthNotAuthorizedException,
-            OAuthExpectationFailedException, OAuthCommunicationException {
+	public DefaultOAuthProvider(OAuthConsumer consumer,
+			String requestTokenEndpointUrl, String accessTokenEndpointUrl,
+			String authorizationWebsiteUrl) {
+		this.consumer = consumer;
+		this.requestTokenEndpointUrl = requestTokenEndpointUrl;
+		this.accessTokenEndpointUrl = accessTokenEndpointUrl;
+		this.authorizationWebsiteUrl = authorizationWebsiteUrl;
+		this.responseParameters = new HashMap<String, String>();
+		this.defaultHeaders = new HashMap<String, String>();
+	}
 
-        // invalidate current credentials, if any
-        consumer.setTokenWithSecret(null, null);
+	public String retrieveRequestToken(String callbackUrl)
+			throws OAuthMessageSignerException, OAuthNotAuthorizedException,
+			OAuthExpectationFailedException, OAuthCommunicationException {
 
-        // 1.0a expects the callback to be sent while getting the request token.
-        // 1.0 service providers would simply ignore this parameter.
-        retrieveToken(OAuth.addQueryParameters(requestTokenEndpointUrl,
-                OAuth.OAUTH_CALLBACK, callbackUrl));
+		// invalidate current credentials, if any
+		consumer.setTokenWithSecret(null, null);
 
-        String callbackConfirmed = responseParameters.get(OAuth.OAUTH_CALLBACK_CONFIRMED);
-        responseParameters.remove(OAuth.OAUTH_CALLBACK_CONFIRMED);
-        isOAuth10a = Boolean.TRUE.toString().equals(callbackConfirmed);
+		// 1.0a expects the callback to be sent while getting the request token.
+		// 1.0 service providers would simply ignore this parameter.
+		retrieveToken(OAuth.addQueryParameters(requestTokenEndpointUrl,
+				OAuth.OAUTH_CALLBACK, callbackUrl));
 
-        // 1.0 service providers expect the callback as part of the auth URL,
-        // Do not send when 1.0a.
-        if (isOAuth10a) {
-            return OAuth.addQueryParameters(authorizationWebsiteUrl,
-                    OAuth.OAUTH_TOKEN, consumer.getToken());
-        } else {
-            return OAuth.addQueryParameters(authorizationWebsiteUrl,
-                    OAuth.OAUTH_TOKEN, consumer.getToken(),
-                    OAuth.OAUTH_CALLBACK, callbackUrl);
-        }
-    }
+		String callbackConfirmed = responseParameters
+				.get(OAuth.OAUTH_CALLBACK_CONFIRMED);
+		responseParameters.remove(OAuth.OAUTH_CALLBACK_CONFIRMED);
+		isOAuth10a = Boolean.TRUE.toString().equals(callbackConfirmed);
 
-    public void retrieveAccessToken(String oauthVerifier)
-            throws OAuthMessageSignerException, OAuthNotAuthorizedException,
-            OAuthExpectationFailedException, OAuthCommunicationException {
+		// 1.0 service providers expect the callback as part of the auth URL,
+		// Do not send when 1.0a.
+		if (isOAuth10a) {
+			return OAuth.addQueryParameters(authorizationWebsiteUrl,
+					OAuth.OAUTH_TOKEN, consumer.getToken());
+		} else {
+			return OAuth.addQueryParameters(authorizationWebsiteUrl,
+					OAuth.OAUTH_TOKEN, consumer.getToken(),
+					OAuth.OAUTH_CALLBACK, callbackUrl);
+		}
+	}
 
-        if (consumer.getToken() == null || consumer.getTokenSecret() == null) {
-            throw new OAuthExpectationFailedException(
-                    "Authorized request token or token secret not set. "
-                            + "Did you retrieve an authorized request token before?");
-        }
+	public void retrieveAccessToken(String oauthVerifier)
+			throws OAuthMessageSignerException, OAuthNotAuthorizedException,
+			OAuthExpectationFailedException, OAuthCommunicationException {
 
-        retrieveToken(isOAuth10a && oauthVerifier != null
-                ? OAuth.addQueryParameters(accessTokenEndpointUrl,
-                        OAuth.OAUTH_VERIFIER, oauthVerifier)
-                : accessTokenEndpointUrl);
-    }
+		if (consumer.getToken() == null || consumer.getTokenSecret() == null) {
+			throw new OAuthExpectationFailedException(
+					"Authorized request token or token secret not set. "
+							+ "Did you retrieve an authorized request token before?");
+		}
 
-    private void retrieveToken(String endpointUrl)
-            throws OAuthMessageSignerException, OAuthCommunicationException,
-            OAuthNotAuthorizedException, OAuthExpectationFailedException {
+		retrieveToken(isOAuth10a && oauthVerifier != null ? OAuth
+				.addQueryParameters(accessTokenEndpointUrl,
+						OAuth.OAUTH_VERIFIER, oauthVerifier)
+				: accessTokenEndpointUrl);
+	}
 
-        if (consumer.getConsumerKey() == null
-                || consumer.getConsumerSecret() == null) {
-            throw new OAuthExpectationFailedException(
-                    "Consumer key or secret not set");
-        }
+	private void retrieveToken(String endpointUrl)
+			throws OAuthMessageSignerException, OAuthCommunicationException,
+			OAuthNotAuthorizedException, OAuthExpectationFailedException {
 
-        try {
-            if (connection == null) {
-                connection = (HttpURLConnection) new URL(endpointUrl).openConnection();
-                connection.setRequestMethod("GET");
-            }
-            HttpRequest request = new HttpRequestAdapter(connection);
+		if (consumer.getConsumerKey() == null
+				|| consumer.getConsumerSecret() == null) {
+			throw new OAuthExpectationFailedException(
+					"Consumer key or secret not set");
+		}
 
-            consumer.sign(request);
+		try {
+			if (connection == null) {
+				connection = (HttpURLConnection) new URL(endpointUrl)
+						.openConnection();
+				connection.setRequestMethod("GET");
+			}
+			HttpRequest request = new HttpRequestAdapter(connection);
+			for (String header : defaultHeaders.keySet()) {
+				request.setHeader(header, defaultHeaders.get(header));
+			}
 
-            connection.connect();
+			consumer.sign(request);
 
-            int statusCode = connection.getResponseCode();
+			connection.connect();
 
-            if (statusCode == 401) {
-                throw new OAuthNotAuthorizedException();
-            }
+			int statusCode = connection.getResponseCode();
 
-            List<Parameter> params = OAuth.decodeForm(connection.getInputStream());
-            responseParameters = OAuth.toMap(params);
+			if (statusCode == 401) {
+				throw new OAuthNotAuthorizedException();
+			}
 
-            String token = responseParameters.get(OAuth.OAUTH_TOKEN);
-            responseParameters.remove(OAuth.OAUTH_TOKEN);
-            String secret = responseParameters.get(OAuth.OAUTH_TOKEN_SECRET);
-            responseParameters.remove(OAuth.OAUTH_TOKEN_SECRET);
+			List<Parameter> params = OAuth.decodeForm(connection
+					.getInputStream());
+			responseParameters = OAuth.toMap(params);
 
-            if (token == null || secret == null) {
-                throw new OAuthExpectationFailedException(
-                        "Request token or token secret not set in server reply. "
-                                + "The service provider you use is probably buggy.");
-            }
+			String token = responseParameters.get(OAuth.OAUTH_TOKEN);
+			responseParameters.remove(OAuth.OAUTH_TOKEN);
+			String secret = responseParameters.get(OAuth.OAUTH_TOKEN_SECRET);
+			responseParameters.remove(OAuth.OAUTH_TOKEN_SECRET);
 
-            consumer.setTokenWithSecret(token, secret);
+			if (token == null || secret == null) {
+				throw new OAuthExpectationFailedException(
+						"Request token or token secret not set in server reply. "
+								+ "The service provider you use is probably buggy.");
+			}
 
-        } catch (OAuthNotAuthorizedException e) {
-            throw e;
-        } catch (OAuthExpectationFailedException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new OAuthCommunicationException(e);
-        } finally {
-            if (connection != null) {
-                connection.disconnect();
-                connection = null;
-            }
-        }
-    }
+			consumer.setTokenWithSecret(token, secret);
 
-    public Map<String, String> getResponseParameters() {
-        return responseParameters;
-    }
+		} catch (OAuthNotAuthorizedException e) {
+			throw e;
+		} catch (OAuthExpectationFailedException e) {
+			throw e;
+		} catch (Exception e) {
+			throw new OAuthCommunicationException(e);
+		} finally {
+			if (connection != null) {
+				connection.disconnect();
+				connection = null;
+			}
+		}
+	}
 
-    void setHttpUrlConnection(HttpURLConnection connection) {
-        this.connection = connection;
-    }
+	public Map<String, String> getResponseParameters() {
+		return responseParameters;
+	}
 
-    public void setOAuth10a(boolean isOAuth10aProvider) {
-        this.isOAuth10a = isOAuth10aProvider;
-    }
+	void setHttpUrlConnection(HttpURLConnection connection) {
+		this.connection = connection;
+	}
 
-    public boolean isOAuth10a() {
-        return isOAuth10a;
-    }
+	public void setOAuth10a(boolean isOAuth10aProvider) {
+		this.isOAuth10a = isOAuth10aProvider;
+	}
 
-    public String getRequestTokenEndpointUrl() {
-        return this.requestTokenEndpointUrl;
-    }
+	public boolean isOAuth10a() {
+		return isOAuth10a;
+	}
 
-    public String getAccessTokenEndpointUrl() {
-        return this.accessTokenEndpointUrl;
-    }
+	public String getRequestTokenEndpointUrl() {
+		return this.requestTokenEndpointUrl;
+	}
 
-    public String getAuthorizationWebsiteUrl() {
-        return this.authorizationWebsiteUrl;
-    }
+	public String getAccessTokenEndpointUrl() {
+		return this.accessTokenEndpointUrl;
+	}
 
-    public OAuthConsumer getConsumer() {
-        return this.consumer;
-    }
+	public String getAuthorizationWebsiteUrl() {
+		return this.authorizationWebsiteUrl;
+	}
 
-    public void setConsumer(OAuthConsumer consumer) {
-        this.consumer = consumer;
-    }
+	public OAuthConsumer getConsumer() {
+		return this.consumer;
+	}
+
+	public void setConsumer(OAuthConsumer consumer) {
+		this.consumer = consumer;
+	}
+
+	public void setRequestHeader(String header, String value) {
+		defaultHeaders.put(header, value);
+	}
 }
