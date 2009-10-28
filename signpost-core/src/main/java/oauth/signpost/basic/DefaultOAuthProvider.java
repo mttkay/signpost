@@ -30,6 +30,13 @@ import oauth.signpost.exception.OAuthMessageSignerException;
 import oauth.signpost.exception.OAuthNotAuthorizedException;
 import oauth.signpost.http.HttpRequest;
 
+/**
+ * This default implementation uses {@link java.net.HttpURLConnection} type GET
+ * requests to receive tokens from a service provider.
+ * 
+ * @author Matthias Kaeppler
+ * 
+ */
 @SuppressWarnings("serial")
 public class DefaultOAuthProvider implements OAuthProvider {
 
@@ -105,7 +112,7 @@ public class DefaultOAuthProvider implements OAuthProvider {
 				: accessTokenEndpointUrl);
 	}
 
-	private void retrieveToken(String endpointUrl)
+	protected void retrieveToken(String endpointUrl)
 			throws OAuthMessageSignerException, OAuthCommunicationException,
 			OAuthNotAuthorizedException, OAuthExpectationFailedException {
 

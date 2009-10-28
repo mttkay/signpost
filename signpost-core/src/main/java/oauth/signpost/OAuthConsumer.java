@@ -20,21 +20,50 @@ import oauth.signpost.exception.OAuthExpectationFailedException;
 import oauth.signpost.exception.OAuthMessageSignerException;
 import oauth.signpost.http.HttpRequest;
 
+/**
+ * Exposes a simple interface to sign HTTP requests using a given OAuth token
+ * and secret.
+ * 
+ * @author Matthias Kaeppler
+ * 
+ */
 public interface OAuthConsumer extends Serializable {
 
-    public HttpRequest sign(HttpRequest request)
-            throws OAuthMessageSignerException, OAuthExpectationFailedException;
+	/**
+	 * Signs the given HTTP request by writing an OAuth signature string to the
+	 * request's Authorization header.
+	 * 
+	 * @param request
+	 *            the request to sign
+	 * @return the request object passed as an argument
+	 * @throws OAuthMessageSignerException
+	 * @throws OAuthExpectationFailedException
+	 */
+	public HttpRequest sign(HttpRequest request)
+			throws OAuthMessageSignerException, OAuthExpectationFailedException;
 
-    public HttpRequest sign(Object request) throws OAuthMessageSignerException,
-            OAuthExpectationFailedException;
+	/**
+	 * Signs the given HTTP request by writing an OAuth signature string to the
+	 * request's Authorization header. This method accepts adapted requests; the
+	 * consumer implementation must ensure that only those request types are
+	 * passed which it supports.
+	 * 
+	 * @param request
+	 *            the request to sign
+	 * @return the request object passed as an argument
+	 * @throws OAuthMessageSignerException
+	 * @throws OAuthExpectationFailedException
+	 */
+	public HttpRequest sign(Object request) throws OAuthMessageSignerException,
+			OAuthExpectationFailedException;
 
-    public void setTokenWithSecret(String token, String tokenSecret);
+	public void setTokenWithSecret(String token, String tokenSecret);
 
-    public String getToken();
+	public String getToken();
 
-    public String getTokenSecret();
+	public String getTokenSecret();
 
-    public String getConsumerKey();
+	public String getConsumerKey();
 
-    public String getConsumerSecret();
+	public String getConsumerSecret();
 }

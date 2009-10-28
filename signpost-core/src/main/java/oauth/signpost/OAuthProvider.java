@@ -22,6 +22,12 @@ import oauth.signpost.exception.OAuthExpectationFailedException;
 import oauth.signpost.exception.OAuthMessageSignerException;
 import oauth.signpost.exception.OAuthNotAuthorizedException;
 
+/**
+ * Supplies an interface that can be used to retrieve request and access tokens
+ * from an OAuth 1.0(a) service provider. A provider object is always bound to a
+ * consumer object; after a token has been retrieved, the consumer is
+ * automatically updated with the token and the corresponding secret.
+ */
 public interface OAuthProvider extends Serializable {
 
 	/**
