@@ -3,7 +3,7 @@
   <groupId>oauth.signpost</groupId>
   <artifactId>oauth-signpost</artifactId>
   <packaging>pom</packaging>
-  <version>1.1</version>
+  <version>1.2-SNAPSHOT</version>
   <name>oauth-signpost</name>
   <description>
     A simple, light-weight, and modular OAuth client library for the
@@ -40,7 +40,9 @@
   </licenses>
 
   <scm>
-    <developerConnection>scm:svn:https://oauth-signpost.googlecode.com/svn/tags/oauth-signpost-1.1</developerConnection>
+    <url>http://github.com/kaeppler/signpost</url>
+    <connection>git://github.com/kaeppler/signpost.git</connection>
+    <developerConnection>git@github.com:kaeppler/signpost.git</developerConnection>
   </scm>
 
   <!-- build settings -->
