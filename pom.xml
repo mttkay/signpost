@@ -10,10 +10,12 @@
     Java platform.
   </description>
   <url>http://code.google.com/p/oauth-signpost/</url>
+
   <issueManagement>
     <system>Google Code Issue Tracker</system>
     <url>http://code.google.com/p/oauth-signpost/issues/list</url>
   </issueManagement>
+
   <developers>
     <developer>
       <id>mk</id>
@@ -25,6 +27,7 @@
       <timezone>+1</timezone>
     </developer>
   </developers>
+
   <modules>
     <module>signpost-core</module>
     <module>signpost-commonshttp4</module>
@@ -42,6 +45,10 @@
   <scm>
     <developerConnection>scm:svn:https://oauth-signpost.googlecode.com/svn/tags/oauth-signpost-1.1</developerConnection>
   </scm>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
 
   <!-- build settings -->
   <build>
