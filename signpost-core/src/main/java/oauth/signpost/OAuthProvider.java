@@ -110,6 +110,17 @@ public interface OAuthProvider extends Serializable {
 	 */
 	public Map<String, String> getResponseParameters();
 
+    /**
+     * Subclasses must use this setter to preserve any non-OAuth query
+     * parameters contained in the server response. It's the caller's
+     * responsibility that any OAuth parameters be removed beforehand.
+     * 
+     * @param parameters
+     *        the map of query parameters served by the service provider in the
+     *        token response
+     */
+    public void setResponseParameters(Map<String, String> parameters);
+
 	/**
 	 * Use this method to set custom HTTP headers to be used for the requests
 	 * which are sent to retrieve tokens.
