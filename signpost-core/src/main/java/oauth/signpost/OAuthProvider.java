@@ -121,6 +121,11 @@ public interface OAuthProvider extends Serializable {
 	 */
 	public void setRequestHeader(String header, String value);
 
+    /**
+     * @return all request headers set via {@link #setRequestHeader}
+     */
+    public Map<String, String> getRequestHeaders();
+
 	/**
 	 * @param isOAuth10aProvider
 	 *            set to true if the service provider supports OAuth 1.0a. Note

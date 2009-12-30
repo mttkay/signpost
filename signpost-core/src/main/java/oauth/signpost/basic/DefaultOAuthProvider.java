@@ -16,13 +16,12 @@ package oauth.signpost.basic;
 
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import oauth.signpost.AbstractOAuthProvider;
 import oauth.signpost.OAuth;
 import oauth.signpost.OAuthConsumer;
-import oauth.signpost.OAuthProvider;
 import oauth.signpost.Parameter;
 import oauth.signpost.exception.OAuthCommunicationException;
 import oauth.signpost.exception.OAuthExpectationFailedException;
@@ -38,83 +37,22 @@ import oauth.signpost.http.HttpRequest;
  * 
  */
 @SuppressWarnings("serial")
-public class DefaultOAuthProvider implements OAuthProvider {
+public class DefaultOAuthProvider extends AbstractOAuthProvider {
 
-	private String requestTokenEndpointUrl;
+    private HttpURLConnection connection;
 
-	private String accessTokenEndpointUrl;
-
-	private String authorizationWebsiteUrl;
-
-	private OAuthConsumer consumer;
-
-	private transient HttpURLConnection connection;
-
-	private Map<String, String> responseParameters;
-
-	private Map<String, String> defaultHeaders;
-
-	private boolean isOAuth10a;
-
-	public DefaultOAuthProvider(OAuthConsumer consumer,
-			String requestTokenEndpointUrl, String accessTokenEndpointUrl,
-			String authorizationWebsiteUrl) {
-		this.consumer = consumer;
-		this.requestTokenEndpointUrl = requestTokenEndpointUrl;
-		this.accessTokenEndpointUrl = accessTokenEndpointUrl;
-		this.authorizationWebsiteUrl = authorizationWebsiteUrl;
-		this.responseParameters = new HashMap<String, String>();
-		this.defaultHeaders = new HashMap<String, String>();
-	}
-
-	public String retrieveRequestToken(String callbackUrl)
-			throws OAuthMessageSignerException, OAuthNotAuthorizedException,
-			OAuthExpectationFailedException, OAuthCommunicationException {
-
-		// invalidate current credentials, if any
-		consumer.setTokenWithSecret(null, null);
-
-		// 1.0a expects the callback to be sent while getting the request token.
-		// 1.0 service providers would simply ignore this parameter.
-		retrieveToken(OAuth.addQueryParameters(requestTokenEndpointUrl,
-				OAuth.OAUTH_CALLBACK, callbackUrl));
-
-		String callbackConfirmed = responseParameters
-				.get(OAuth.OAUTH_CALLBACK_CONFIRMED);
-		responseParameters.remove(OAuth.OAUTH_CALLBACK_CONFIRMED);
-		isOAuth10a = Boolean.TRUE.toString().equals(callbackConfirmed);
-
-		// 1.0 service providers expect the callback as part of the auth URL,
-		// Do not send when 1.0a.
-		if (isOAuth10a) {
-			return OAuth.addQueryParameters(authorizationWebsiteUrl,
-					OAuth.OAUTH_TOKEN, consumer.getToken());
-		} else {
-			return OAuth.addQueryParameters(authorizationWebsiteUrl,
-					OAuth.OAUTH_TOKEN, consumer.getToken(),
-					OAuth.OAUTH_CALLBACK, callbackUrl);
-		}
-	}
-
-	public void retrieveAccessToken(String oauthVerifier)
-			throws OAuthMessageSignerException, OAuthNotAuthorizedException,
-			OAuthExpectationFailedException, OAuthCommunicationException {
-
-		if (consumer.getToken() == null || consumer.getTokenSecret() == null) {
-			throw new OAuthExpectationFailedException(
-					"Authorized request token or token secret not set. "
-							+ "Did you retrieve an authorized request token before?");
-		}
-
-		retrieveToken(isOAuth10a && oauthVerifier != null ? OAuth
-				.addQueryParameters(accessTokenEndpointUrl,
-						OAuth.OAUTH_VERIFIER, oauthVerifier)
-				: accessTokenEndpointUrl);
-	}
-
+    public DefaultOAuthProvider(OAuthConsumer consumer,
+            String requestTokenEndpointUrl, String accessTokenEndpointUrl,
+            String authorizationWebsiteUrl) {
+        super(consumer, requestTokenEndpointUrl, accessTokenEndpointUrl, authorizationWebsiteUrl);
+    }
+    
 	protected void retrieveToken(String endpointUrl)
 			throws OAuthMessageSignerException, OAuthCommunicationException,
 			OAuthNotAuthorizedException, OAuthExpectationFailedException {
+
+        OAuthConsumer consumer = getConsumer();
+        Map<String, String> defaultHeaders = getRequestHeaders();
 
 		if (consumer.getConsumerKey() == null
 				|| consumer.getConsumerSecret() == null) {
@@ -145,12 +83,14 @@ public class DefaultOAuthProvider implements OAuthProvider {
 
 			List<Parameter> params = OAuth.decodeForm(connection
 					.getInputStream());
-			responseParameters = OAuth.toMap(params);
+            Map<String, String> responseParams = OAuth.toMap(params);
 
-			String token = responseParameters.get(OAuth.OAUTH_TOKEN);
-			responseParameters.remove(OAuth.OAUTH_TOKEN);
-			String secret = responseParameters.get(OAuth.OAUTH_TOKEN_SECRET);
-			responseParameters.remove(OAuth.OAUTH_TOKEN_SECRET);
+			String token = responseParams.get(OAuth.OAUTH_TOKEN);
+            String secret = responseParams.get(OAuth.OAUTH_TOKEN_SECRET);
+            responseParams.remove(OAuth.OAUTH_TOKEN);
+            responseParams.remove(OAuth.OAUTH_TOKEN_SECRET);
+
+            setResponseParameters(responseParams);
 
 			if (token == null || secret == null) {
 				throw new OAuthExpectationFailedException(
@@ -174,43 +114,7 @@ public class DefaultOAuthProvider implements OAuthProvider {
 		}
 	}
 
-	public Map<String, String> getResponseParameters() {
-		return responseParameters;
-	}
-
-	void setHttpUrlConnection(HttpURLConnection connection) {
-		this.connection = connection;
-	}
-
-	public void setOAuth10a(boolean isOAuth10aProvider) {
-		this.isOAuth10a = isOAuth10aProvider;
-	}
-
-	public boolean isOAuth10a() {
-		return isOAuth10a;
-	}
-
-	public String getRequestTokenEndpointUrl() {
-		return this.requestTokenEndpointUrl;
-	}
-
-	public String getAccessTokenEndpointUrl() {
-		return this.accessTokenEndpointUrl;
-	}
-
-	public String getAuthorizationWebsiteUrl() {
-		return this.authorizationWebsiteUrl;
-	}
-
-	public OAuthConsumer getConsumer() {
-		return this.consumer;
-	}
-
-	public void setConsumer(OAuthConsumer consumer) {
-		this.consumer = consumer;
-	}
-
-	public void setRequestHeader(String header, String value) {
-		defaultHeaders.put(header, value);
-	}
+    void setHttpUrlConnection(HttpURLConnection connection) {
+        this.connection = connection;
+    }
 }
