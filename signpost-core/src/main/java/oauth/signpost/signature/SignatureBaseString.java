@@ -11,17 +11,14 @@
 package oauth.signpost.signature;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
+import java.util.Iterator;
 import java.util.Map;
 
 import oauth.signpost.OAuth;
-import oauth.signpost.Parameter;
 import oauth.signpost.exception.OAuthMessageSignerException;
 import oauth.signpost.http.HttpRequest;
 
@@ -29,64 +26,114 @@ public class SignatureBaseString {
 
     private HttpRequest request;
 
-    private Map<String, String> oauthParams;
+    private Map<String, String> requestParameters;
 
-    /** An efficiently sortable wrapper around a parameter. */
-    private static class ComparableParameter implements
-            Comparable<ComparableParameter> {
+    /**
+     * Wrapper for an OAuth key/value pair that is easily sortable.
+     */
+    private static class ComparableParameter implements Comparable<ComparableParameter>,
+            Map.Entry<String, String> {
 
-        ComparableParameter(Parameter value) {
-            this.value = value;
-            String n = safeString(value.getKey());
-            String v = safeString(value.getValue());
-            this.key = OAuth.percentEncode(n) + ' ' + OAuth.percentEncode(v);
+        private ComparableParameter(String key, String value) {
+            this.key = OAuth.percentEncode(safeString(key));
+            this.value = OAuth.percentEncode(safeString(value));
+            this.combined = key + ' ' + value;
             // ' ' is used because it comes before any character
             // that can appear in a percentEncoded string.
         }
 
-        final Parameter value;
-
-        private final String key;
+        private String key, value, combined;
 
         private static String safeString(String from) {
             return (from == null) ? null : from.toString();
         }
 
+        public String getKey() {
+            return this.key;
+        }
+
+        public String getValue() {
+            return this.value;
+        }
+
+        public String setValue(String value) {
+            this.value = value;
+            return value;
+        }
+
         public int compareTo(ComparableParameter that) {
-            return this.key.compareTo(that.key);
+            return this.combined.compareTo(that.combined);
         }
 
         @Override
-        public String toString() {
-            return key;
+        public int hashCode() {
+            final int prime = 31;
+            int result = 1;
+            result = prime * result + ((key == null) ? 0 : key.hashCode());
+            result = prime * result + ((value == null) ? 0 : value.hashCode());
+            return result;
         }
 
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj)
+                return true;
+            if (obj == null)
+                return false;
+            if (getClass() != obj.getClass())
+                return false;
+            ComparableParameter other = (ComparableParameter) obj;
+            if (key == null) {
+                if (other.key != null)
+                    return false;
+            } else if (!key.equals(other.key))
+                return false;
+            if (value == null) {
+                if (other.value != null)
+                    return false;
+            } else if (!value.equals(other.value))
+                return false;
+            return true;
+        }
     }
 
-    public SignatureBaseString(HttpRequest request,
-            Map<String, String> oauthParams) {
+    /**
+     * Constructs a new SBS instance that will operate on the given request
+     * object and parameter set.
+     * 
+     * @param request
+     *        the HTTP request
+     * @param requestParameters
+     *        the set of request parameters from the Authorization header, query
+     *        string and form body
+     */
+    public SignatureBaseString(HttpRequest request, Map<String, String> requestParameters) {
         this.request = request;
-        this.oauthParams = oauthParams;
+        this.requestParameters = requestParameters;
     }
 
-    public String compute() throws OAuthMessageSignerException {
+    /**
+     * Builds the signature base string from the data this instance was
+     * configured with.
+     * 
+     * @return the signature base string
+     * @throws OAuthMessageSignerException
+     */
+    public String generate() throws OAuthMessageSignerException {
 
         try {
-            List<Parameter> params = new ArrayList<Parameter>();
-            collectHeaderParameters(params);
-            collectBodyParameters(params);
-            String requestUrl = collectQueryParameters(params);
+            String normalizedUrl = normalizeRequestUrl();
+            String normalizedParams = normalizeRequestParameters();
 
-            return request.getMethod() + '&'
-                    + OAuth.percentEncode(normalizeUrl(requestUrl)) + '&'
-                    + OAuth.percentEncode(normalizeParameters(params));
+            return request.getMethod() + '&' + OAuth.percentEncode(normalizedUrl) + '&'
+                    + OAuth.percentEncode(normalizedParams);
         } catch (Exception e) {
             throw new OAuthMessageSignerException(e);
         }
     }
 
-    public String normalizeUrl(String url) throws URISyntaxException {
-        URI uri = new URI(url);
+    public String normalizeRequestUrl() throws URISyntaxException {
+        URI uri = new URI(request.getRequestUrl());
         String scheme = uri.getScheme().toLowerCase();
         String authority = uri.getAuthority().toLowerCase();
         boolean dropPort = (scheme.equals("http") && uri.getPort() == 80)
@@ -106,81 +153,40 @@ public class SignatureBaseString {
         return scheme + "://" + authority + path;
     }
 
-    public String normalizeParameters(Collection<Parameter> parameters)
-            throws IOException {
-        if (parameters == null) {
+    /**
+     * Normalizes the set of request parameters this instance was configured
+     * with, as per OAuth spec section 9.1.1. cf. {@link http
+     * ://oauth.net/core/1.0a/#anchor13}
+     * 
+     * @param parameters
+     *        the set of request parameters
+     * @return the normalized params string
+     * @throws IOException
+     */
+    public String normalizeRequestParameters() throws IOException {
+        if (requestParameters == null) {
             return "";
         }
-        List<ComparableParameter> p = new ArrayList<ComparableParameter>(
-                parameters.size());
-        for (Parameter parameter : parameters) {
-            if (!OAuth.OAUTH_SIGNATURE.equals(parameter.getKey())) {
-                p.add(new ComparableParameter(parameter));
+        ArrayList<ComparableParameter> sortedParams = new ArrayList<ComparableParameter>(
+            requestParameters.size());
+        for (String key : requestParameters.keySet()) {
+            // ignnore 'realm' and 'signature' params
+            if ("realm".equals(key) || OAuth.OAUTH_SIGNATURE.equals(key)) {
+                continue;
+            }
+            sortedParams.add(new ComparableParameter(key, requestParameters.get(key)));
+        }
+        Collections.sort(sortedParams);
+
+        StringBuilder sb = new StringBuilder();
+        Iterator<ComparableParameter> iter = sortedParams.iterator();
+        while (iter.hasNext()) {
+            ComparableParameter p = iter.next();
+            sb.append(p.key + "=" + p.value);
+            if (iter.hasNext()) {
+                sb.append("&");
             }
         }
-        Collections.sort(p);
-        return OAuth.formEncode(getParameters(p));
-    }
-
-    /**
-     * Collects OAuth Authorization header parameters as per OAuth Core 1.0 spec
-     * section 9.1.1 FIXME: This should actually look in the request header and
-     * prioritize any existing OAuth parameters (save for the realm param, cf.
-     * 5.4.1) in favor of whatever was passed in the parameters map before.
-     * Could also be done in OAuthConsumer.buildOAuthParemeterMap()
-     */
-    private void collectHeaderParameters(Collection<Parameter> parameters) {
-        for (String key : oauthParams.keySet()) {
-            parameters.add(new Parameter(key, oauthParams.get(key)));
-        }
-    }
-
-    /**
-     * Collects x-www-form-urlencoded body parameters as per OAuth Core 1.0 spec
-     * section 9.1.1
-     */
-    private void collectBodyParameters(Collection<Parameter> parameters)
-            throws IOException {
-
-        // collect x-www-form-urlencoded body params
-        String contentType = request.getContentType();
-        if (contentType != null && contentType.equals(OAuth.FORM_ENCODED)) {
-            InputStream payload = request.getMessagePayload();
-            parameters.addAll(OAuth.decodeForm(payload));
-        }
-    }
-
-    /**
-     * Collects HTTP GET query string parameters as per OAuth Core 1.0 spec
-     * section 9.1.1
-     * 
-     * @param request
-     *            The HTTP request
-     * @return the URL without the query parameters, if there were any
-     */
-    private String collectQueryParameters(Collection<Parameter> parameters) {
-
-        String url = request.getRequestUrl();
-        int q = url.indexOf('?');
-        if (q >= 0) {
-            // Combine the URL query string with the other parameters:
-            parameters.addAll(OAuth.decodeForm(url.substring(q + 1)));
-            url = url.substring(0, q);
-        }
-
-        return url;
-    }
-
-    /** Retrieve the original parameters from a sorted collection. */
-    private List<Parameter> getParameters(
-            Collection<ComparableParameter> parameters) {
-        if (parameters == null) {
-            return null;
-        }
-        ArrayList<Parameter> list = new ArrayList<Parameter>(parameters.size());
-        for (ComparableParameter parameter : parameters) {
-            list.add(parameter.value);
-        }
-        return list;
+        return sb.toString();
     }
 }

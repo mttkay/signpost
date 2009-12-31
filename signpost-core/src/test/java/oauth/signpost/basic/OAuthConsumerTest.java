@@ -11,8 +11,9 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.HashMap;
+import java.util.Map;
 
+import oauth.signpost.OAuth;
 import oauth.signpost.OAuthConsumer;
 import oauth.signpost.SignpostTestBase;
 import oauth.signpost.exception.OAuthExpectationFailedException;
@@ -115,7 +116,7 @@ public class OAuthConsumerTest extends SignpostTestBase {
         public boolean matches(Object argument) {
             String oauthHeader = (String) argument;
             assertTrue(oauthHeader.startsWith("OAuth "));
-            HashMap<String, String> params = oauthHeaderToParamsMap(oauthHeader);
+            Map<String, String> params = OAuth.oauthHeaderToParamsMap(oauthHeader);
             assertNotNull(params.get("oauth_consumer_key"));
             assertNotNull(params.get("oauth_token"));
             assertNotNull(params.get("oauth_signature_method"));
@@ -132,21 +133,10 @@ public class OAuthConsumerTest extends SignpostTestBase {
         @Override
         public boolean matches(Object argument) {
             String oauthHeader = (String) argument;
-            HashMap<String, String> params = oauthHeaderToParamsMap(oauthHeader);
+            Map<String, String> params = OAuth.oauthHeaderToParamsMap(oauthHeader);
             assertEquals("\"1%252\"", params.get("oauth_consumer_key"));
             assertEquals("\"3%204\"", params.get("oauth_token"));
             return true;
         }
-    }
-
-    private HashMap<String, String> oauthHeaderToParamsMap(String oauthHeader) {
-        oauthHeader = oauthHeader.substring("OAuth ".length());
-        String[] elements = oauthHeader.split(",");
-        HashMap<String, String> params = new HashMap<String, String>();
-        for (String keyValuePair : elements) {
-            String[] keyValue = keyValuePair.split("=");
-            params.put(keyValue[0].trim(), keyValue[1].trim());
-        }
-        return params;
     }
 }

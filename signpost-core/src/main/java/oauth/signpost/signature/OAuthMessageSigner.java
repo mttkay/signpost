@@ -25,6 +25,8 @@ import org.apache.commons.codec.binary.Base64;
 
 public abstract class OAuthMessageSigner implements Serializable {
 
+    private static final long serialVersionUID = 4445779788786131202L;
+
     private transient Base64 base64;
 
     private String consumerSecret;
@@ -49,8 +51,7 @@ public abstract class OAuthMessageSigner implements Serializable {
         this.base64 = new Base64();
     }
 
-    public abstract String sign(HttpRequest request,
-            Map<String, String> oauthParameters)
+    public abstract String sign(HttpRequest request, Map<String, String> oauthParams)
             throws OAuthMessageSignerException;
 
     protected String getConsumerSecret() {
@@ -75,14 +76,6 @@ public abstract class OAuthMessageSigner implements Serializable {
 
     protected String base64Encode(byte[] b) {
         return new String(base64.encode(b));
-    }
-
-    protected String computeSignatureBaseString(HttpRequest request,
-            Map<String, String> oauthParameters)
-            throws OAuthMessageSignerException {
-        SignatureBaseString sbs = new SignatureBaseString(request,
-                oauthParameters);
-        return sbs.compute();
     }
 
     private void readObject(java.io.ObjectInputStream stream)

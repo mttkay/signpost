@@ -32,7 +32,7 @@ public class HmacSha1MessageSigner extends OAuthMessageSigner {
 	private static final String MAC_NAME = "HmacSHA1";
 
 	@Override
-	public String sign(HttpRequest request, Map<String, String> oauthParameters)
+    public String sign(HttpRequest request, Map<String, String> oauthParams)
 			throws OAuthMessageSignerException {
 		try {
 			String keyString = OAuth.percentEncode(getConsumerSecret()) + '&'
@@ -43,8 +43,8 @@ public class HmacSha1MessageSigner extends OAuthMessageSigner {
 			Mac mac = Mac.getInstance(MAC_NAME);
 			mac.init(key);
 
-			String sbs = computeSignatureBaseString(request, oauthParameters);
-			byte[] text = sbs.getBytes(OAuth.ENCODING);
+            String sbs = new SignatureBaseString(request, oauthParams).generate();
+            byte[] text = sbs.getBytes(OAuth.ENCODING);
 
 			return base64Encode(mac.doFinal(text)).trim();
 		} catch (GeneralSecurityException e) {

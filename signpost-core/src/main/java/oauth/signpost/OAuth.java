@@ -21,10 +21,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.URLDecoder;
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import com.google.gdata.util.common.base.PercentEscaper;
@@ -90,19 +89,19 @@ public class OAuth {
      * of name/value pairs. Use OAuth percent encoding (not exactly the encoding
      * mandated by x-www-form-urlencoded).
      */
-    public static void formEncode(Collection<Parameter> parameters,
+    public static <T extends Map.Entry<String, String>> void formEncode(Collection<T> parameters,
             OutputStream into) throws IOException {
         if (parameters != null) {
             boolean first = true;
-            for (Parameter parameter : parameters) {
+            for (Map.Entry<String, String> entry : parameters) {
                 if (first) {
                     first = false;
                 } else {
                     into.write('&');
                 }
-                into.write(percentEncode(toString(parameter.getKey())).getBytes());
+                into.write(percentEncode(toString(entry.getKey())).getBytes());
                 into.write('=');
-                into.write(percentEncode(toString(parameter.getValue())).getBytes());
+                into.write(percentEncode(toString(entry.getValue())).getBytes());
             }
         }
     }
@@ -112,7 +111,7 @@ public class OAuth {
      * of name/value pairs. Use OAuth percent encoding (not exactly the encoding
      * mandated by x-www-form-urlencoded).
      */
-    public static String formEncode(Collection<Parameter> parameters)
+    public static <T extends Map.Entry<String, String>> String formEncode(Collection<T> parameters)
             throws IOException {
         ByteArrayOutputStream b = new ByteArrayOutputStream();
         formEncode(parameters, b);
@@ -120,28 +119,29 @@ public class OAuth {
     }
 
     /** Parse a form-urlencoded document. */
-    public static List<Parameter> decodeForm(String form) {
-        ArrayList<Parameter> params = new ArrayList<Parameter>();
-        if (!isEmpty(form)) {
-            for (String nvp : form.split("\\&")) {
-                int equals = nvp.indexOf('=');
-                String name;
-                String value;
-                if (equals < 0) {
-                    name = percentDecode(nvp);
-                    value = null;
-                } else {
-                    name = percentDecode(nvp.substring(0, equals));
-                    value = percentDecode(nvp.substring(equals + 1));
-                }
-
-                params.add(new Parameter(name, value));
+    public static Map<String, String> decodeForm(String form) {
+        HashMap<String, String> params = new HashMap<String, String>();
+        if (isEmpty(form)) {
+            return params;
+        }
+        for (String nvp : form.split("\\&")) {
+            int equals = nvp.indexOf('=');
+            String name;
+            String value;
+            if (equals < 0) {
+                name = percentDecode(nvp);
+                value = null;
+            } else {
+                name = percentDecode(nvp.substring(0, equals));
+                value = percentDecode(nvp.substring(equals + 1));
             }
+
+            params.put(name, value);
         }
         return params;
     }
 
-    public static List<Parameter> decodeForm(InputStream content)
+    public static Map<String, String> decodeForm(InputStream content)
             throws IOException {
         BufferedReader reader = new BufferedReader(new InputStreamReader(
                 content));
@@ -160,13 +160,13 @@ public class OAuth {
      * parameters have the same name, the Map will contain the first value,
      * only.
      */
-    public static Map<String, String> toMap(Collection<Parameter> from) {
+    public static <T extends Map.Entry<String, String>> Map<String, String> toMap(Collection<T> from) {
         HashMap<String, String> map = new HashMap<String, String>();
         if (from != null) {
-            for (Parameter param : from) {
-                String key = toString(param.getKey());
+            for (Map.Entry<String, String> entry : from) {
+                String key = entry.getKey();
                 if (!map.containsKey(key)) {
-                    map.put(key, toString(param.getValue()));
+                    map.put(key, entry.getValue());
                 }
             }
         }
@@ -193,4 +193,19 @@ public class OAuth {
         }
         return sb.toString();
     }
+
+    public static Map<String, String> oauthHeaderToParamsMap(String oauthHeader) {
+        if (oauthHeader == null || !oauthHeader.startsWith("OAuth ")) {
+            return Collections.emptyMap();
+        }
+        oauthHeader = oauthHeader.substring("OAuth ".length());
+        String[] elements = oauthHeader.split(",");
+        HashMap<String, String> params = new HashMap<String, String>();
+        for (String keyValuePair : elements) {
+            String[] keyValue = keyValuePair.split("=");
+            params.put(keyValue[0].trim(), keyValue[1].trim());
+        }
+        return params;
+    }
+
 }

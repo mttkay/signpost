@@ -1,5 +1,6 @@
 package oauth.signpost.basic;
 
+import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
 
 import java.io.BufferedReader;
@@ -45,6 +46,9 @@ public abstract class HttpRequestAdapterTestBase {
 
         request.setHeader("a", "b");
         assertEquals("b", request.getHeader("a"));
+
+        assertTrue(request.getAllHeaders().containsKey(HEADER_NAME));
+        assertTrue(request.getAllHeaders().containsKey("a"));
     }
 
     @Test

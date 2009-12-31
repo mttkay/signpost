@@ -3,9 +3,9 @@ package oauth.signpost;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.util.ArrayList;
-import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 import org.junit.Test;
 
@@ -47,32 +47,28 @@ public class OAuthTest {
 
     @Test
     public void shouldCorrectlyFormEncodeParameters() throws Exception {
-        ArrayList<Parameter> params = new ArrayList<Parameter>(2);
-        params.add(new Parameter("one", rfc3986ReservedCharacters));
-        params.add(new Parameter(rfc3986ReservedCharacters,
-                rfc3986UnreservedCharacters));
+        HashMap<String, String> params = new HashMap<String, String>();
+        params.put("one", rfc3986ReservedCharacters);
+        params.put(rfc3986ReservedCharacters, rfc3986UnreservedCharacters);
 
         // both keys and values must be percent encoded
-        assertEquals(
-                "one=" + reservedCharactersEncoded + "&"
-                        + reservedCharactersEncoded + "="
-                        + rfc3986UnreservedCharacters, OAuth.formEncode(params));
+        assertEquals("one=" + reservedCharactersEncoded + "&" + reservedCharactersEncoded + "="
+                + rfc3986UnreservedCharacters, OAuth.formEncode(params.entrySet()));
     }
 
     @Test
     public void shouldCorrectlyFormDecodeParameters() {
-        Collection<Parameter> params = null;
-        params = OAuth.decodeForm("one=" + reservedCharactersEncoded + "&"
+        Map<String, String> params = OAuth.decodeForm("one=" + reservedCharactersEncoded + "&"
                 + reservedCharactersEncoded + "=" + rfc3986UnreservedCharacters);
 
         assertTrue(params.size() == 2);
-        Iterator<Parameter> iter = params.iterator();
+        Iterator<Map.Entry<String, String>> iter = params.entrySet().iterator();
 
-        Parameter one = iter.next();
+        Map.Entry<String, String> one = iter.next();
         assertEquals("one", one.getKey());
         assertEquals(rfc3986ReservedCharacters, one.getValue());
 
-        Parameter two = iter.next();
+        Map.Entry<String, String> two = iter.next();
         assertEquals(rfc3986ReservedCharacters, two.getKey());
         assertEquals(rfc3986UnreservedCharacters, two.getValue());
     }

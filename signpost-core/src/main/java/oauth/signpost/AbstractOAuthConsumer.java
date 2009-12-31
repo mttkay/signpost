@@ -14,9 +14,12 @@
  */
 package oauth.signpost;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
+import oauth.signpost.exception.OAuthCommunicationException;
 import oauth.signpost.exception.OAuthExpectationFailedException;
 import oauth.signpost.exception.OAuthMessageSignerException;
 import oauth.signpost.http.HttpRequest;
@@ -34,6 +37,8 @@ public abstract class AbstractOAuthConsumer implements OAuthConsumer {
 
 	private OAuthMessageSigner messageSigner;
 
+    private Map<String, String> requestParameters, oauthHeaderParams;
+
 	public AbstractOAuthConsumer(String consumerKey, String consumerSecret,
 			SignatureMethod signatureMethod) {
 
@@ -44,32 +49,36 @@ public abstract class AbstractOAuthConsumer implements OAuthConsumer {
 		messageSigner.setConsumerSecret(consumerSecret);
 	}
 
-	public HttpRequest sign(HttpRequest request)
-			throws OAuthMessageSignerException, OAuthExpectationFailedException {
-		if (consumerKey == null) {
-			throw new OAuthExpectationFailedException("consumer key not set");
-		}
-		if (consumerSecret == null) {
-			throw new OAuthExpectationFailedException("consumer secret not set");
-		}
+    public HttpRequest sign(HttpRequest request) throws OAuthMessageSignerException,
+            OAuthExpectationFailedException, OAuthCommunicationException {
+        if (consumerKey == null) {
+            throw new OAuthExpectationFailedException("consumer key not set");
+        }
+        if (consumerSecret == null) {
+            throw new OAuthExpectationFailedException("consumer secret not set");
+        }
 
-		// FIXME the fact that OAuthConsumer pre-builts the OAuth parameters
-		// and passes them to SBS yields a responsibility problem which makes
-		// things difficult to test. Plus, the Authorization header is in fact
-		// ignored using this approach. Solution: Move param map construction +
-		// accoutning for header params into SBS, and make a getter for the map
-		Map<String, String> oauthParams = buildOAuthParameterMap();
+        this.requestParameters = new HashMap<String, String>();
+        try {
+            collectHeaderParameters(request);
+            collectQueryParameters(request);
+            collectBodyParameters(request);
 
-		String signature = messageSigner.sign(request, oauthParams);
+            // add any OAuth params that haven't already been set
+            completeOAuthParameters();
+        } catch (IOException e) {
+            throw new OAuthCommunicationException(e);
+        }
 
-		request.setHeader(OAuth.HTTP_AUTHORIZATION_HEADER, buildOAuthHeader(
-				oauthParams, signature));
+        String signature = messageSigner.sign(request, requestParameters);
 
-		return request;
-	}
+        request.setHeader(OAuth.HTTP_AUTHORIZATION_HEADER, buildOAuthHeader(signature));
+
+        return request;
+    }
 
 	public HttpRequest sign(Object request) throws OAuthMessageSignerException,
-			OAuthExpectationFailedException {
+            OAuthExpectationFailedException, OAuthCommunicationException {
 		return sign(wrap(request));
 	}
 
@@ -96,36 +105,81 @@ public abstract class AbstractOAuthConsumer implements OAuthConsumer {
 		return this.consumerSecret;
 	}
 
-	private Map<String, String> buildOAuthParameterMap() {
-		HashMap<String, String> map = new HashMap<String, String>();
+    private void completeOAuthParameters() {
+        if (!oauthHeaderParams.containsKey(OAuth.OAUTH_CONSUMER_KEY)) {
+            oauthHeaderParams.put(OAuth.OAUTH_CONSUMER_KEY, consumerKey);
+        }
+        if (!oauthHeaderParams.containsKey(OAuth.OAUTH_SIGNATURE_METHOD)) {
+            oauthHeaderParams.put(OAuth.OAUTH_SIGNATURE_METHOD, signatureMethod.toString());
+        }
+        if (!oauthHeaderParams.containsKey(OAuth.OAUTH_TIMESTAMP)) {
+            oauthHeaderParams.put(OAuth.OAUTH_TIMESTAMP, Long
+                .toString(System.currentTimeMillis() / 1000L));
+        }
+        if (!oauthHeaderParams.containsKey(OAuth.OAUTH_NONCE)) {
+            oauthHeaderParams.put(OAuth.OAUTH_NONCE, Long.toString(System.nanoTime()));
+        }
+        if (!oauthHeaderParams.containsKey(OAuth.OAUTH_VERSION)) {
+            oauthHeaderParams.put(OAuth.OAUTH_VERSION, OAuth.VERSION_1_0);
+        }
+        if (!oauthHeaderParams.containsKey(OAuth.OAUTH_TOKEN)) {
+            oauthHeaderParams.put(OAuth.OAUTH_TOKEN, token);
+        }
+        this.requestParameters.putAll(this.oauthHeaderParams);
+    }
 
-		map.put(OAuth.OAUTH_CONSUMER_KEY, consumerKey);
-		map.put(OAuth.OAUTH_SIGNATURE_METHOD, signatureMethod.toString());
-		map.put(OAuth.OAUTH_TIMESTAMP, Long
-				.toString(System.currentTimeMillis() / 1000L));
-		map.put(OAuth.OAUTH_NONCE, Long.toString(System.nanoTime()));
-		map.put(OAuth.OAUTH_VERSION, OAuth.VERSION_1_0);
-		map.put(OAuth.OAUTH_TOKEN, token);
-		return map;
-	}
+    /**
+     * Collects OAuth Authorization header parameters as per OAuth Core 1.0 spec
+     * section 9.1.1
+     */
+    private void collectHeaderParameters(HttpRequest request) {
+        this.oauthHeaderParams = OAuth.oauthHeaderToParamsMap(request
+            .getHeader(OAuth.HTTP_AUTHORIZATION_HEADER));
+    }
 
-	private String buildOAuthHeader(Map<String, String> oauthParams,
-			String signature) {
+    /**
+     * Collects x-www-form-urlencoded body parameters as per OAuth Core 1.0 spec
+     * section 9.1.1
+     */
+    private void collectBodyParameters(HttpRequest request) throws IOException {
 
-		StringBuilder sb = new StringBuilder();
+        // collect x-www-form-urlencoded body params
+        String contentType = request.getContentType();
+        if (contentType != null && contentType.equals(OAuth.FORM_ENCODED)) {
+            InputStream payload = request.getMessagePayload();
+            this.requestParameters.putAll(OAuth.decodeForm(payload));
+        }
+    }
 
-		sb.append("OAuth ");
+    /**
+     * Collects HTTP GET query string parameters as per OAuth Core 1.0 spec
+     * section 9.1.1
+     */
+    private void collectQueryParameters(HttpRequest request) {
 
-		for (String key : oauthParams.keySet()) {
-			String value = oauthParams.get(key);
-			sb.append(oauthHeaderElement(key, value));
-			sb.append(",");
-		}
+        String url = request.getRequestUrl();
+        int q = url.indexOf('?');
+        if (q >= 0) {
+            // Combine the URL query string with the other parameters:
+            this.requestParameters.putAll(OAuth.decodeForm(url.substring(q + 1)));
+        }
+    }
 
-		sb.append(oauthHeaderElement(OAuth.OAUTH_SIGNATURE, signature));
+    private String buildOAuthHeader(String signature) {
 
-		return sb.toString();
-	}
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("OAuth ");
+
+        for (String key : oauthHeaderParams.keySet()) {
+            sb.append(oauthHeaderElement(key, oauthHeaderParams.get(key)));
+            sb.append(",");
+        }
+
+        sb.append(oauthHeaderElement(OAuth.OAUTH_SIGNATURE, signature));
+
+        return sb.toString();
+    }
 
 	private String oauthHeaderElement(String name, String value) {
 		return OAuth.percentEncode(name) + "=\"" + OAuth.percentEncode(value)

@@ -16,13 +16,11 @@ package oauth.signpost.basic;
 
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.List;
 import java.util.Map;
 
 import oauth.signpost.AbstractOAuthProvider;
 import oauth.signpost.OAuth;
 import oauth.signpost.OAuthConsumer;
-import oauth.signpost.Parameter;
 import oauth.signpost.exception.OAuthCommunicationException;
 import oauth.signpost.exception.OAuthExpectationFailedException;
 import oauth.signpost.exception.OAuthMessageSignerException;
@@ -47,72 +45,67 @@ public class DefaultOAuthProvider extends AbstractOAuthProvider {
         super(consumer, requestTokenEndpointUrl, accessTokenEndpointUrl, authorizationWebsiteUrl);
     }
     
-	protected void retrieveToken(String endpointUrl)
-			throws OAuthMessageSignerException, OAuthCommunicationException,
-			OAuthNotAuthorizedException, OAuthExpectationFailedException {
+    protected void retrieveToken(String endpointUrl) throws OAuthMessageSignerException,
+            OAuthCommunicationException, OAuthNotAuthorizedException,
+            OAuthExpectationFailedException {
 
         OAuthConsumer consumer = getConsumer();
         Map<String, String> defaultHeaders = getRequestHeaders();
 
-		if (consumer.getConsumerKey() == null
-				|| consumer.getConsumerSecret() == null) {
-			throw new OAuthExpectationFailedException(
-					"Consumer key or secret not set");
-		}
+        if (consumer.getConsumerKey() == null || consumer.getConsumerSecret() == null) {
+            throw new OAuthExpectationFailedException("Consumer key or secret not set");
+        }
 
-		try {
-			if (connection == null) {
-				connection = (HttpURLConnection) new URL(endpointUrl)
-						.openConnection();
-				connection.setRequestMethod("GET");
-			}
-			HttpRequest request = new HttpRequestAdapter(connection);
-			for (String header : defaultHeaders.keySet()) {
-				request.setHeader(header, defaultHeaders.get(header));
-			}
+        try {
+            if (connection == null) {
+                connection = (HttpURLConnection) new URL(endpointUrl).openConnection();
+                connection.setRequestMethod("GET");
+            }
+            HttpRequest request = new HttpRequestAdapter(connection);
+            for (String header : defaultHeaders.keySet()) {
+                request.setHeader(header, defaultHeaders.get(header));
+            }
 
-			consumer.sign(request);
+            consumer.sign(request);
 
-			connection.connect();
+            connection.connect();
 
-			int statusCode = connection.getResponseCode();
+            int statusCode = connection.getResponseCode();
 
-			if (statusCode == 401) {
-				throw new OAuthNotAuthorizedException();
-			}
+            if (statusCode == 401) {
+                throw new OAuthNotAuthorizedException();
+            }
 
-			List<Parameter> params = OAuth.decodeForm(connection
-					.getInputStream());
-            Map<String, String> responseParams = OAuth.toMap(params);
+            Map<String, String> responseParams = OAuth.decodeForm(connection.getInputStream());
 
-			String token = responseParams.get(OAuth.OAUTH_TOKEN);
+            String token = responseParams.get(OAuth.OAUTH_TOKEN);
             String secret = responseParams.get(OAuth.OAUTH_TOKEN_SECRET);
             responseParams.remove(OAuth.OAUTH_TOKEN);
             responseParams.remove(OAuth.OAUTH_TOKEN_SECRET);
 
             setResponseParameters(responseParams);
 
-			if (token == null || secret == null) {
-				throw new OAuthExpectationFailedException(
-						"Request token or token secret not set in server reply. "
-								+ "The service provider you use is probably buggy.");
-			}
+            if (token == null || secret == null) {
+                throw new OAuthExpectationFailedException(
+                    "Request token or token secret not set in server reply. "
+                            + "The service provider you use is probably buggy.");
+            }
 
-			consumer.setTokenWithSecret(token, secret);
+            consumer.setTokenWithSecret(token, secret);
 
-		} catch (OAuthNotAuthorizedException e) {
-			throw e;
-		} catch (OAuthExpectationFailedException e) {
-			throw e;
-		} catch (Exception e) {
-			throw new OAuthCommunicationException(e);
-		} finally {
-			if (connection != null) {
-				connection.disconnect();
-				connection = null;
-			}
-		}
-	}
+        } catch (OAuthNotAuthorizedException e) {
+            throw e;
+        } catch (OAuthExpectationFailedException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new OAuthCommunicationException(e);
+        } finally {
+            if (connection != null) {
+                connection.disconnect();
+                connection = null;
+            }
+        }
+    }
 
     void setHttpUrlConnection(HttpURLConnection connection) {
         this.connection = connection;

@@ -2,7 +2,9 @@ package oauth.signpost;
 
 import static org.mockito.Mockito.when;
 
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Map;
 
 import oauth.signpost.http.HttpRequest;
 
@@ -36,6 +38,8 @@ public abstract class SignpostTestBase {
     public static final String AUTHORIZE_WEBSITE_URL = "http://www.test.com/authorize";
 
     public static final HashMap<String, String> OAUTH_PARAMS = new HashMap<String, String>();
+
+    public static final Map<String, String> EMPTY_PARAMS = Collections.emptyMap();
 
     @Mock
     protected HttpRequest httpGetMock;

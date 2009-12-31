@@ -16,6 +16,7 @@ package oauth.signpost;
 
 import java.io.Serializable;
 
+import oauth.signpost.exception.OAuthCommunicationException;
 import oauth.signpost.exception.OAuthExpectationFailedException;
 import oauth.signpost.exception.OAuthMessageSignerException;
 import oauth.signpost.http.HttpRequest;
@@ -29,33 +30,35 @@ import oauth.signpost.http.HttpRequest;
  */
 public interface OAuthConsumer extends Serializable {
 
-	/**
-	 * Signs the given HTTP request by writing an OAuth signature string to the
-	 * request's Authorization header.
-	 * 
-	 * @param request
-	 *            the request to sign
-	 * @return the request object passed as an argument
-	 * @throws OAuthMessageSignerException
-	 * @throws OAuthExpectationFailedException
-	 */
-	public HttpRequest sign(HttpRequest request)
-			throws OAuthMessageSignerException, OAuthExpectationFailedException;
+    /**
+     * Signs the given HTTP request by writing an OAuth signature string to the
+     * request's Authorization header.
+     * 
+     * @param request
+     *        the request to sign
+     * @return the request object passed as an argument
+     * @throws OAuthMessageSignerException
+     * @throws OAuthExpectationFailedException
+     * @throws OAuthCommunicationException
+     */
+    public HttpRequest sign(HttpRequest request) throws OAuthMessageSignerException,
+            OAuthExpectationFailedException, OAuthCommunicationException;
 
 	/**
-	 * Signs the given HTTP request by writing an OAuth signature string to the
-	 * request's Authorization header. This method accepts adapted requests; the
-	 * consumer implementation must ensure that only those request types are
-	 * passed which it supports.
-	 * 
-	 * @param request
-	 *            the request to sign
-	 * @return the request object passed as an argument
-	 * @throws OAuthMessageSignerException
-	 * @throws OAuthExpectationFailedException
-	 */
+     * Signs the given HTTP request by writing an OAuth signature string to the
+     * request's Authorization header. This method accepts adapted requests; the
+     * consumer implementation must ensure that only those request types are
+     * passed which it supports.
+     * 
+     * @param request
+     *        the request to sign
+     * @return the request object passed as an argument
+     * @throws OAuthMessageSignerException
+     * @throws OAuthExpectationFailedException
+     * @throws OAuthCommunicationException
+     */
 	public HttpRequest sign(Object request) throws OAuthMessageSignerException,
-			OAuthExpectationFailedException;
+            OAuthExpectationFailedException, OAuthCommunicationException;
 
 	public void setTokenWithSecret(String token, String tokenSecret);
 

@@ -24,7 +24,7 @@ import oauth.signpost.http.HttpRequest;
 public class PlainTextMessageSigner extends OAuthMessageSigner {
 
     @Override
-    public String sign(HttpRequest request, Map<String, String> oauthParameters)
+    public String sign(HttpRequest request, Map<String, String> oauthParams)
             throws OAuthMessageSignerException {
         return OAuth.percentEncode(getConsumerSecret()) + '&'
                 + OAuth.percentEncode(getTokenSecret());

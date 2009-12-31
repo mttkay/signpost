@@ -3,6 +3,9 @@ package oauth.signpost.basic;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import oauth.signpost.http.HttpRequest;
 
@@ -28,6 +31,18 @@ public class HttpRequestAdapter implements HttpRequest {
 
     public String getHeader(String name) {
         return connection.getRequestProperty(name);
+    }
+
+    public Map<String, String> getAllHeaders() {
+        Map<String, List<String>> origHeaders = connection.getRequestProperties();
+        Map<String, String> headers = new HashMap<String, String>(origHeaders.size());
+        for (String name : origHeaders.keySet()) {
+            List<String> values = origHeaders.get(name);
+            if (!values.isEmpty()) {
+                headers.put(name, values.get(0));
+            }
+        }
+        return headers;
     }
 
     public InputStream getMessagePayload() throws IOException {
