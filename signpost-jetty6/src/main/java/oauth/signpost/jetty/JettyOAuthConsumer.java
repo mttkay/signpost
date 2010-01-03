@@ -2,7 +2,7 @@ package oauth.signpost.jetty;
 
 import oauth.signpost.AbstractOAuthConsumer;
 import oauth.signpost.http.HttpRequest;
-import oauth.signpost.signature.SignatureMethod;
+import oauth.signpost.signature.OAuthMessageSigner;
 
 import org.mortbay.jetty.client.HttpExchange;
 
@@ -10,8 +10,8 @@ import org.mortbay.jetty.client.HttpExchange;
 public class JettyOAuthConsumer extends AbstractOAuthConsumer {
 
     public JettyOAuthConsumer(String consumerKey, String consumerSecret,
-            SignatureMethod signatureMethod) {
-        super(consumerKey, consumerSecret, signatureMethod);
+            OAuthMessageSigner messageSigner) {
+        super(consumerKey, consumerSecret, messageSigner);
     }
 
     @Override

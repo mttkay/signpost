@@ -2,14 +2,14 @@ package oauth.signpost.commonshttp;
 
 import oauth.signpost.AbstractOAuthConsumer;
 import oauth.signpost.http.HttpRequest;
-import oauth.signpost.signature.SignatureMethod;
+import oauth.signpost.signature.OAuthMessageSigner;
 
 @SuppressWarnings("serial")
 public class CommonsHttpOAuthConsumer extends AbstractOAuthConsumer {
 
     public CommonsHttpOAuthConsumer(String consumerKey, String consumerSecret,
-            SignatureMethod signatureMethod) {
-        super(consumerKey, consumerSecret, signatureMethod);
+            OAuthMessageSigner messageSigner) {
+        super(consumerKey, consumerSecret, messageSigner);
     }
 
     @Override

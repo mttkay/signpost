@@ -16,10 +16,10 @@ package oauth.signpost.signature;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.Map;
 
 import oauth.signpost.exception.OAuthMessageSignerException;
 import oauth.signpost.http.HttpRequest;
+import oauth.signpost.http.RequestParameters;
 
 import org.apache.commons.codec.binary.Base64;
 
@@ -33,28 +33,16 @@ public abstract class OAuthMessageSigner implements Serializable {
 
     private String tokenSecret;
 
-    public static OAuthMessageSigner create(SignatureMethod signatureMethod) {
-
-        switch (signatureMethod) {
-
-        case PLAINTEXT:
-            return new PlainTextMessageSigner();
-
-        case HMAC_SHA1:
-            return new HmacSha1MessageSigner();
-        }
-
-        return null;
-    }
-
     public OAuthMessageSigner() {
         this.base64 = new Base64();
     }
 
-    public abstract String sign(HttpRequest request, Map<String, String> oauthParams)
+    public abstract String sign(HttpRequest request, RequestParameters requestParameters)
             throws OAuthMessageSignerException;
 
-    protected String getConsumerSecret() {
+    public abstract String getSignatureMethod();
+
+    public String getConsumerSecret() {
         return consumerSecret;
     }
 

@@ -3,11 +3,9 @@ package oauth.signpost.signature;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-
-import java.util.HashMap;
-
 import oauth.signpost.SignpostTestBase;
 import oauth.signpost.http.HttpRequest;
+import oauth.signpost.http.RequestParameters;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -18,7 +16,7 @@ public class OAuthMessageSignerTest extends SignpostTestBase {
 
     @Test
     public void shouldCreateCorrectPlaintextSignature() throws Exception {
-        OAuthMessageSigner signer = OAuthMessageSigner.create(SignatureMethod.PLAINTEXT);
+        OAuthMessageSigner signer = new PlainTextMessageSigner();
         signer.setConsumerSecret(CONSUMER_SECRET);
         signer.setTokenSecret(TOKEN_SECRET);
 
@@ -29,7 +27,7 @@ public class OAuthMessageSignerTest extends SignpostTestBase {
     @Test
     public void shouldComputeCorrectHmacSha1Signature() throws Exception {
         // based on the reference test case from http://oauth.pbwiki.com/TestCases
-        OAuthMessageSigner signer = OAuthMessageSigner.create(SignatureMethod.HMAC_SHA1);
+        OAuthMessageSigner signer = new HmacSha1MessageSigner();
         signer.setConsumerSecret(CONSUMER_SECRET);
         signer.setTokenSecret(TOKEN_SECRET);
 
@@ -38,8 +36,8 @@ public class OAuthMessageSignerTest extends SignpostTestBase {
                 "http://photos.example.net/photos?file=vacation.jpg&size=original");
         when(request.getMethod()).thenReturn("GET");
 
-        HashMap<String, String> oauthParams = new HashMap<String, String>(
-                OAUTH_PARAMS);
+        RequestParameters oauthParams = new RequestParameters();
+        oauthParams.putAll(OAUTH_PARAMS);
         oauthParams.put("oauth_signature_method", "HMAC-SHA1");
 
         assertEquals("tR3+Ty81lMeYAr/Fid0kMTYa/WM=", signer.sign(request,

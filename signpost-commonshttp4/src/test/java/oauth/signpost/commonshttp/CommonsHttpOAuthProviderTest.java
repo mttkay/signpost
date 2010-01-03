@@ -9,7 +9,7 @@ import java.io.InputStream;
 import oauth.signpost.OAuth;
 import oauth.signpost.OAuthConsumer;
 import oauth.signpost.OAuthProvider;
-import oauth.signpost.basic.OAuthProviderTest;
+import oauth.signpost.OAuthProviderTest;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.ProtocolVersion;

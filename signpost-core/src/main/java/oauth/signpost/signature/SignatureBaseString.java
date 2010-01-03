@@ -13,20 +13,19 @@ package oauth.signpost.signature;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.Map;
 
 import oauth.signpost.OAuth;
 import oauth.signpost.exception.OAuthMessageSignerException;
 import oauth.signpost.http.HttpRequest;
+import oauth.signpost.http.RequestParameters;
 
 public class SignatureBaseString {
 
     private HttpRequest request;
 
-    private Map<String, String> requestParameters;
+    private RequestParameters requestParameters;
 
     /**
      * Wrapper for an OAuth key/value pair that is easily sortable.
@@ -35,18 +34,12 @@ public class SignatureBaseString {
             Map.Entry<String, String> {
 
         private ComparableParameter(String key, String value) {
-            this.key = OAuth.percentEncode(safeString(key));
-            this.value = OAuth.percentEncode(safeString(value));
             this.combined = key + ' ' + value;
             // ' ' is used because it comes before any character
             // that can appear in a percentEncoded string.
         }
 
         private String key, value, combined;
-
-        private static String safeString(String from) {
-            return (from == null) ? null : from.toString();
-        }
 
         public String getKey() {
             return this.key;
@@ -107,7 +100,7 @@ public class SignatureBaseString {
      *        the set of request parameters from the Authorization header, query
      *        string and form body
      */
-    public SignatureBaseString(HttpRequest request, Map<String, String> requestParameters) {
+    public SignatureBaseString(HttpRequest request, RequestParameters requestParameters) {
         this.request = request;
         this.requestParameters = requestParameters;
     }
@@ -167,22 +160,10 @@ public class SignatureBaseString {
         if (requestParameters == null) {
             return "";
         }
-        ArrayList<ComparableParameter> sortedParams = new ArrayList<ComparableParameter>(
-            requestParameters.size());
-        for (String key : requestParameters.keySet()) {
-            // ignnore 'realm' and 'signature' params
-            if ("realm".equals(key) || OAuth.OAUTH_SIGNATURE.equals(key)) {
-                continue;
-            }
-            sortedParams.add(new ComparableParameter(key, requestParameters.get(key)));
-        }
-        Collections.sort(sortedParams);
-
         StringBuilder sb = new StringBuilder();
-        Iterator<ComparableParameter> iter = sortedParams.iterator();
+        Iterator<String> iter = requestParameters.keySet().iterator();
         while (iter.hasNext()) {
-            ComparableParameter p = iter.next();
-            sb.append(p.key + "=" + p.value);
+            sb.append(requestParameters.get(iter.next()));
             if (iter.hasNext()) {
                 sb.append("&");
             }

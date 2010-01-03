@@ -5,12 +5,9 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-
-import java.util.HashMap;
-
-import oauth.signpost.OAuth;
 import oauth.signpost.SignpostTestBase;
 import oauth.signpost.http.HttpRequest;
+import oauth.signpost.http.RequestParameters;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -65,7 +62,7 @@ public class SignatureBaseStringTest extends SignpostTestBase {
     public void shouldNormalizeParameters() throws Exception {
 
         // example from OAuth spec
-        HashMap<String, String> params = new HashMap<String, String>();
+        RequestParameters params = new RequestParameters();
         params.put("a", "1");
         params.put("c", "hi there");
         params.put("f", "25");
@@ -79,64 +76,20 @@ public class SignatureBaseStringTest extends SignpostTestBase {
 
         // examples from the official test cases on
         // http://oauth.pbwiki.com/TestCases
-        params = new HashMap<String, String>();
+        params = new RequestParameters();
         params.put("a", "x!y");
         params.put("a", "x y");
         expected = "a=x%20y&a=x%21y";
         result = new SignatureBaseString(httpGetMock, params).normalizeRequestParameters();
         assertEquals(expected, result);
 
-        params = new HashMap<String, String>();
+        params = new RequestParameters();
         params.put("name", "");
-        expected = "name=";
-        result = new SignatureBaseString(httpGetMock, params).normalizeRequestParameters();
-        assertEquals(expected, result);
-    }
-
-    // @Test
-    // public void shouldIncludeOAuthAndQueryAndBodyParams() throws Exception {
-    //
-    // HashMap<String, String> params = new HashMap<String, String>();
-    //
-    // HttpRequest request = mock(HttpRequest.class);
-    // when(request.getRequestUrl()).thenReturn("http://example.com?a=1");
-    // ByteArrayInputStream body = new ByteArrayInputStream("b=2".getBytes());
-    // when(request.getMessagePayload()).thenReturn(body);
-    // when(request.getContentType()).thenReturn(
-    // "application/x-www-form-urlencoded");
-    // when(request.getHeader("Authorization")).thenReturn(
-    // "OAuth realm=www.example.com, oauth_signature=12345");
-    //
-    // SignatureBaseString sbs = new SignatureBaseString(request);
-    // String result = sbs.generate();
-    //
-    // assertTrue(result.contains("a%3D1"));
-    // assertTrue(result.contains("b%3D2"));
-    // assertTrue(result.contains("oauth_consumer_key%3D" + CONSUMER_KEY));
-    // assertTrue(result.contains("oauth_signature_method%3D"
-    // + SIGNATURE_METHOD));
-    // assertTrue(result.contains("oauth_timestamp%3D" + TIMESTAMP));
-    // assertTrue(result.contains("oauth_nonce%3D" + NONCE));
-    // assertTrue(result.contains("oauth_version%3D" + OAUTH_VERSION));
-    // assertTrue(result.contains("oauth_token%3D" + TOKEN));
-    //
-    // // should ignore signature and realm params
-    // assertFalse(result.contains("oauth_signature%3D12345"));
-    // assertFalse(result.contains("realm%3Dwww.example.com"));
-    //
-    // // should not include the body param if not x-www-form-urlencoded
-    // when(request.getContentType()).thenReturn(null);
-    // sbs = new SignatureBaseString(request);
-    // assertFalse(sbs.generate().contains("b%3D2"));
-    // }
-
-    @Test
-    public void shouldAlwaysIncludeTokenParamEvenWhenEmpty() throws Exception {
-
-        SignatureBaseString sbs = new SignatureBaseString(httpGetMock, EMPTY_PARAMS);
-        String result = sbs.generate();
-
-        assertTrue(result.contains(OAuth.percentEncode("oauth_token=&")));
+        assertEquals("name=", new SignatureBaseString(httpGetMock, params)
+            .normalizeRequestParameters());
+        params.put("name", null);
+        assertEquals("name=", new SignatureBaseString(httpGetMock, params)
+            .normalizeRequestParameters());
     }
 
     @Test
@@ -145,7 +98,7 @@ public class SignatureBaseStringTest extends SignpostTestBase {
         when(request.getMethod()).thenReturn("GET");
         when(request.getRequestUrl()).thenReturn("http://example.com");
 
-        HashMap<String, String> params = new HashMap<String, String>();
+        RequestParameters params = new RequestParameters();
         params.put("a", "1");
 
         SignatureBaseString sbs = new SignatureBaseString(request, params);

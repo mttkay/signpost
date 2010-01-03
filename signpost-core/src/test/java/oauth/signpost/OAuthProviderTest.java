@@ -1,30 +1,22 @@
-package oauth.signpost.basic;
+package oauth.signpost;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.anyObject;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.HashMap;
 
-import oauth.signpost.AbstractOAuthProvider;
-import oauth.signpost.OAuth;
-import oauth.signpost.OAuthConsumer;
-import oauth.signpost.OAuthProvider;
-import oauth.signpost.SignpostTestBase;
+import oauth.signpost.basic.DefaultOAuthConsumer;
 import oauth.signpost.exception.OAuthExpectationFailedException;
 import oauth.signpost.http.HttpRequest;
-import oauth.signpost.signature.SignatureMethod;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -34,7 +26,7 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.runners.MockitoJUnit44Runner;
 
 @RunWith(MockitoJUnit44Runner.class)
-public class OAuthProviderTest extends SignpostTestBase {
+public abstract class OAuthProviderTest extends SignpostTestBase {
 
     protected OAuthProvider provider;
 
@@ -56,44 +48,23 @@ public class OAuthProviderTest extends SignpostTestBase {
             ACCESS_TOKEN_ENDPOINT_URL, AUTHORIZE_WEBSITE_URL, true);
     }
 
-    protected OAuthProvider buildProvider(OAuthConsumer consumer, String requestTokenUrl,
-            String accessTokenUrl, String websiteUrl, boolean mockConnection) throws Exception {
-        OAuthProvider provider = new DefaultOAuthProvider(consumer, requestTokenUrl,
-            accessTokenUrl, websiteUrl);
-        if (mockConnection) {
-            mockConnection(provider, OAuth.OAUTH_TOKEN + "=" + TOKEN + "&"
-                    + OAuth.OAUTH_TOKEN_SECRET + "=" + TOKEN_SECRET);
-        }
-        return provider;
-    }
+    protected abstract OAuthProvider buildProvider(OAuthConsumer consumer, String requestTokenUrl,
+            String accessTokenUrl, String websiteUrl, boolean mockConnection) throws Exception;
 
-    protected void mockConnection(OAuthProvider provider, String responseBody) throws Exception {
-
-        HttpURLConnection connectionMock = mock(HttpURLConnection.class);
-        InputStream is = new ByteArrayInputStream(responseBody.getBytes());
-        when(connectionMock.getResponseCode()).thenReturn(200);
-        when(connectionMock.getInputStream()).thenReturn(is);
-
-        ((DefaultOAuthProvider) provider).setHttpUrlConnection(connectionMock);
-    }
+    protected abstract void mockConnection(OAuthProvider provider, String responseBody)
+            throws Exception;
 
     @Test(expected = OAuthExpectationFailedException.class)
-    public void shouldThrowExpectationFailedIfConsumerKeyNotSet()
-            throws Exception {
-        provider = buildProvider(new DefaultOAuthConsumer(null,
-                CONSUMER_SECRET, SignatureMethod.HMAC_SHA1),
-                REQUEST_TOKEN_ENDPOINT_URL, ACCESS_TOKEN_ENDPOINT_URL,
-            AUTHORIZE_WEBSITE_URL, true);
+    public void shouldThrowExpectationFailedIfConsumerKeyNotSet() throws Exception {
+        provider = buildProvider(new DefaultOAuthConsumer(null, CONSUMER_SECRET),
+            REQUEST_TOKEN_ENDPOINT_URL, ACCESS_TOKEN_ENDPOINT_URL, AUTHORIZE_WEBSITE_URL, true);
         provider.retrieveRequestToken(REQUEST_TOKEN_ENDPOINT_URL);
     }
 
     @Test(expected = OAuthExpectationFailedException.class)
-    public void shouldThrowExpectationFailedIfConsumerSecretNotSet()
-            throws Exception {
-        provider = buildProvider(new DefaultOAuthConsumer(
-                CONSUMER_KEY, null, SignatureMethod.HMAC_SHA1),
-                REQUEST_TOKEN_ENDPOINT_URL, ACCESS_TOKEN_ENDPOINT_URL,
-            AUTHORIZE_WEBSITE_URL, true);
+    public void shouldThrowExpectationFailedIfConsumerSecretNotSet() throws Exception {
+        provider = buildProvider(new DefaultOAuthConsumer(CONSUMER_KEY, null),
+            REQUEST_TOKEN_ENDPOINT_URL, ACCESS_TOKEN_ENDPOINT_URL, AUTHORIZE_WEBSITE_URL, true);
         provider.retrieveRequestToken(REQUEST_TOKEN_ENDPOINT_URL);
     }
 
@@ -172,8 +143,7 @@ public class OAuthProviderTest extends SignpostTestBase {
     @Test
     public void shouldBeSerializable() throws Exception {
         // the mock consumer isn't serializable, thus set a normal one
-        OAuthConsumer consumer = new DefaultOAuthConsumer(CONSUMER_KEY, CONSUMER_SECRET,
-            SignatureMethod.HMAC_SHA1);
+        OAuthConsumer consumer = new DefaultOAuthConsumer(CONSUMER_KEY, CONSUMER_SECRET);
         consumer.setTokenWithSecret(TOKEN, TOKEN_SECRET);
 
         provider = buildProvider(consumer, REQUEST_TOKEN_ENDPOINT_URL, ACCESS_TOKEN_ENDPOINT_URL,

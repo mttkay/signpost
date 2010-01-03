@@ -2,6 +2,8 @@ package oauth.signpost.commonshttp;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
@@ -21,14 +23,6 @@ public class HttpRequestAdapter implements oauth.signpost.http.HttpRequest {
         }
     }
 
-    public String getHeader(String name) {
-        Header header = request.getFirstHeader(name);
-        if (header == null) {
-            return null;
-        }
-        return header.getValue();
-    }
-
     public String getMethod() {
         return request.getRequestLine().getMethod();
     }
@@ -37,8 +31,25 @@ public class HttpRequestAdapter implements oauth.signpost.http.HttpRequest {
         return request.getURI().toString();
     }
 
+    public String getHeader(String name) {
+        Header header = request.getFirstHeader(name);
+        if (header == null) {
+            return null;
+        }
+        return header.getValue();
+    }
+
     public void setHeader(String name, String value) {
         request.setHeader(name, value);
+    }
+
+    public Map<String, String> getAllHeaders() {
+        Header[] origHeaders = request.getAllHeaders();
+        HashMap<String, String> headers = new HashMap<String, String>();
+        for (Header h : origHeaders) {
+            headers.put(h.getName(), h.getValue());
+        }
+        return headers;
     }
 
     public String getContentType() {

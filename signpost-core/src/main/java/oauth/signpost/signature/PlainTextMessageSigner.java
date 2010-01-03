@@ -14,17 +14,21 @@
  */
 package oauth.signpost.signature;
 
-import java.util.Map;
-
 import oauth.signpost.OAuth;
 import oauth.signpost.exception.OAuthMessageSignerException;
 import oauth.signpost.http.HttpRequest;
+import oauth.signpost.http.RequestParameters;
 
 @SuppressWarnings("serial")
 public class PlainTextMessageSigner extends OAuthMessageSigner {
 
     @Override
-    public String sign(HttpRequest request, Map<String, String> oauthParams)
+    public String getSignatureMethod() {
+        return SignatureMethod.PLAINTEXT.toString();
+    }
+
+    @Override
+    public String sign(HttpRequest request, RequestParameters requestParams)
             throws OAuthMessageSignerException {
         return OAuth.percentEncode(getConsumerSecret()) + '&'
                 + OAuth.percentEncode(getTokenSecret());

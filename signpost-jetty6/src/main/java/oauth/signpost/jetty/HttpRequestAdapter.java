@@ -3,10 +3,14 @@ package oauth.signpost.jetty;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 import oauth.signpost.http.HttpRequest;
 
 import org.mortbay.jetty.HttpFields;
+import org.mortbay.jetty.HttpFields.Field;
 import org.mortbay.jetty.client.HttpExchange;
 
 public class HttpRequestAdapter implements HttpRequest {
@@ -25,11 +29,6 @@ public class HttpRequestAdapter implements HttpRequest {
         return fields.getStringField("Content-Type");
     }
 
-    public String getHeader(String name) {
-        HttpFields fields = request.getRequestFields();
-        return fields.getStringField(name);
-    }
-
     public InputStream getMessagePayload() throws IOException {
         return new ByteArrayInputStream(request.getRequestContent().array());
     }
@@ -44,6 +43,24 @@ public class HttpRequestAdapter implements HttpRequest {
 
     public void setHeader(String name, String value) {
         request.setRequestHeader(name, value);
+    }
+
+    public String getHeader(String name) {
+        HttpFields fields = request.getRequestFields();
+        return fields.getStringField(name);
+    }
+
+    @SuppressWarnings("unchecked")
+    public Map<String, String> getAllHeaders() {
+        HttpFields fields = request.getRequestFields();
+        Iterator iter = fields.getFields();
+        HashMap<String, String> headers = new HashMap<String, String>();
+        while (iter.hasNext()) {
+            Field field = (Field) iter.next();
+            headers.put(field.getName(), field.getValue());
+        }
+
+        return headers;
     }
 
     // Jetty has some very weird mechanism for handling URLs... we have to

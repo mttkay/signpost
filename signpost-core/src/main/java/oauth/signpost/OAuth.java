@@ -22,7 +22,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.URLDecoder;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -99,9 +98,9 @@ public class OAuth {
                 } else {
                     into.write('&');
                 }
-                into.write(percentEncode(toString(entry.getKey())).getBytes());
+                into.write(percentEncode(safeToString(entry.getKey())).getBytes());
                 into.write('=');
-                into.write(percentEncode(toString(entry.getValue())).getBytes());
+                into.write(percentEncode(safeToString(entry.getValue())).getBytes());
             }
         }
     }
@@ -173,11 +172,11 @@ public class OAuth {
         return map;
     }
 
-    private static final String toString(Object from) {
+    public static final String safeToString(Object from) {
         return (from == null) ? null : from.toString();
     }
 
-    private static boolean isEmpty(String str) {
+    public static boolean isEmpty(String str) {
         return (str == null) || (str.length() == 0);
     }
 
@@ -196,7 +195,7 @@ public class OAuth {
 
     public static Map<String, String> oauthHeaderToParamsMap(String oauthHeader) {
         if (oauthHeader == null || !oauthHeader.startsWith("OAuth ")) {
-            return Collections.emptyMap();
+            return new HashMap<String, String>();
         }
         oauthHeader = oauthHeader.substring("OAuth ".length());
         String[] elements = oauthHeader.split(",");

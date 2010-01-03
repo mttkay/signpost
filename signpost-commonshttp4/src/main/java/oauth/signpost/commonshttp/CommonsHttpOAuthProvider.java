@@ -15,13 +15,11 @@
 package oauth.signpost.commonshttp;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Map;
 
 import oauth.signpost.AbstractOAuthProvider;
 import oauth.signpost.OAuth;
 import oauth.signpost.OAuthConsumer;
-import oauth.signpost.Parameter;
 import oauth.signpost.exception.OAuthCommunicationException;
 import oauth.signpost.exception.OAuthExpectationFailedException;
 import oauth.signpost.exception.OAuthMessageSignerException;
@@ -82,8 +80,8 @@ public class CommonsHttpOAuthProvider extends AbstractOAuthProvider {
 				throw new OAuthNotAuthorizedException();
 			}
 
-            List<Parameter> params = OAuth.decodeForm(response.getEntity().getContent());
-            Map<String, String> responseParams = OAuth.toMap(params);
+            Map<String, String> responseParams = OAuth
+                .decodeForm(response.getEntity().getContent());
 
 			String token = responseParams.get(OAuth.OAUTH_TOKEN);
             String secret = responseParams.get(OAuth.OAUTH_TOKEN_SECRET);

@@ -16,7 +16,6 @@ package oauth.signpost.signature;
 
 import java.io.UnsupportedEncodingException;
 import java.security.GeneralSecurityException;
-import java.util.Map;
 
 import javax.crypto.Mac;
 import javax.crypto.SecretKey;
@@ -25,6 +24,7 @@ import javax.crypto.spec.SecretKeySpec;
 import oauth.signpost.OAuth;
 import oauth.signpost.exception.OAuthMessageSignerException;
 import oauth.signpost.http.HttpRequest;
+import oauth.signpost.http.RequestParameters;
 
 @SuppressWarnings("serial")
 public class HmacSha1MessageSigner extends OAuthMessageSigner {
@@ -32,7 +32,12 @@ public class HmacSha1MessageSigner extends OAuthMessageSigner {
 	private static final String MAC_NAME = "HmacSHA1";
 
 	@Override
-    public String sign(HttpRequest request, Map<String, String> oauthParams)
+    public String getSignatureMethod() {
+        return SignatureMethod.HMAC_SHA1.toString();
+    }
+
+    @Override
+    public String sign(HttpRequest request, RequestParameters requestParams)
 			throws OAuthMessageSignerException {
 		try {
 			String keyString = OAuth.percentEncode(getConsumerSecret()) + '&'
@@ -43,7 +48,7 @@ public class HmacSha1MessageSigner extends OAuthMessageSigner {
 			Mac mac = Mac.getInstance(MAC_NAME);
 			mac.init(key);
 
-            String sbs = new SignatureBaseString(request, oauthParams).generate();
+            String sbs = new SignatureBaseString(request, requestParams).generate();
             byte[] text = sbs.getBytes(OAuth.ENCODING);
 
 			return base64Encode(mac.doFinal(text)).trim();
