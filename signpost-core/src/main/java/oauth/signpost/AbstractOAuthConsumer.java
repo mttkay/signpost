@@ -25,10 +25,11 @@ import oauth.signpost.http.HttpRequest;
 import oauth.signpost.http.RequestParameters;
 import oauth.signpost.signature.OAuthMessageSigner;
 
-@SuppressWarnings("serial")
 public abstract class AbstractOAuthConsumer implements OAuthConsumer {
 
-	private String consumerKey, consumerSecret;
+    private static final long serialVersionUID = 1L;
+
+    private String consumerKey, consumerSecret;
 
 	private String token;
 
@@ -65,6 +66,12 @@ public abstract class AbstractOAuthConsumer implements OAuthConsumer {
 
             // add any OAuth params that haven't already been set
             completeOAuthParameters(requestParameters);
+
+            // remove any 'realm' and 'oauth_signature' params, as they must
+            // not become part of the signature
+            requestParameters.remove("realm");
+            requestParameters.remove(OAuth.OAUTH_SIGNATURE);
+
         } catch (IOException e) {
             throw new OAuthCommunicationException(e);
         }
@@ -124,7 +131,7 @@ public abstract class AbstractOAuthConsumer implements OAuthConsumer {
         if (!oauthHeaderParams.containsKey(OAuth.OAUTH_TOKEN)) {
             oauthHeaderParams.put(OAuth.OAUTH_TOKEN, token);
         }
-        out.putAll(this.oauthHeaderParams);
+        out.putMap(this.oauthHeaderParams);
     }
 
     /**
@@ -147,7 +154,7 @@ public abstract class AbstractOAuthConsumer implements OAuthConsumer {
         String contentType = request.getContentType();
         if (contentType != null && contentType.equals(OAuth.FORM_ENCODED)) {
             InputStream payload = request.getMessagePayload();
-            out.putAll(OAuth.decodeForm(payload));
+            out.putMap(OAuth.decodeForm(payload));
         }
     }
 
@@ -161,7 +168,7 @@ public abstract class AbstractOAuthConsumer implements OAuthConsumer {
         int q = url.indexOf('?');
         if (q >= 0) {
             // Combine the URL query string with the other parameters:
-            out.putAll(OAuth.decodeForm(url.substring(q + 1)));
+            out.putMap(OAuth.decodeForm(url.substring(q + 1)));
         }
     }
 

@@ -1,10 +1,12 @@
 package oauth.signpost;
 
+import static junit.framework.Assert.assertFalse;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.argThat;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Matchers.same;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -13,11 +15,12 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.HashMap;
 import java.util.Map;
 
 import oauth.signpost.exception.OAuthExpectationFailedException;
 import oauth.signpost.http.HttpRequest;
+import oauth.signpost.http.RequestParameters;
+import oauth.signpost.signature.HmacSha1MessageSigner;
 import oauth.signpost.signature.OAuthMessageSigner;
 
 import org.junit.Test;
@@ -63,38 +66,36 @@ public abstract class OAuthConsumerTest extends SignpostTestBase {
     @Test
     public void shouldIncludeOAuthAndQueryAndBodyParams() throws Exception {
 
-        HashMap<String, String> params = new HashMap<String, String>();
-
+        // mock a request that has custom query, body, and header params set
         HttpRequest request = mock(HttpRequest.class);
         when(request.getRequestUrl()).thenReturn("http://example.com?a=1");
         ByteArrayInputStream body = new ByteArrayInputStream("b=2".getBytes());
         when(request.getMessagePayload()).thenReturn(body);
         when(request.getContentType()).thenReturn("application/x-www-form-urlencoded");
         when(request.getHeader("Authorization")).thenReturn(
-            "OAuth realm=www.example.com, oauth_signature=12345");
+            "OAuth realm=www.example.com, oauth_signature=12345, oauth_version=1.1");
 
-        consumer.sign(httpGetMock);
+        OAuthMessageSigner signer = mock(HmacSha1MessageSigner.class);
+        consumer.setMessageSigner(signer);
 
-        // TODO
+        consumer.sign(request);
 
-        // assertTrue(result.contains("a%3D1"));
-        // assertTrue(result.contains("b%3D2"));
-        // assertTrue(result.contains("oauth_consumer_key%3D" + CONSUMER_KEY));
-        // assertTrue(result.contains("oauth_signature_method%3D" +
-        // SIGNATURE_METHOD));
-        // assertTrue(result.contains("oauth_timestamp%3D" + TIMESTAMP));
-        // assertTrue(result.contains("oauth_nonce%3D" + NONCE));
-        // assertTrue(result.contains("oauth_version%3D" + OAUTH_VERSION));
-        // assertTrue(result.contains("oauth_token%3D" + TOKEN));
-        //
-        // // should ignore signature and realm params
-        // assertFalse(result.contains("oauth_signature%3D12345"));
-        // assertFalse(result.contains("realm%3Dwww.example.com"));
-        //
-        // // should not include the body param if not x-www-form-urlencoded
-        // when(request.getContentType()).thenReturn(null);
-        // sbs = new SignatureBaseString(request);
-        // assertFalse(sbs.generate().contains("b%3D2"));
+        // verify that all custom params are properly read and passed to the
+        // message signer
+        ArgumentMatcher<RequestParameters> hasAllParameters = new ArgumentMatcher<RequestParameters>() {
+            public boolean matches(Object argument) {
+                RequestParameters params = (RequestParameters) argument;
+                assertEquals("1", params.get("a").first());
+                assertEquals("2", params.get("b").first());
+                assertEquals("1.1", params.get("oauth_version").first());
+
+                assertFalse(params.containsKey(OAuth.OAUTH_SIGNATURE));
+                assertFalse(params.containsKey("realm"));
+                return true;
+            }
+        };
+
+        verify(signer).sign(same(request), argThat(hasAllParameters));
     }
 
     @Test

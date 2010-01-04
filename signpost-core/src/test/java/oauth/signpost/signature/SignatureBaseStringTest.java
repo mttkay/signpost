@@ -87,7 +87,7 @@ public class SignatureBaseStringTest extends SignpostTestBase {
         params.put("name", "");
         assertEquals("name=", new SignatureBaseString(httpGetMock, params)
             .normalizeRequestParameters());
-        params.put("name", null);
+        params.putNull("name", null);
         assertEquals("name=", new SignatureBaseString(httpGetMock, params)
             .normalizeRequestParameters());
     }

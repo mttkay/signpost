@@ -20,6 +20,7 @@ import oauth.signpost.exception.OAuthCommunicationException;
 import oauth.signpost.exception.OAuthExpectationFailedException;
 import oauth.signpost.exception.OAuthMessageSignerException;
 import oauth.signpost.http.HttpRequest;
+import oauth.signpost.signature.OAuthMessageSigner;
 
 /**
  * Exposes a simple interface to sign HTTP requests using a given OAuth token
@@ -29,6 +30,15 @@ import oauth.signpost.http.HttpRequest;
  * 
  */
 public interface OAuthConsumer extends Serializable {
+
+    /**
+     * Sets the message signer that should be used to generate the OAuth
+     * signature.
+     * 
+     * @param messageSigner
+     *        the signer
+     */
+    public void setMessageSigner(OAuthMessageSigner messageSigner);
 
     /**
      * Signs the given HTTP request by writing an OAuth signature string to the

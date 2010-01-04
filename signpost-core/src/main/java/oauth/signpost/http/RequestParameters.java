@@ -2,24 +2,36 @@ package oauth.signpost.http;
 
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-import javax.naming.OperationNotSupportedException;
-
 import oauth.signpost.OAuth;
 
-public class RequestParameters implements Map<String, String> {
+public class RequestParameters implements Map<String, SortedSet<String>> {
 
     private static final long serialVersionUID = -2281503352590395824L;
 
-    private TreeMap<String, Set<String>> wrappedMap = new TreeMap<String, Set<String>>();
+    private TreeMap<String, SortedSet<String>> wrappedMap = new TreeMap<String, SortedSet<String>>();
 
+    public SortedSet<String> put(String key, SortedSet<String> value) {
+        return wrappedMap.put(key, value);
+    }
+
+    /**
+     * Convenience method to add a single value for the parameter specified by
+     * 'key'.
+     * 
+     * @param key
+     *        the parameter name
+     * @param value
+     *        the parameter value
+     * @return the value
+     */
     public String put(String key, String value) {
-        Set<String> values = wrappedMap.get(key);
+        SortedSet<String> values = wrappedMap.get(key);
         if (values == null) {
             values = new TreeSet<String>();
             wrappedMap.put(OAuth.percentEncode(key), values);
@@ -30,13 +42,49 @@ public class RequestParameters implements Map<String, String> {
         return value;
     }
 
-    public void putAll(Map<? extends String, ? extends String> m) {
+    /**
+     * Convenience method to allow for storing null values. {@link #put} doesn't
+     * allow null values, because that would be ambiguous.
+     * 
+     * @param key
+     *        the parameter name
+     * @param nullString
+     *        can be anything, but probably... null?
+     * @return null
+     */
+    public String putNull(String key, String nullString) {
+        return put(key, nullString);
+    }
+
+    public void putAll(Map<? extends String, ? extends SortedSet<String>> m) {
+        wrappedMap.putAll(m);
+    }
+
+    /**
+     * Convenience method to merge a Map<String, String>.
+     * 
+     * @param m
+     *        the map
+     */
+    public void putMap(Map<? extends String, ? extends String> m) {
         for (String key : m.keySet()) {
             put(key, m.get(key));
         }
     }
 
-    public String get(Object key) {
+    public SortedSet<String> get(Object key) {
+        return wrappedMap.get(key);
+    }
+
+    /**
+     * Returns an application/x-www-form-encoded string of all values for the
+     * given parameter.
+     * 
+     * @param key
+     *        the parameter name
+     * @return the form encoded value string
+     */
+    public String getFormEncoded(Object key) {
         StringBuilder sb = new StringBuilder();
         key = OAuth.percentEncode((String) key);
         Set<String> values = wrappedMap.get(key);
@@ -67,7 +115,11 @@ public class RequestParameters implements Map<String, String> {
     }
 
     public int size() {
-        return wrappedMap.size();
+        int count = 0;
+        for (String key : wrappedMap.keySet()) {
+            count += wrappedMap.get(key).size();
+        }
+        return count;
     }
 
     public boolean isEmpty() {
@@ -78,24 +130,19 @@ public class RequestParameters implements Map<String, String> {
         wrappedMap.clear();
     }
 
-    public String remove(Object key) {
-        wrappedMap.remove(key);
-        return null;
+    public SortedSet<String> remove(Object key) {
+        return wrappedMap.remove(key);
     }
 
     public Set<String> keySet() {
         return wrappedMap.keySet();
     }
 
-    public Collection<String> values() {
-        LinkedList<String> values = new LinkedList<String>();
-        for (Set<String> v : wrappedMap.values()) {
-            values.addAll(v);
-        }
-        return values;
+    public Collection<SortedSet<String>> values() {
+        return wrappedMap.values();
     }
 
-    public Set<java.util.Map.Entry<String, String>> entrySet() {
-        throw new RuntimeException(new OperationNotSupportedException());
+    public Set<java.util.Map.Entry<String, SortedSet<String>>> entrySet() {
+        return wrappedMap.entrySet();
     }
 }

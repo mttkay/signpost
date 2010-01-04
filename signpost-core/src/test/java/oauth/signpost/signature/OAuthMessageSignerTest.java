@@ -26,21 +26,21 @@ public class OAuthMessageSignerTest extends SignpostTestBase {
 
     @Test
     public void shouldComputeCorrectHmacSha1Signature() throws Exception {
-        // based on the reference test case from http://oauth.pbwiki.com/TestCases
+        // based on the reference test case from
+        // http://oauth.pbwiki.com/TestCases
         OAuthMessageSigner signer = new HmacSha1MessageSigner();
         signer.setConsumerSecret(CONSUMER_SECRET);
         signer.setTokenSecret(TOKEN_SECRET);
 
         HttpRequest request = mock(HttpRequest.class);
-        when(request.getRequestUrl()).thenReturn(
-                "http://photos.example.net/photos?file=vacation.jpg&size=original");
+        when(request.getRequestUrl()).thenReturn("http://photos.example.net/photos");
         when(request.getMethod()).thenReturn("GET");
 
-        RequestParameters oauthParams = new RequestParameters();
-        oauthParams.putAll(OAUTH_PARAMS);
-        oauthParams.put("oauth_signature_method", "HMAC-SHA1");
+        RequestParameters params = new RequestParameters();
+        params.putAll(OAUTH_PARAMS);
+        params.put("file", "vacation.jpg");
+        params.put("size", "original");
 
-        assertEquals("tR3+Ty81lMeYAr/Fid0kMTYa/WM=", signer.sign(request,
-                oauthParams));
+        assertEquals("tR3+Ty81lMeYAr/Fid0kMTYa/WM=", signer.sign(request, params));
     }
 }

@@ -14,7 +14,6 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Iterator;
-import java.util.Map;
 
 import oauth.signpost.OAuth;
 import oauth.signpost.exception.OAuthMessageSignerException;
@@ -26,69 +25,6 @@ public class SignatureBaseString {
     private HttpRequest request;
 
     private RequestParameters requestParameters;
-
-    /**
-     * Wrapper for an OAuth key/value pair that is easily sortable.
-     */
-    private static class ComparableParameter implements Comparable<ComparableParameter>,
-            Map.Entry<String, String> {
-
-        private ComparableParameter(String key, String value) {
-            this.combined = key + ' ' + value;
-            // ' ' is used because it comes before any character
-            // that can appear in a percentEncoded string.
-        }
-
-        private String key, value, combined;
-
-        public String getKey() {
-            return this.key;
-        }
-
-        public String getValue() {
-            return this.value;
-        }
-
-        public String setValue(String value) {
-            this.value = value;
-            return value;
-        }
-
-        public int compareTo(ComparableParameter that) {
-            return this.combined.compareTo(that.combined);
-        }
-
-        @Override
-        public int hashCode() {
-            final int prime = 31;
-            int result = 1;
-            result = prime * result + ((key == null) ? 0 : key.hashCode());
-            result = prime * result + ((value == null) ? 0 : value.hashCode());
-            return result;
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            if (this == obj)
-                return true;
-            if (obj == null)
-                return false;
-            if (getClass() != obj.getClass())
-                return false;
-            ComparableParameter other = (ComparableParameter) obj;
-            if (key == null) {
-                if (other.key != null)
-                    return false;
-            } else if (!key.equals(other.key))
-                return false;
-            if (value == null) {
-                if (other.value != null)
-                    return false;
-            } else if (!value.equals(other.value))
-                return false;
-            return true;
-        }
-    }
 
     /**
      * Constructs a new SBS instance that will operate on the given request
@@ -163,7 +99,7 @@ public class SignatureBaseString {
         StringBuilder sb = new StringBuilder();
         Iterator<String> iter = requestParameters.keySet().iterator();
         while (iter.hasNext()) {
-            sb.append(requestParameters.get(iter.next()));
+            sb.append(requestParameters.getFormEncoded(iter.next()));
             if (iter.hasNext()) {
                 sb.append("&");
             }

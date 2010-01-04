@@ -18,26 +18,26 @@ public class RequestParametersTest {
         RequestParameters params = new RequestParameters();
         assertTrue(params.isEmpty());
 
-        params.put("a", "5");
+        params.putNull("a", "5");
         assertFalse(params.isEmpty());
-        assertEquals("a=5", params.get("a"));
+        assertEquals("5", params.get("a").first());
 
-        params.put("a", "1");
-        assertEquals("a=1&a=5", params.get("a"));
+        params.putNull("a", "1");
+        assertEquals("a=1&a=5", params.getFormEncoded("a"));
 
-        params.put("b", "drei");
-        params.put("b", "vier");
+        params.putNull("b", "drei");
+        params.putNull("b", "vier");
         HashMap<String, String> other = new HashMap<String, String>();
         other.put("b", "eins");
-        params.putAll(other);
+        params.putMap(other);
 
         assertEquals(2, params.keySet().size());
-        assertEquals(5, params.values().size());
-        assertEquals("b=drei&b=eins&b=vier", params.get("b"));
+        assertEquals(5, params.size());
+        assertEquals("b=drei&b=eins&b=vier", params.getFormEncoded("b"));
 
-        params.put("a b", "c d");
-        assertEquals("a%20b=c%20d", params.get("a b"));
+        params.putNull("a b", "c d");
+        assertEquals("a%20b=c%20d", params.getFormEncoded("a b"));
 
-        assertEquals("x=", params.get("x"));
+        assertEquals("x=", params.getFormEncoded("x"));
     }
 }
