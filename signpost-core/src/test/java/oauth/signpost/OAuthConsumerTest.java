@@ -130,18 +130,19 @@ public abstract class OAuthConsumerTest extends SignpostTestBase {
         consumer.sign(httpGetMock);
     }
 
-    @Test
-    public void shouldSupport2LeggedOAuth() throws Exception {
-        OAuthConsumer consumer = buildConsumer(CONSUMER_KEY, CONSUMER_SECRET, null);
-
-        // note how we do not set a token and secret; should still include the
-        // oauth_token parameter
-
-        consumer.sign(httpGetMock);
-
-        verify(httpGetMock).setHeader(eq("Authorization"),
-            argThat(new IsCompleteListOfOAuthParameters()));
-    }
+    // @Test
+    // public void shouldSupport2LeggedOAuth() throws Exception {
+    // OAuthConsumer consumer = buildConsumer(CONSUMER_KEY, CONSUMER_SECRET,
+    // null);
+    //
+    // // note how we do not set a token and secret; should still include the
+    // // oauth_token parameter
+    //
+    // consumer.sign(httpGetMock);
+    //
+    // verify(httpGetMock).setHeader(eq("Authorization"),
+    // argThat(new IsCompleteListOfOAuthParameters()));
+    // }
 
     private class IsCompleteListOfOAuthParameters extends
             ArgumentMatcher<String> {

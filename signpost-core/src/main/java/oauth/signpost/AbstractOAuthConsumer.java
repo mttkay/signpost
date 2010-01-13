@@ -23,6 +23,7 @@ import oauth.signpost.exception.OAuthExpectationFailedException;
 import oauth.signpost.exception.OAuthMessageSignerException;
 import oauth.signpost.http.HttpRequest;
 import oauth.signpost.http.RequestParameters;
+import oauth.signpost.signature.HmacSha1MessageSigner;
 import oauth.signpost.signature.OAuthMessageSigner;
 
 public abstract class AbstractOAuthConsumer implements OAuthConsumer {
@@ -37,11 +38,21 @@ public abstract class AbstractOAuthConsumer implements OAuthConsumer {
 
     private Map<String, String> oauthHeaderParams;
 
+    private RequestParameters requestParameters;
+
+    private boolean sendEmptyTokens;
+
     public AbstractOAuthConsumer(String consumerKey, String consumerSecret,
             OAuthMessageSigner messageSigner) {
         this.consumerKey = consumerKey;
         this.consumerSecret = consumerSecret;
         setMessageSigner(messageSigner);
+    }
+
+    public AbstractOAuthConsumer(String consumerKey, String consumerSecret) {
+        this.consumerKey = consumerKey;
+        this.consumerSecret = consumerSecret;
+        setMessageSigner(new HmacSha1MessageSigner());
     }
 
     public void setMessageSigner(OAuthMessageSigner messageSigner) {
@@ -58,7 +69,7 @@ public abstract class AbstractOAuthConsumer implements OAuthConsumer {
             throw new OAuthExpectationFailedException("consumer secret not set");
         }
 
-        RequestParameters requestParameters = new RequestParameters();
+        requestParameters = new RequestParameters();
         try {
             collectHeaderParameters(request, requestParameters);
             collectQueryParameters(request, requestParameters);
@@ -129,9 +140,28 @@ public abstract class AbstractOAuthConsumer implements OAuthConsumer {
             oauthHeaderParams.put(OAuth.OAUTH_VERSION, OAuth.VERSION_1_0);
         }
         if (!oauthHeaderParams.containsKey(OAuth.OAUTH_TOKEN)) {
-            oauthHeaderParams.put(OAuth.OAUTH_TOKEN, token);
+            if (token != null && !token.equals("") || sendEmptyTokens) {
+                oauthHeaderParams.put(OAuth.OAUTH_TOKEN, token);
+            }
         }
         out.putMap(this.oauthHeaderParams);
+    }
+
+    public RequestParameters getRequestParameters() {
+        return requestParameters;
+    }
+
+    /**
+     * <p>
+     * If you're seeing 401s during calls to
+     * {@link OAuthProvider#retrieveRequestToken}, try setting this to true.
+     * </p>
+     * 
+     * @param enable
+     *        true or false
+     */
+    public void sendEmptyTokens(boolean enable) {
+        this.sendEmptyTokens = enable;
     }
 
     /**

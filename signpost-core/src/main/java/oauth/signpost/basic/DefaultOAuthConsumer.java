@@ -18,7 +18,7 @@ import java.net.HttpURLConnection;
 
 import oauth.signpost.AbstractOAuthConsumer;
 import oauth.signpost.http.HttpRequest;
-import oauth.signpost.signature.HmacSha1MessageSigner;
+import oauth.signpost.signature.OAuthMessageSigner;
 import oauth.signpost.signature.SignatureMethod;
 
 /**
@@ -31,8 +31,13 @@ import oauth.signpost.signature.SignatureMethod;
 @SuppressWarnings("serial")
 public class DefaultOAuthConsumer extends AbstractOAuthConsumer {
 
+    public DefaultOAuthConsumer(String consumerKey, String consumerSecret,
+            OAuthMessageSigner messageSigner) {
+        super(consumerKey, consumerSecret, messageSigner);
+    }
+
     public DefaultOAuthConsumer(String consumerKey, String consumerSecret) {
-        super(consumerKey, consumerSecret, new HmacSha1MessageSigner());
+        super(consumerKey, consumerSecret);
     }
 
     @Override

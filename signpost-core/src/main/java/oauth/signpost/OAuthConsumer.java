@@ -20,6 +20,7 @@ import oauth.signpost.exception.OAuthCommunicationException;
 import oauth.signpost.exception.OAuthExpectationFailedException;
 import oauth.signpost.exception.OAuthMessageSignerException;
 import oauth.signpost.http.HttpRequest;
+import oauth.signpost.http.RequestParameters;
 import oauth.signpost.signature.OAuthMessageSigner;
 
 /**
@@ -79,4 +80,16 @@ public interface OAuthConsumer extends Serializable {
 	public String getConsumerKey();
 
 	public String getConsumerSecret();
+
+    /**
+     * Returns all parameters collected from the HTTP request during message
+     * signing (this means the return value may be NULL before a call to
+     * {@link #sign}), plus all required OAuth parameters that were added
+     * because the request didn't contain them beforehand. In other words, this
+     * is the set of parameters that were used for creating the message
+     * signature.
+     * 
+     * @return the request parameters used for message signing
+     */
+    public RequestParameters getRequestParameters();
 }

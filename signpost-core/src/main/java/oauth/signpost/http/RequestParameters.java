@@ -10,6 +10,13 @@ import java.util.TreeSet;
 
 import oauth.signpost.OAuth;
 
+/**
+ * A multi-map of HTTP request parameters. Each key references a
+ * {@link SortedSet} of parameters collected from the request during message
+ * signing. Parameter values are sorted as per {@linkplain http://oauth.net/core/1.0a/#anchor13}.
+ * 
+ * @author Matthias Kaeppler
+ */
 public class RequestParameters implements Map<String, SortedSet<String>> {
 
     private static final long serialVersionUID = -2281503352590395824L;
