@@ -25,6 +25,7 @@ import oauth.signpost.http.HttpRequest;
 import oauth.signpost.http.RequestParameters;
 import oauth.signpost.signature.HmacSha1MessageSigner;
 import oauth.signpost.signature.OAuthMessageSigner;
+import oauth.signpost.signature.SignatureBaseString;
 
 public abstract class AbstractOAuthConsumer implements OAuthConsumer {
 
@@ -89,7 +90,7 @@ public abstract class AbstractOAuthConsumer implements OAuthConsumer {
 
         String signature = messageSigner.sign(request, requestParameters);
 
-        request.setHeader(OAuth.HTTP_AUTHORIZATION_HEADER, buildOAuthHeader(signature));
+        writeSignature(request, signature);
 
         return request;
     }
@@ -122,6 +123,15 @@ public abstract class AbstractOAuthConsumer implements OAuthConsumer {
 		return this.consumerSecret;
 	}
 
+    /**
+     * Helper method that adds any OAuth parameters to the given request
+     * parameters which are missing from the current request but required for
+     * signing. A good example is the oauth_nonce parameter, which is typically
+     * not provided by the client in advance.
+     * 
+     * @param out
+     *        the request parameter which should be completed
+     */
     protected void completeOAuthParameters(RequestParameters out) {
         if (!oauthHeaderParams.containsKey(OAuth.OAUTH_CONSUMER_KEY)) {
             oauthHeaderParams.put(OAuth.OAUTH_CONSUMER_KEY, consumerKey);
@@ -202,6 +212,14 @@ public abstract class AbstractOAuthConsumer implements OAuthConsumer {
         }
     }
 
+    /**
+     * Helper method which constructs an OAuth authorization string that can be
+     * placed in the HTTP Authorization header.
+     * 
+     * @param signature
+     *        the message signature
+     * @return the OAuth HTTP Authorization header value
+     */
     protected String buildOAuthHeader(String signature) {
 
         StringBuilder sb = new StringBuilder();
@@ -218,8 +236,31 @@ public abstract class AbstractOAuthConsumer implements OAuthConsumer {
         return sb.toString();
     }
 
+    /**
+     * Helper method to concatenate an OAuth parameter and its value to a pair.
+     * This method percent encodes both parts before joining them.
+     * 
+     * @param name
+     *        the OAuth parameter name, e.g. oauth_token
+     * @param value
+     *        the OAuth parameter value, e.g. 'hello oauth'
+     * @return a name/value pair, e.g. oauth_token='hello%20oauth'
+     */
     protected String oauthHeaderElement(String name, String value) {
 		return OAuth.percentEncode(name) + "=\"" + OAuth.percentEncode(value)
 				+ "\"";
 	}
+
+    /**
+     * Writes the signature to the given HTTP request. The default
+     * implementation writes it to the HTTP Authorization header.
+     * 
+     * @param request
+     *        the HTTP request to sign
+     * @param signature
+     *        the signature as computed by {@link SignatureBaseString}
+     */
+    protected void writeSignature(HttpRequest request, String signature) {
+        request.setHeader(OAuth.HTTP_AUTHORIZATION_HEADER, buildOAuthHeader(signature));
+    }
 }
