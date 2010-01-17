@@ -10,6 +10,8 @@ public interface HttpRequest {
 
     String getRequestUrl();
 
+    void setRequestUrl(String url);
+
     void setHeader(String name, String value);
 
     String getHeader(String name);

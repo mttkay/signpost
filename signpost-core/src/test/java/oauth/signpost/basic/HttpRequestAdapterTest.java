@@ -17,7 +17,7 @@ public class HttpRequestAdapterTest extends HttpRequestAdapterTestBase {
         conn.setRequestMethod(HTTP_POST_METHOD);
         conn.setRequestProperty(HEADER_NAME, HEADER_VALUE);
         conn.setRequestProperty("Content-Type", CONTENT_TYPE);
-        request = new HttpRequestAdapter(conn);
+        request = new HttpURLConnectionRequestAdapter(conn);
     }
 
     @Override

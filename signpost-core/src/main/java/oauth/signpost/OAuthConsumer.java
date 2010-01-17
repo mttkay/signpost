@@ -22,6 +22,7 @@ import oauth.signpost.exception.OAuthMessageSignerException;
 import oauth.signpost.http.HttpRequest;
 import oauth.signpost.http.RequestParameters;
 import oauth.signpost.signature.OAuthMessageSigner;
+import oauth.signpost.signature.SigningStrategy;
 
 /**
  * Exposes a simple interface to sign HTTP requests using a given OAuth token
@@ -40,6 +41,13 @@ public interface OAuthConsumer extends Serializable {
      *        the signer
      */
     public void setMessageSigner(OAuthMessageSigner messageSigner);
+    
+    /**
+     * Defines which strategy should be used to write a signature to an
+     * HTTP request.
+     * @param signingStrategy the strategy
+     */
+    public void setSigningStrategy(SigningStrategy signingStrategy);
 
     /**
      * Signs the given HTTP request by writing an OAuth signature string to the
@@ -69,6 +77,27 @@ public interface OAuthConsumer extends Serializable {
      * @throws OAuthCommunicationException
      */
 	public HttpRequest sign(Object request) throws OAuthMessageSignerException,
+            OAuthExpectationFailedException, OAuthCommunicationException;
+
+    /**
+     * <p>
+     * "Signs" the given URL by appending all OAuth parameters to it which are
+     * required for message signing. The assumed HTTP method is GET.
+     * Essentially, this is equivalent to signing an HTTP GET request, but it
+     * can be useful if your application requires clickable links to protected
+     * resources, i.e. when your application does not have access to the actual
+     * request that is being sent.
+     * </p>
+     * 
+     * @param url
+     *        the input URL. May have query parameters.
+     * @return the input URL, with all necessary OAuth parameters attached as a
+     *         query string. Existing query parameters are preserved.
+     * @throws OAuthMessageSignerException
+     * @throws OAuthExpectationFailedException
+     * @throws OAuthCommunicationException
+     */
+    public String sign(String url) throws OAuthMessageSignerException,
             OAuthExpectationFailedException, OAuthCommunicationException;
 
 	public void setTokenWithSecret(String token, String tokenSecret);

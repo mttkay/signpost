@@ -108,6 +108,14 @@ public class RequestParameters implements Map<String, SortedSet<String>> {
         return sb.toString();
     }
 
+    public String getAsHeaderElement(String key) {
+        String value = get(key).first();
+        if (value == null) {
+            return null;
+        }
+        return key + "=\"" + value + "\"";
+    }
+
     public boolean containsKey(Object key) {
         return wrappedMap.containsKey(key);
     }

@@ -66,8 +66,8 @@ public abstract class AbstractOAuthProvider implements OAuthProvider {
 
 		// 1.0a expects the callback to be sent while getting the request token.
 		// 1.0 service providers would simply ignore this parameter.
-		retrieveToken(OAuth.addQueryParameters(requestTokenEndpointUrl,
-				OAuth.OAUTH_CALLBACK, callbackUrl));
+        retrieveToken(OAuth.addQueryParameters(requestTokenEndpointUrl, OAuth.OAUTH_CALLBACK,
+            callbackUrl));
 
 		String callbackConfirmed = responseParameters
 				.get(OAuth.OAUTH_CALLBACK_CONFIRMED);
@@ -96,10 +96,8 @@ public abstract class AbstractOAuthProvider implements OAuthProvider {
 							+ "Did you retrieve an authorized request token before?");
 		}
 
-		retrieveToken(isOAuth10a && oauthVerifier != null ? OAuth
-				.addQueryParameters(accessTokenEndpointUrl,
-						OAuth.OAUTH_VERIFIER, oauthVerifier)
-				: accessTokenEndpointUrl);
+        retrieveToken(isOAuth10a && oauthVerifier != null ? OAuth.addQueryParameters(
+            accessTokenEndpointUrl, OAuth.OAUTH_VERIFIER, oauthVerifier) : accessTokenEndpointUrl);
 	}
 
     /**
@@ -135,7 +133,7 @@ public abstract class AbstractOAuthProvider implements OAuthProvider {
      *         if an expectation has failed, e.g. because the server didn't
      *         reply in the expected format
      */
-	protected abstract void retrieveToken(String endpointUrl)
+    protected abstract void retrieveToken(String endpointUrl)
 			throws OAuthMessageSignerException, OAuthCommunicationException,
 			OAuthNotAuthorizedException, OAuthExpectationFailedException;
 	

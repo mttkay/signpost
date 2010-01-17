@@ -5,6 +5,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.junit.Test;
@@ -82,5 +83,11 @@ public class OAuthTest {
         String url2 = "http://www.example.com?x=1";
         assertEquals("http://www.example.com?x=1&a=1&b=2",
                 OAuth.addQueryParameters(url2, "a", "1", "b", "2"));
+
+        Map<String, String> params = new LinkedHashMap<String, String>();
+        params.put("a", "1");
+        params.put("b", "2");
+        assertEquals("http://www.example.com?x=1&a=1&b=2", OAuth.addQueryParameters(url2, params));
+
     }
 }

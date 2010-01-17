@@ -49,6 +49,7 @@ public class HmacSha1MessageSigner extends OAuthMessageSigner {
 			mac.init(key);
 
             String sbs = new SignatureBaseString(request, requestParams).generate();
+            System.out.println(sbs);
             byte[] text = sbs.getBytes(OAuth.ENCODING);
 
 			return base64Encode(mac.doFinal(text)).trim();

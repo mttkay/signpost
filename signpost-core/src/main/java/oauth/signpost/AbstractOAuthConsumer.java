@@ -18,14 +18,17 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 
+import oauth.signpost.basic.UrlStringRequestAdapter;
 import oauth.signpost.exception.OAuthCommunicationException;
 import oauth.signpost.exception.OAuthExpectationFailedException;
 import oauth.signpost.exception.OAuthMessageSignerException;
 import oauth.signpost.http.HttpRequest;
 import oauth.signpost.http.RequestParameters;
+import oauth.signpost.signature.AuthorizationHeaderSigningStrategy;
 import oauth.signpost.signature.HmacSha1MessageSigner;
 import oauth.signpost.signature.OAuthMessageSigner;
-import oauth.signpost.signature.SignatureBaseString;
+import oauth.signpost.signature.QueryStringSigningStrategy;
+import oauth.signpost.signature.SigningStrategy;
 
 public abstract class AbstractOAuthConsumer implements OAuthConsumer {
 
@@ -37,8 +40,9 @@ public abstract class AbstractOAuthConsumer implements OAuthConsumer {
 
 	private OAuthMessageSigner messageSigner;
 
-    private Map<String, String> oauthHeaderParams;
+    private SigningStrategy signingStrategy;
 
+    // these are the params which will be passed to the message signer
     private RequestParameters requestParameters;
 
     private boolean sendEmptyTokens;
@@ -48,17 +52,23 @@ public abstract class AbstractOAuthConsumer implements OAuthConsumer {
         this.consumerKey = consumerKey;
         this.consumerSecret = consumerSecret;
         setMessageSigner(messageSigner);
+        setSigningStrategy(new AuthorizationHeaderSigningStrategy());
     }
 
     public AbstractOAuthConsumer(String consumerKey, String consumerSecret) {
         this.consumerKey = consumerKey;
         this.consumerSecret = consumerSecret;
         setMessageSigner(new HmacSha1MessageSigner());
+        setSigningStrategy(new AuthorizationHeaderSigningStrategy());
     }
 
     public void setMessageSigner(OAuthMessageSigner messageSigner) {
         this.messageSigner = messageSigner;
         messageSigner.setConsumerSecret(consumerSecret);
+    }
+
+    public void setSigningStrategy(SigningStrategy signingStrategy) {
+        this.signingStrategy = signingStrategy;
     }
 
     public HttpRequest sign(HttpRequest request) throws OAuthMessageSignerException,
@@ -79,9 +89,6 @@ public abstract class AbstractOAuthConsumer implements OAuthConsumer {
             // add any OAuth params that haven't already been set
             completeOAuthParameters(requestParameters);
 
-            // remove any 'realm' and 'oauth_signature' params, as they must
-            // not become part of the signature
-            requestParameters.remove("realm");
             requestParameters.remove(OAuth.OAUTH_SIGNATURE);
 
         } catch (IOException e) {
@@ -90,7 +97,7 @@ public abstract class AbstractOAuthConsumer implements OAuthConsumer {
 
         String signature = messageSigner.sign(request, requestParameters);
 
-        writeSignature(request, signature);
+        signingStrategy.writeSignature(signature, request, requestParameters);
 
         return request;
     }
@@ -99,6 +106,22 @@ public abstract class AbstractOAuthConsumer implements OAuthConsumer {
             OAuthExpectationFailedException, OAuthCommunicationException {
 		return sign(wrap(request));
 	}
+
+    public String sign(String url) throws OAuthMessageSignerException,
+            OAuthExpectationFailedException, OAuthCommunicationException {
+        HttpRequest request = new UrlStringRequestAdapter(url);
+
+        // switch to URL signing
+        SigningStrategy oldStrategy = this.signingStrategy;
+        this.signingStrategy = new QueryStringSigningStrategy();
+
+        sign(request);
+
+        // revert to old strategy
+        this.signingStrategy = oldStrategy;
+
+        return request.getRequestUrl();
+    }
 
 	protected abstract HttpRequest wrap(Object request);
 
@@ -133,28 +156,26 @@ public abstract class AbstractOAuthConsumer implements OAuthConsumer {
      *        the request parameter which should be completed
      */
     protected void completeOAuthParameters(RequestParameters out) {
-        if (!oauthHeaderParams.containsKey(OAuth.OAUTH_CONSUMER_KEY)) {
-            oauthHeaderParams.put(OAuth.OAUTH_CONSUMER_KEY, consumerKey);
+        if (!out.containsKey(OAuth.OAUTH_CONSUMER_KEY)) {
+            out.put(OAuth.OAUTH_CONSUMER_KEY, consumerKey);
         }
-        if (!oauthHeaderParams.containsKey(OAuth.OAUTH_SIGNATURE_METHOD)) {
-            oauthHeaderParams.put(OAuth.OAUTH_SIGNATURE_METHOD, messageSigner.getSignatureMethod());
+        if (!out.containsKey(OAuth.OAUTH_SIGNATURE_METHOD)) {
+            out.put(OAuth.OAUTH_SIGNATURE_METHOD, messageSigner.getSignatureMethod());
         }
-        if (!oauthHeaderParams.containsKey(OAuth.OAUTH_TIMESTAMP)) {
-            oauthHeaderParams.put(OAuth.OAUTH_TIMESTAMP, Long
-                .toString(System.currentTimeMillis() / 1000L));
+        if (!out.containsKey(OAuth.OAUTH_TIMESTAMP)) {
+            out.put(OAuth.OAUTH_TIMESTAMP, generateTimestamp());
         }
-        if (!oauthHeaderParams.containsKey(OAuth.OAUTH_NONCE)) {
-            oauthHeaderParams.put(OAuth.OAUTH_NONCE, Long.toString(System.nanoTime()));
+        if (!out.containsKey(OAuth.OAUTH_NONCE)) {
+            out.put(OAuth.OAUTH_NONCE, generateNonce());
         }
-        if (!oauthHeaderParams.containsKey(OAuth.OAUTH_VERSION)) {
-            oauthHeaderParams.put(OAuth.OAUTH_VERSION, OAuth.VERSION_1_0);
+        if (!out.containsKey(OAuth.OAUTH_VERSION)) {
+            out.put(OAuth.OAUTH_VERSION, OAuth.VERSION_1_0);
         }
-        if (!oauthHeaderParams.containsKey(OAuth.OAUTH_TOKEN)) {
+        if (!out.containsKey(OAuth.OAUTH_TOKEN)) {
             if (token != null && !token.equals("") || sendEmptyTokens) {
-                oauthHeaderParams.put(OAuth.OAUTH_TOKEN, token);
+                out.put(OAuth.OAUTH_TOKEN, token);
             }
         }
-        out.putMap(this.oauthHeaderParams);
     }
 
     public RequestParameters getRequestParameters() {
@@ -179,8 +200,9 @@ public abstract class AbstractOAuthConsumer implements OAuthConsumer {
      * section 9.1.1
      */
     protected void collectHeaderParameters(HttpRequest request, RequestParameters out) {
-        this.oauthHeaderParams = OAuth.oauthHeaderToParamsMap(request
+        Map<String, String> headerParams = OAuth.oauthHeaderToParamsMap(request
             .getHeader(OAuth.HTTP_AUTHORIZATION_HEADER));
+        out.putMap(headerParams);
     }
 
     /**
@@ -212,55 +234,11 @@ public abstract class AbstractOAuthConsumer implements OAuthConsumer {
         }
     }
 
-    /**
-     * Helper method which constructs an OAuth authorization string that can be
-     * placed in the HTTP Authorization header.
-     * 
-     * @param signature
-     *        the message signature
-     * @return the OAuth HTTP Authorization header value
-     */
-    protected String buildOAuthHeader(String signature) {
-
-        StringBuilder sb = new StringBuilder();
-
-        sb.append("OAuth ");
-
-        for (String key : oauthHeaderParams.keySet()) {
-            sb.append(oauthHeaderElement(key, oauthHeaderParams.get(key)));
-            sb.append(",");
-        }
-
-        sb.append(oauthHeaderElement(OAuth.OAUTH_SIGNATURE, signature));
-
-        return sb.toString();
+    protected String generateTimestamp() {
+        return Long.toString(System.currentTimeMillis() / 1000L);
     }
 
-    /**
-     * Helper method to concatenate an OAuth parameter and its value to a pair.
-     * This method percent encodes both parts before joining them.
-     * 
-     * @param name
-     *        the OAuth parameter name, e.g. oauth_token
-     * @param value
-     *        the OAuth parameter value, e.g. 'hello oauth'
-     * @return a name/value pair, e.g. oauth_token='hello%20oauth'
-     */
-    protected String oauthHeaderElement(String name, String value) {
-		return OAuth.percentEncode(name) + "=\"" + OAuth.percentEncode(value)
-				+ "\"";
-	}
-
-    /**
-     * Writes the signature to the given HTTP request. The default
-     * implementation writes it to the HTTP Authorization header.
-     * 
-     * @param request
-     *        the HTTP request to sign
-     * @param signature
-     *        the signature as computed by {@link SignatureBaseString}
-     */
-    protected void writeSignature(HttpRequest request, String signature) {
-        request.setHeader(OAuth.HTTP_AUTHORIZATION_HEADER, buildOAuthHeader(signature));
+    protected String generateNonce() {
+        return Long.toString(System.nanoTime());
     }
 }

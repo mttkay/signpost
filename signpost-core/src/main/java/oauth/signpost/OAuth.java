@@ -193,6 +193,17 @@ public class OAuth {
         return sb.toString();
     }
 
+    public static String addQueryParameters(String url, Map<String, String> params) {
+        String[] kvPairs = new String[params.size() * 2];
+        int idx = 0;
+        for (String key : params.keySet()) {
+            kvPairs[idx] = key;
+            kvPairs[idx + 1] = params.get(key);
+            idx += 2;
+        }
+        return addQueryParameters(url, kvPairs);
+    }
+
     public static Map<String, String> oauthHeaderToParamsMap(String oauthHeader) {
         if (oauthHeader == null || !oauthHeader.startsWith("OAuth ")) {
             return new HashMap<String, String>();
@@ -205,6 +216,21 @@ public class OAuth {
             params.put(keyValue[0].trim(), keyValue[1].trim());
         }
         return params;
+    }
+
+    /**
+     * Helper method to concatenate a parameter and its value to a pair that can
+     * be used in an HTTP header. This method percent encodes both parts before
+     * joining them.
+     * 
+     * @param name
+     *        the OAuth parameter name, e.g. oauth_token
+     * @param value
+     *        the OAuth parameter value, e.g. 'hello oauth'
+     * @return a name/value pair, e.g. oauth_token="hello%20oauth"
+     */
+    public static String toHeaderElement(String name, String value) {
+        return OAuth.percentEncode(name) + "=\"" + OAuth.percentEncode(value) + "\"";
     }
 
 }

@@ -61,8 +61,16 @@ public class SignatureBaseStringTest extends SignpostTestBase {
     @Test
     public void shouldNormalizeParameters() throws Exception {
 
-        // example from OAuth spec
+        // should ignore signature, callback, and realm params
         RequestParameters params = new RequestParameters();
+        params.put("a", "1");
+        params.put("realm", "www.example.com");
+        params.put("oauth_signature", "12345");
+        String result = new SignatureBaseString(httpGetMock, params).normalizeRequestParameters();
+        assertEquals("a=1", result);
+
+        // example from OAuth spec
+        params = new RequestParameters();
         params.put("a", "1");
         params.put("c", "hi there");
         params.put("f", "25");
@@ -71,7 +79,7 @@ public class SignatureBaseStringTest extends SignpostTestBase {
         params.put("z", "p");
         params.put("z", "t");
         String expected = "a=1&c=hi%20there&f=25&f=50&f=a&z=p&z=t";
-        String result = new SignatureBaseString(httpGetMock, params).normalizeRequestParameters();
+        result = new SignatureBaseString(httpGetMock, params).normalizeRequestParameters();
         assertEquals(expected, result);
 
         // examples from the official test cases on

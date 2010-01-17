@@ -9,11 +9,11 @@ import java.util.Map;
 
 import oauth.signpost.http.HttpRequest;
 
-public class HttpRequestAdapter implements HttpRequest {
+public class HttpURLConnectionRequestAdapter implements HttpRequest {
 
     protected HttpURLConnection connection;
 
-    public HttpRequestAdapter(HttpURLConnection connection) {
+    public HttpURLConnectionRequestAdapter(HttpURLConnection connection) {
         this.connection = connection;
     }
 
@@ -23,6 +23,10 @@ public class HttpRequestAdapter implements HttpRequest {
 
     public String getRequestUrl() {
         return connection.getURL().toExternalForm();
+    }
+
+    public void setRequestUrl(String url) {
+        // can't do
     }
 
     public void setHeader(String name, String value) {

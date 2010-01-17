@@ -41,6 +41,10 @@ public class HttpRequestAdapter implements HttpRequest {
         return requestUrl;
     }
 
+    public void setRequestUrl(String url) {
+        throw new RuntimeException(new UnsupportedOperationException());
+    }
+
     public void setHeader(String name, String value) {
         request.setRequestHeader(name, value);
     }

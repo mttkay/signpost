@@ -46,7 +46,7 @@ public class DefaultOAuthConsumer extends AbstractOAuthConsumer {
             throw new IllegalArgumentException(
                     "The default consumer expects requests of type java.net.HttpURLConnection");
         }
-        return new HttpRequestAdapter((HttpURLConnection) request);
+        return new HttpURLConnectionRequestAdapter((HttpURLConnection) request);
     }
 
 }

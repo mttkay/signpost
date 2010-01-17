@@ -84,8 +84,7 @@ public class SignatureBaseString {
 
     /**
      * Normalizes the set of request parameters this instance was configured
-     * with, as per OAuth spec section 9.1.1. cf. {@link http
-     * ://oauth.net/core/1.0a/#anchor13}
+     * with, as per OAuth spec section 9.1.1.
      * 
      * @param parameters
      *        the set of request parameters
@@ -96,13 +95,22 @@ public class SignatureBaseString {
         if (requestParameters == null) {
             return "";
         }
+
         StringBuilder sb = new StringBuilder();
         Iterator<String> iter = requestParameters.keySet().iterator();
-        while (iter.hasNext()) {
-            sb.append(requestParameters.getFormEncoded(iter.next()));
-            if (iter.hasNext()) {
+
+        for (int i = 0; iter.hasNext(); i++) {
+            String param = iter.next();
+
+            if (OAuth.OAUTH_SIGNATURE.equals(param) || "realm".equals(param)) {
+                continue;
+            }
+
+            if (i > 0) {
                 sb.append("&");
             }
+
+            sb.append(requestParameters.getFormEncoded(param));
         }
         return sb.toString();
     }

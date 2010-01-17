@@ -49,7 +49,7 @@ public class CommonsHttpOAuthProvider extends AbstractOAuthProvider {
         httpClient = new DefaultHttpClient();
     }
     
-	protected void retrieveToken(String endpointUrl)
+    protected void retrieveToken(String endpointUrl)
 			throws OAuthMessageSignerException, OAuthCommunicationException,
 			OAuthNotAuthorizedException, OAuthExpectationFailedException {
 

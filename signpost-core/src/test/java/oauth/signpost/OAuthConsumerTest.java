@@ -1,6 +1,5 @@
 package oauth.signpost;
 
-import static junit.framework.Assert.assertFalse;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -64,6 +63,26 @@ public abstract class OAuthConsumerTest extends SignpostTestBase {
     }
 
     @Test
+    public void shouldSignUrl() throws Exception {
+
+        OAuthConsumer consumer = buildConsumer(CONSUMER_KEY, CONSUMER_SECRET, null);
+
+        consumer.setTokenWithSecret(TOKEN, TOKEN_SECRET);
+
+        String result = consumer.sign("http://www.example.com?q=1");
+        assertNotNull(result);
+
+        String[] parts = result.split("\\?");
+        assertEquals("parameters are missing", 2, parts.length);
+        assertEquals("http://www.example.com", parts[0]);
+
+        Map<String, String> params = OAuth.decodeForm(parts[1]);
+        assertAllOAuthParametersExist(params);
+
+        assertEquals("1", params.get("q"));
+    }
+
+    @Test
     public void shouldIncludeOAuthAndQueryAndBodyParams() throws Exception {
 
         // mock a request that has custom query, body, and header params set
@@ -88,9 +107,6 @@ public abstract class OAuthConsumerTest extends SignpostTestBase {
                 assertEquals("1", params.get("a").first());
                 assertEquals("2", params.get("b").first());
                 assertEquals("1.1", params.get("oauth_version").first());
-
-                assertFalse(params.containsKey(OAuth.OAUTH_SIGNATURE));
-                assertFalse(params.containsKey("realm"));
                 return true;
             }
         };
@@ -151,16 +167,19 @@ public abstract class OAuthConsumerTest extends SignpostTestBase {
         public boolean matches(Object argument) {
             String oauthHeader = (String) argument;
             assertTrue(oauthHeader.startsWith("OAuth "));
-            Map<String, String> params = OAuth.oauthHeaderToParamsMap(oauthHeader);
-            assertNotNull(params.get("oauth_consumer_key"));
-            assertNotNull(params.get("oauth_token"));
-            assertNotNull(params.get("oauth_signature_method"));
-            assertNotNull(params.get("oauth_signature"));
-            assertNotNull(params.get("oauth_timestamp"));
-            assertNotNull(params.get("oauth_nonce"));
-            assertNotNull(params.get("oauth_version"));
+            assertAllOAuthParametersExist(OAuth.oauthHeaderToParamsMap(oauthHeader));
             return true;
         }
+    }
+
+    private void assertAllOAuthParametersExist(Map<String, String> params) {
+        assertNotNull(params.get("oauth_consumer_key"));
+        assertNotNull(params.get("oauth_token"));
+        assertNotNull(params.get("oauth_signature_method"));
+        assertNotNull(params.get("oauth_signature"));
+        assertNotNull(params.get("oauth_timestamp"));
+        assertNotNull(params.get("oauth_nonce"));
+        assertNotNull(params.get("oauth_version"));
     }
 
     private class HasValuesPercentEncoded extends ArgumentMatcher<String> {

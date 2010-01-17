@@ -61,7 +61,7 @@ public class DefaultOAuthProvider extends AbstractOAuthProvider {
                 connection = (HttpURLConnection) new URL(endpointUrl).openConnection();
                 connection.setRequestMethod("GET");
             }
-            HttpRequest request = new HttpRequestAdapter(connection);
+            HttpRequest request = new HttpURLConnectionRequestAdapter(connection);
             for (String header : defaultHeaders.keySet()) {
                 request.setHeader(header, defaultHeaders.get(header));
             }

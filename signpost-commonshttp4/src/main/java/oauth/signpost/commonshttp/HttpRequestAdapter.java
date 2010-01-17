@@ -31,6 +31,10 @@ public class HttpRequestAdapter implements oauth.signpost.http.HttpRequest {
         return request.getURI().toString();
     }
 
+    public void setRequestUrl(String url) {
+        throw new RuntimeException(new UnsupportedOperationException());
+    }
+
     public String getHeader(String name) {
         Header header = request.getFirstHeader(name);
         if (header == null) {
