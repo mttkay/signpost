@@ -50,6 +50,17 @@ public interface OAuthConsumer extends Serializable {
     public void setSigningStrategy(SigningStrategy signingStrategy);
 
     /**
+     * <p>
+     * If you're seeing 401s during calls to
+     * {@link OAuthProvider#retrieveRequestToken}, try setting this to true.
+     * </p>
+     * 
+     * @param enable
+     *        true or false
+     */
+    public void setSendEmptyTokens(boolean enable);
+
+    /**
      * Signs the given HTTP request by writing an OAuth signature string to the
      * request's Authorization header.
      * 

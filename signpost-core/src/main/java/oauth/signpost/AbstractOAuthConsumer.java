@@ -182,16 +182,7 @@ public abstract class AbstractOAuthConsumer implements OAuthConsumer {
         return requestParameters;
     }
 
-    /**
-     * <p>
-     * If you're seeing 401s during calls to
-     * {@link OAuthProvider#retrieveRequestToken}, try setting this to true.
-     * </p>
-     * 
-     * @param enable
-     *        true or false
-     */
-    public void sendEmptyTokens(boolean enable) {
+    public void setSendEmptyTokens(boolean enable) {
         this.sendEmptyTokens = enable;
     }
 
