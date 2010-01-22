@@ -42,25 +42,21 @@ public class CommonsHttpOAuthProvider extends AbstractOAuthProvider {
 
     private HttpClient httpClient;
 
-    public CommonsHttpOAuthProvider(OAuthConsumer consumer,
-            String requestTokenEndpointUrl, String accessTokenEndpointUrl,
+    public CommonsHttpOAuthProvider(String requestTokenEndpointUrl, String accessTokenEndpointUrl,
             String authorizationWebsiteUrl) {
-        super(consumer, requestTokenEndpointUrl, accessTokenEndpointUrl, authorizationWebsiteUrl);
+        super(requestTokenEndpointUrl, accessTokenEndpointUrl, authorizationWebsiteUrl);
         httpClient = new DefaultHttpClient();
     }
     
-    protected void retrieveToken(String endpointUrl)
-			throws OAuthMessageSignerException, OAuthCommunicationException,
-			OAuthNotAuthorizedException, OAuthExpectationFailedException {
+    protected void retrieveToken(OAuthConsumer consumer, String endpointUrl)
+            throws OAuthMessageSignerException, OAuthCommunicationException,
+            OAuthNotAuthorizedException, OAuthExpectationFailedException {
 
-        OAuthConsumer consumer = getConsumer();
         Map<String, String> defaultHeaders = getRequestHeaders();
 
-		if (consumer.getConsumerKey() == null
-				|| consumer.getConsumerSecret() == null) {
-			throw new OAuthExpectationFailedException(
-					"Consumer key or secret not set");
-		}
+        if (consumer.getConsumerKey() == null || consumer.getConsumerSecret() == null) {
+            throw new OAuthExpectationFailedException("Consumer key or secret not set");
+        }
 
         HttpGet request = new HttpGet(endpointUrl);
         for (String header : defaultHeaders.keySet()) {
@@ -68,43 +64,43 @@ public class CommonsHttpOAuthProvider extends AbstractOAuthProvider {
         }
         HttpResponse response = null;
 
-		try {
+        try {
 
             consumer.sign(new HttpRequestAdapter(request));
 
             response = httpClient.execute(request);
 
-			int statusCode = response.getStatusLine().getStatusCode();
+            int statusCode = response.getStatusLine().getStatusCode();
 
-			if (statusCode == 401) {
-				throw new OAuthNotAuthorizedException();
-			}
+            if (statusCode == 401) {
+                throw new OAuthNotAuthorizedException();
+            }
 
             Map<String, String> responseParams = OAuth
                 .decodeForm(response.getEntity().getContent());
 
-			String token = responseParams.get(OAuth.OAUTH_TOKEN);
+            String token = responseParams.get(OAuth.OAUTH_TOKEN);
             String secret = responseParams.get(OAuth.OAUTH_TOKEN_SECRET);
             responseParams.remove(OAuth.OAUTH_TOKEN);
             responseParams.remove(OAuth.OAUTH_TOKEN_SECRET);
 
             setResponseParameters(responseParams);
 
-			if (token == null || secret == null) {
-				throw new OAuthExpectationFailedException(
-						"Request token or token secret not set in server reply. "
-								+ "The service provider you use is probably buggy.");
-			}
+            if (token == null || secret == null) {
+                throw new OAuthExpectationFailedException(
+                    "Request token or token secret not set in server reply. "
+                            + "The service provider you use is probably buggy.");
+            }
 
-			consumer.setTokenWithSecret(token, secret);
+            consumer.setTokenWithSecret(token, secret);
 
-		} catch (OAuthNotAuthorizedException e) {
-			throw e;
-		} catch (OAuthExpectationFailedException e) {
-			throw e;
-		} catch (Exception e) {
-			throw new OAuthCommunicationException(e);
-		} finally {
+        } catch (OAuthNotAuthorizedException e) {
+            throw e;
+        } catch (OAuthExpectationFailedException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new OAuthCommunicationException(e);
+        } finally {
             if (response != null) {
                 HttpEntity entity = response.getEntity();
                 if (entity != null) {
@@ -117,8 +113,8 @@ public class CommonsHttpOAuthProvider extends AbstractOAuthProvider {
                     }
                 }
             }
-		}
-	}
+        }
+    }
 
     void setHttpClient(HttpClient httpClient) {
         this.httpClient = httpClient;

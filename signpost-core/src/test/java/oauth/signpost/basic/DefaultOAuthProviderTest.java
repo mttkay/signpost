@@ -8,7 +8,6 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 
 import oauth.signpost.OAuth;
-import oauth.signpost.OAuthConsumer;
 import oauth.signpost.OAuthProvider;
 import oauth.signpost.OAuthProviderTest;
 
@@ -18,10 +17,10 @@ import org.mockito.runners.MockitoJUnit44Runner;
 @RunWith(MockitoJUnit44Runner.class)
 public abstract class DefaultOAuthProviderTest extends OAuthProviderTest {
 
-    protected OAuthProvider buildProvider(OAuthConsumer consumer, String requestTokenUrl,
-            String accessTokenUrl, String websiteUrl, boolean mockConnection) throws Exception {
-        OAuthProvider provider = new DefaultOAuthProvider(consumer, requestTokenUrl,
-            accessTokenUrl, websiteUrl);
+    protected OAuthProvider buildProvider(String requestTokenUrl, String accessTokenUrl,
+            String websiteUrl, boolean mockConnection) throws Exception {
+        OAuthProvider provider = new DefaultOAuthProvider(requestTokenUrl, accessTokenUrl,
+            websiteUrl);
         if (mockConnection) {
             mockConnection(provider, OAuth.OAUTH_TOKEN + "=" + TOKEN + "&"
                     + OAuth.OAUTH_TOKEN_SECRET + "=" + TOKEN_SECRET);

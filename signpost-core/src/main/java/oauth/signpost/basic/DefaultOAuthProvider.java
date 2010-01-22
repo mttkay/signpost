@@ -39,17 +39,15 @@ public class DefaultOAuthProvider extends AbstractOAuthProvider {
 
     private HttpURLConnection connection;
 
-    public DefaultOAuthProvider(OAuthConsumer consumer,
-            String requestTokenEndpointUrl, String accessTokenEndpointUrl,
+    public DefaultOAuthProvider(String requestTokenEndpointUrl, String accessTokenEndpointUrl,
             String authorizationWebsiteUrl) {
-        super(consumer, requestTokenEndpointUrl, accessTokenEndpointUrl, authorizationWebsiteUrl);
+        super(requestTokenEndpointUrl, accessTokenEndpointUrl, authorizationWebsiteUrl);
     }
     
-    protected void retrieveToken(String endpointUrl) throws OAuthMessageSignerException,
-            OAuthCommunicationException, OAuthNotAuthorizedException,
-            OAuthExpectationFailedException {
+    protected void retrieveToken(OAuthConsumer consumer, String endpointUrl)
+            throws OAuthMessageSignerException, OAuthCommunicationException,
+            OAuthNotAuthorizedException, OAuthExpectationFailedException {
 
-        OAuthConsumer consumer = getConsumer();
         Map<String, String> defaultHeaders = getRequestHeaders();
 
         if (consumer.getConsumerKey() == null || consumer.getConsumerSecret() == null) {

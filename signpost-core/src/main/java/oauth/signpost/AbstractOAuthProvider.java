@@ -38,67 +38,63 @@ public abstract class AbstractOAuthProvider implements OAuthProvider {
 
 	private String authorizationWebsiteUrl;
 
-	private OAuthConsumer consumer;
-
 	private Map<String, String> responseParameters;
 
 	private Map<String, String> defaultHeaders;
 
 	private boolean isOAuth10a;
 
-	public AbstractOAuthProvider(OAuthConsumer consumer,
-			String requestTokenEndpointUrl, String accessTokenEndpointUrl,
-			String authorizationWebsiteUrl) {
-		this.consumer = consumer;
-		this.requestTokenEndpointUrl = requestTokenEndpointUrl;
-		this.accessTokenEndpointUrl = accessTokenEndpointUrl;
-		this.authorizationWebsiteUrl = authorizationWebsiteUrl;
-		this.responseParameters = new HashMap<String, String>();
-		this.defaultHeaders = new HashMap<String, String>();
-	}
+    public AbstractOAuthProvider(String requestTokenEndpointUrl, String accessTokenEndpointUrl,
+            String authorizationWebsiteUrl) {
+        this.requestTokenEndpointUrl = requestTokenEndpointUrl;
+        this.accessTokenEndpointUrl = accessTokenEndpointUrl;
+        this.authorizationWebsiteUrl = authorizationWebsiteUrl;
+        this.responseParameters = new HashMap<String, String>();
+        this.defaultHeaders = new HashMap<String, String>();
+    }
 
-	public String retrieveRequestToken(String callbackUrl)
-			throws OAuthMessageSignerException, OAuthNotAuthorizedException,
-			OAuthExpectationFailedException, OAuthCommunicationException {
+    public String retrieveRequestToken(OAuthConsumer consumer, String callbackUrl)
+            throws OAuthMessageSignerException, OAuthNotAuthorizedException,
+            OAuthExpectationFailedException, OAuthCommunicationException {
 
-		// invalidate current credentials, if any
-		consumer.setTokenWithSecret(null, null);
+        // invalidate current credentials, if any
+        consumer.setTokenWithSecret(null, null);
 
-		// 1.0a expects the callback to be sent while getting the request token.
-		// 1.0 service providers would simply ignore this parameter.
-        retrieveToken(OAuth.addQueryParameters(requestTokenEndpointUrl, OAuth.OAUTH_CALLBACK,
-            callbackUrl));
+        // 1.0a expects the callback to be sent while getting the request token.
+        // 1.0 service providers would simply ignore this parameter.
+        retrieveToken(consumer, OAuth.addQueryParameters(requestTokenEndpointUrl,
+            OAuth.OAUTH_CALLBACK, callbackUrl));
 
-		String callbackConfirmed = responseParameters
-				.get(OAuth.OAUTH_CALLBACK_CONFIRMED);
-		responseParameters.remove(OAuth.OAUTH_CALLBACK_CONFIRMED);
-		isOAuth10a = Boolean.TRUE.toString().equals(callbackConfirmed);
+        String callbackConfirmed = responseParameters.get(OAuth.OAUTH_CALLBACK_CONFIRMED);
+        responseParameters.remove(OAuth.OAUTH_CALLBACK_CONFIRMED);
+        isOAuth10a = Boolean.TRUE.toString().equals(callbackConfirmed);
 
-		// 1.0 service providers expect the callback as part of the auth URL,
-		// Do not send when 1.0a.
-		if (isOAuth10a) {
-			return OAuth.addQueryParameters(authorizationWebsiteUrl,
-					OAuth.OAUTH_TOKEN, consumer.getToken());
-		} else {
-			return OAuth.addQueryParameters(authorizationWebsiteUrl,
-					OAuth.OAUTH_TOKEN, consumer.getToken(),
-					OAuth.OAUTH_CALLBACK, callbackUrl);
-		}
-	}
+        // 1.0 service providers expect the callback as part of the auth URL,
+        // Do not send when 1.0a.
+        if (isOAuth10a) {
+            return OAuth.addQueryParameters(authorizationWebsiteUrl, OAuth.OAUTH_TOKEN, consumer
+                .getToken());
+        } else {
+            return OAuth.addQueryParameters(authorizationWebsiteUrl, OAuth.OAUTH_TOKEN, consumer
+                .getToken(), OAuth.OAUTH_CALLBACK, callbackUrl);
+        }
+    }
 
-	public void retrieveAccessToken(String oauthVerifier)
-			throws OAuthMessageSignerException, OAuthNotAuthorizedException,
-			OAuthExpectationFailedException, OAuthCommunicationException {
+    public void retrieveAccessToken(OAuthConsumer consumer, String oauthVerifier)
+            throws OAuthMessageSignerException, OAuthNotAuthorizedException,
+            OAuthExpectationFailedException, OAuthCommunicationException {
 
-		if (consumer.getToken() == null || consumer.getTokenSecret() == null) {
-			throw new OAuthExpectationFailedException(
-					"Authorized request token or token secret not set. "
-							+ "Did you retrieve an authorized request token before?");
-		}
+        if (consumer.getToken() == null || consumer.getTokenSecret() == null) {
+            throw new OAuthExpectationFailedException(
+                "Authorized request token or token secret not set. "
+                        + "Did you retrieve an authorized request token before?");
+        }
 
-        retrieveToken(isOAuth10a && oauthVerifier != null ? OAuth.addQueryParameters(
-            accessTokenEndpointUrl, OAuth.OAUTH_VERIFIER, oauthVerifier) : accessTokenEndpointUrl);
-	}
+        String endpointUrl = isOAuth10a && oauthVerifier != null ? OAuth.addQueryParameters(
+            accessTokenEndpointUrl, OAuth.OAUTH_VERIFIER, oauthVerifier) : accessTokenEndpointUrl;
+
+        retrieveToken(consumer, endpointUrl);
+    }
 
     /**
      * <p>
@@ -111,7 +107,7 @@ public abstract class AbstractOAuthProvider implements OAuthProvider {
      * Correct implementations of this method must guarantee the following
      * post-conditions:
      * <ul>
-     * <li>the {@link OAuthConsumer} wrapped by this object must have a valid
+     * <li>the {@link OAuthConsumer} passed to this method must have a valid
      * {@link OAuth#OAUTH_TOKEN} and {@link OAuth#OAUTH_TOKEN_SECRET} set by
      * calling {@link OAuthConsumer#setTokenWithSecret(String, String)}</li>
      * <li>{@link #getResponseParameters()} must return the set of query
@@ -120,6 +116,8 @@ public abstract class AbstractOAuthProvider implements OAuthProvider {
      * </ul>
      * </p>
      * 
+     * @param consumer
+     *        the {@link OAuthConsumer} that should be used to sign the request
      * @param endpointUrl
      *        the URL at which the service provider serves the OAuth token that
      *        is to be fetched
@@ -133,7 +131,7 @@ public abstract class AbstractOAuthProvider implements OAuthProvider {
      *         if an expectation has failed, e.g. because the server didn't
      *         reply in the expected format
      */
-    protected abstract void retrieveToken(String endpointUrl)
+    protected abstract void retrieveToken(OAuthConsumer consumer, String endpointUrl)
 			throws OAuthMessageSignerException, OAuthCommunicationException,
 			OAuthNotAuthorizedException, OAuthExpectationFailedException;
 	
@@ -176,14 +174,6 @@ public abstract class AbstractOAuthProvider implements OAuthProvider {
 
 	public String getAuthorizationWebsiteUrl() {
 		return this.authorizationWebsiteUrl;
-	}
-
-	public OAuthConsumer getConsumer() {
-		return this.consumer;
-	}
-
-	public void setConsumer(OAuthConsumer consumer) {
-		this.consumer = consumer;
 	}
 
 	public void setRequestHeader(String header, String value) {
