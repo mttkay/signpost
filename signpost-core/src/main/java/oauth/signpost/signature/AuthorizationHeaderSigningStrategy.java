@@ -22,10 +22,12 @@ public class AuthorizationHeaderSigningStrategy implements SigningStrategy {
             sb.append(requestParameters.getAsHeaderElement(OAuth.OAUTH_TOKEN));
             sb.append(", ");
         }
-        if (requestParameters.containsKey(OAuth.OAUTH_CALLBACK)) {
-            sb.append(requestParameters.getAsHeaderElement(OAuth.OAUTH_CALLBACK));
-            sb.append(", ");
-        }
+        // Twitter sends 401 when oauth_callback is passed in the Authorization
+        // header, so leave this blank for now
+        // if (requestParameters.containsKey(OAuth.OAUTH_CALLBACK)) {
+        // sb.append(requestParameters.getAsHeaderElement(OAuth.OAUTH_CALLBACK));
+        // sb.append(", ");
+        // }
         sb.append(requestParameters.getAsHeaderElement(OAuth.OAUTH_CONSUMER_KEY));
         sb.append(", ");
         sb.append(requestParameters.getAsHeaderElement(OAuth.OAUTH_VERSION));

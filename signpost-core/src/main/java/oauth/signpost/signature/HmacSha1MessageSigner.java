@@ -38,25 +38,25 @@ public class HmacSha1MessageSigner extends OAuthMessageSigner {
 
     @Override
     public String sign(HttpRequest request, RequestParameters requestParams)
-			throws OAuthMessageSignerException {
-		try {
-			String keyString = OAuth.percentEncode(getConsumerSecret()) + '&'
-					+ OAuth.percentEncode(getTokenSecret());
-			byte[] keyBytes = keyString.getBytes(OAuth.ENCODING);
+            throws OAuthMessageSignerException {
+        try {
+            String keyString = OAuth.percentEncode(getConsumerSecret()) + '&'
+                    + OAuth.percentEncode(getTokenSecret());
+            byte[] keyBytes = keyString.getBytes(OAuth.ENCODING);
 
-			SecretKey key = new SecretKeySpec(keyBytes, MAC_NAME);
-			Mac mac = Mac.getInstance(MAC_NAME);
-			mac.init(key);
+            SecretKey key = new SecretKeySpec(keyBytes, MAC_NAME);
+            Mac mac = Mac.getInstance(MAC_NAME);
+            mac.init(key);
 
             String sbs = new SignatureBaseString(request, requestParams).generate();
-            System.out.println(sbs);
+            OAuth.debugOut("SBS", sbs);
             byte[] text = sbs.getBytes(OAuth.ENCODING);
 
-			return base64Encode(mac.doFinal(text)).trim();
-		} catch (GeneralSecurityException e) {
-			throw new OAuthMessageSignerException(e);
-		} catch (UnsupportedEncodingException e) {
-			throw new OAuthMessageSignerException(e);
-		}
-	}
+            return base64Encode(mac.doFinal(text)).trim();
+        } catch (GeneralSecurityException e) {
+            throw new OAuthMessageSignerException(e);
+        } catch (UnsupportedEncodingException e) {
+            throw new OAuthMessageSignerException(e);
+        }
+    }
 }

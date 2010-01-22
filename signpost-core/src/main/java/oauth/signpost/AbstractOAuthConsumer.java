@@ -96,6 +96,7 @@ public abstract class AbstractOAuthConsumer implements OAuthConsumer {
         }
 
         String signature = messageSigner.sign(request, requestParameters);
+        OAuth.debugOut("signature", signature);
 
         signingStrategy.writeSignature(signature, request, requestParameters);
 
