@@ -53,14 +53,6 @@ public abstract class AbstractOAuthConsumer implements OAuthConsumer {
 
     private boolean sendEmptyTokens;
 
-    public AbstractOAuthConsumer(String consumerKey, String consumerSecret,
-            OAuthMessageSigner messageSigner) {
-        this.consumerKey = consumerKey;
-        this.consumerSecret = consumerSecret;
-        setMessageSigner(messageSigner);
-        setSigningStrategy(new AuthorizationHeaderSigningStrategy());
-    }
-
     public AbstractOAuthConsumer(String consumerKey, String consumerSecret) {
         this.consumerKey = consumerKey;
         this.consumerSecret = consumerSecret;

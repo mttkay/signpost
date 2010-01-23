@@ -32,13 +32,17 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 
 /**
- * This implementation uses the {@link HttpClient} interface to fetch OAuth
- * tokens from a service provider.
+ * This implementation uses the Apache Commons {@link HttpClient} 4.x HTTP
+ * implementation to fetch OAuth tokens from a service provider. Android users
+ * should use this provider implementation in favor of the default one, since
+ * the latter is known to cause problems with Android's Apache Harmony
+ * underpinnings.
  * 
  * @author Matthias Kaeppler
  */
-@SuppressWarnings("serial")
 public class CommonsHttpOAuthProvider extends AbstractOAuthProvider {
+
+    private static final long serialVersionUID = 1L;
 
     private HttpClient httpClient;
 
