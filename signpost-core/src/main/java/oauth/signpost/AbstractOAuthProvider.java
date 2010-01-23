@@ -23,16 +23,17 @@ import oauth.signpost.exception.OAuthMessageSignerException;
 import oauth.signpost.exception.OAuthNotAuthorizedException;
 
 /**
- * This default implementation uses {@link java.net.HttpURLConnection} type GET
- * requests to receive tokens from a service provider.
+ * ABC for all provider implementations. If you're writing a custom provider,
+ * you will probably inherit from this class, since it takes a lot of work from
+ * you.
  * 
  * @author Matthias Kaeppler
- * 
  */
-@SuppressWarnings("serial")
 public abstract class AbstractOAuthProvider implements OAuthProvider {
 
-	private String requestTokenEndpointUrl;
+    private static final long serialVersionUID = 1L;
+
+    private String requestTokenEndpointUrl;
 
 	private String accessTokenEndpointUrl;
 

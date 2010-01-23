@@ -32,10 +32,10 @@ import oauth.signpost.http.HttpRequest;
  * requests to receive tokens from a service provider.
  * 
  * @author Matthias Kaeppler
- * 
  */
-@SuppressWarnings("serial")
 public class DefaultOAuthProvider extends AbstractOAuthProvider {
+
+    private static final long serialVersionUID = 1L;
 
     private HttpURLConnection connection;
 
@@ -43,7 +43,7 @@ public class DefaultOAuthProvider extends AbstractOAuthProvider {
             String authorizationWebsiteUrl) {
         super(requestTokenEndpointUrl, accessTokenEndpointUrl, authorizationWebsiteUrl);
     }
-    
+
     protected void retrieveToken(OAuthConsumer consumer, String endpointUrl)
             throws OAuthMessageSignerException, OAuthCommunicationException,
             OAuthNotAuthorizedException, OAuthExpectationFailedException {

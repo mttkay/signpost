@@ -6,16 +6,22 @@ import oauth.signpost.http.HttpRequest;
 import oauth.signpost.http.RequestParameters;
 
 /**
- * Unlike {@link OAuthMessageSigner}, which is concerned with how to generate a
- * signature, this class is concered with where to write it (e.g. HTTP header or
- * query string)
+ * <p>
+ * Defines how an OAuth signature string is written to a request.
+ * </p>
+ * <p>
+ * Unlike {@link OAuthMessageSigner}, which is concerned with <i>how</i> to
+ * generate a signature, this class is concered with <i>where</i> to write it
+ * (e.g. HTTP header or query string).
+ * </p>
  * 
  * @author Matthias Kaeppler
  */
 public interface SigningStrategy extends Serializable {
 
     /**
-     * Writes a signature to an HTTP message.
+     * Writes an OAuth signature and all remaining required parameters to an
+     * HTTP message.
      * 
      * @param signature
      *        the signature to write

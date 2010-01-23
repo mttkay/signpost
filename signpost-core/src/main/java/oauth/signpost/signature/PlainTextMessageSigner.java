@@ -24,7 +24,7 @@ public class PlainTextMessageSigner extends OAuthMessageSigner {
 
     @Override
     public String getSignatureMethod() {
-        return SignatureMethod.PLAINTEXT.toString();
+        return "PLAINTEXT";
     }
 
     @Override

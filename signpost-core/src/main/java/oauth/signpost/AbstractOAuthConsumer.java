@@ -30,6 +30,12 @@ import oauth.signpost.signature.OAuthMessageSigner;
 import oauth.signpost.signature.QueryStringSigningStrategy;
 import oauth.signpost.signature.SigningStrategy;
 
+/**
+ * ABC for consumer implementations. If you're developing a custom consumer you
+ * will probably inherit from this class to save you a lot of work.
+ * 
+ * @author Matthias Kaeppler
+ */
 public abstract class AbstractOAuthConsumer implements OAuthConsumer {
 
     private static final long serialVersionUID = 1L;
@@ -124,6 +130,14 @@ public abstract class AbstractOAuthConsumer implements OAuthConsumer {
         return request.getRequestUrl();
     }
 
+    /**
+     * Adapts the given request object to a Signpost {@link HttpRequest}. How
+     * this is done depends on the consumer implementation.
+     * 
+     * @param request
+     *        the native HTTP request instance
+     * @return the adapted request
+     */
 	protected abstract HttpRequest wrap(Object request);
 
 	public void setTokenWithSecret(String token, String tokenSecret) {
@@ -148,10 +162,17 @@ public abstract class AbstractOAuthConsumer implements OAuthConsumer {
 	}
 
     /**
+     * <p>
      * Helper method that adds any OAuth parameters to the given request
      * parameters which are missing from the current request but required for
      * signing. A good example is the oauth_nonce parameter, which is typically
      * not provided by the client in advance.
+     * </p>
+     * <p>
+     * It's probably not a very good idea to override this method. If you want
+     * to generate different nonces or timestamps, override
+     * {@link #generateNonce()} or {@link #generateTimestamp()} instead.
+     * </p>
      * 
      * @param out
      *        the request parameter which should be completed

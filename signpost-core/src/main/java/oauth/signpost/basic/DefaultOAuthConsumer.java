@@ -19,17 +19,16 @@ import java.net.HttpURLConnection;
 import oauth.signpost.AbstractOAuthConsumer;
 import oauth.signpost.http.HttpRequest;
 import oauth.signpost.signature.OAuthMessageSigner;
-import oauth.signpost.signature.SignatureMethod;
 
 /**
- * The default implementation for an OAuth consumer that signs
- * {@link java.net.HttpURLConnection} requests using the HMAC-SHA1
- * {@link SignatureMethod}.
+ * The default implementation for an OAuth consumer. Only supports signing
+ * {@link java.net.HttpURLConnection} type requests.
  * 
  * @author Matthias Kaeppler
  */
-@SuppressWarnings("serial")
 public class DefaultOAuthConsumer extends AbstractOAuthConsumer {
+
+    private static final long serialVersionUID = 1L;
 
     public DefaultOAuthConsumer(String consumerKey, String consumerSecret,
             OAuthMessageSigner messageSigner) {

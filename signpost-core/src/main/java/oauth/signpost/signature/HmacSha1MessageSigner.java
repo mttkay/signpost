@@ -33,7 +33,7 @@ public class HmacSha1MessageSigner extends OAuthMessageSigner {
 
 	@Override
     public String getSignatureMethod() {
-        return SignatureMethod.HMAC_SHA1.toString();
+        return "HMAC-SHA1";
     }
 
     @Override

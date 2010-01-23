@@ -21,15 +21,39 @@ import oauth.signpost.exception.OAuthExpectationFailedException;
 import oauth.signpost.exception.OAuthMessageSignerException;
 import oauth.signpost.http.HttpRequest;
 import oauth.signpost.http.RequestParameters;
+import oauth.signpost.signature.AuthorizationHeaderSigningStrategy;
+import oauth.signpost.signature.HmacSha1MessageSigner;
 import oauth.signpost.signature.OAuthMessageSigner;
+import oauth.signpost.signature.PlainTextMessageSigner;
+import oauth.signpost.signature.QueryStringSigningStrategy;
 import oauth.signpost.signature.SigningStrategy;
 
 /**
+ * <p>
  * Exposes a simple interface to sign HTTP requests using a given OAuth token
- * and secret.
+ * and secret. Refer to {@link OAuthProvider} how to retrieve a valid token and
+ * token secret.
+ * </p>
+ * <p>
+ * HTTP messages are signed as follows:
+ * <p>
+ * 
+ * <pre>
+ * // exchange the arguments with the actual token/secret pair
+ * OAuthConsumer consumer = new DefaultOAuthConsumer(&quot;1234&quot;, &quot;5678&quot;);
+ * 
+ * URL url = new URL(&quot;http://example.com/protected.xml&quot;);
+ * HttpURLConnection request = (HttpURLConnection) url.openConnection();
+ * 
+ * consumer.sign(request);
+ * 
+ * request.connect();
+ * </pre>
+ * 
+ * </p>
+ * </p>
  * 
  * @author Matthias Kaeppler
- * 
  */
 public interface OAuthConsumer extends Serializable {
 
@@ -39,19 +63,26 @@ public interface OAuthConsumer extends Serializable {
      * 
      * @param messageSigner
      *        the signer
+     * @see HmacSha1MessageSigner
+     * @see PlainTextMessageSigner
      */
     public void setMessageSigner(OAuthMessageSigner messageSigner);
-    
+
     /**
-     * Defines which strategy should be used to write a signature to an
-     * HTTP request.
-     * @param signingStrategy the strategy
+     * Defines which strategy should be used to write a signature to an HTTP
+     * request.
+     * 
+     * @param signingStrategy
+     *        the strategy
+     * @see AuthorizationHeaderSigningStrategy
+     * @see QueryStringSigningStrategy
      */
     public void setSigningStrategy(SigningStrategy signingStrategy);
 
     /**
      * <p>
-     * If you're seeing 401s during calls to
+     * Causes the consumer to always include the oauth_token parameter to be
+     * sent, even if blank. If you're seeing 401s during calls to
      * {@link OAuthProvider#retrieveRequestToken}, try setting this to true.
      * </p>
      * 
@@ -61,8 +92,9 @@ public interface OAuthConsumer extends Serializable {
     public void setSendEmptyTokens(boolean enable);
 
     /**
-     * Signs the given HTTP request by writing an OAuth signature string to the
-     * request's Authorization header.
+     * Signs the given HTTP request by writing an OAuth signature (and other
+     * required OAuth parameters) to it. Where these parameters are written
+     * depends on the current {@link SigningStrategy}.
      * 
      * @param request
      *        the request to sign
@@ -74,11 +106,15 @@ public interface OAuthConsumer extends Serializable {
     public HttpRequest sign(HttpRequest request) throws OAuthMessageSignerException,
             OAuthExpectationFailedException, OAuthCommunicationException;
 
-	/**
-     * Signs the given HTTP request by writing an OAuth signature string to the
-     * request's Authorization header. This method accepts adapted requests; the
-     * consumer implementation must ensure that only those request types are
-     * passed which it supports.
+    /**
+     * <p>
+     * Signs the given HTTP request by writing an OAuth signature (and other
+     * required OAuth parameters) to it. Where these parameters are written
+     * depends on the current {@link SigningStrategy}.
+     * </p>
+     * This method accepts HTTP library specific request objects; the consumer
+     * implementation must ensure that only those request types are passed which
+     * it supports.
      * 
      * @param request
      *        the request to sign
@@ -111,6 +147,14 @@ public interface OAuthConsumer extends Serializable {
     public String sign(String url) throws OAuthMessageSignerException,
             OAuthExpectationFailedException, OAuthCommunicationException;
 
+    /**
+     * Sets the OAuth token and token secret used for message signing.
+     * 
+     * @param token
+     *        the token
+     * @param tokenSecret
+     *        the token secret
+     */
 	public void setTokenWithSecret(String token, String tokenSecret);
 
 	public String getToken();
@@ -126,7 +170,7 @@ public interface OAuthConsumer extends Serializable {
      * signing (this means the return value may be NULL before a call to
      * {@link #sign}), plus all required OAuth parameters that were added
      * because the request didn't contain them beforehand. In other words, this
-     * is the set of parameters that were used for creating the message
+     * is the exact set of parameters that were used for creating the message
      * signature.
      * 
      * @return the request parameters used for message signing

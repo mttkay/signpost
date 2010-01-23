@@ -59,6 +59,16 @@ public class OAuth {
 
     public static final String OAUTH_VERIFIER = "oauth_verifier";
 
+    /**
+     * Pass this value as the callback "url" upon retrieving a request token if
+     * your application cannot receive callbacks (e.g. because it's a desktop
+     * app). This will tell the service provider that verification happens
+     * out-of-band, which basically means that it will generate a PIN code (the
+     * OAuth verifier) and display that to your user. You must obtain this code
+     * from your user and pass it to
+     * {@link OAuthProvider#retrieveAccessToken(OAuthConsumer, String)} in order
+     * to complete the token handshake.
+     */
     public static final String OUT_OF_BAND = "oob";
 
     private static final PercentEscaper percentEncoder = new PercentEscaper(
@@ -180,6 +190,28 @@ public class OAuth {
         return (str == null) || (str.length() == 0);
     }
 
+    /**
+     * Appends a list of key/value pairs to the given URL, e.g.:
+     * 
+     * <pre>
+     * String url = OAuth.addQueryParameters(&quot;http://example.com?a=1&quot;, b, 2, c, 3);
+     * </pre>
+     * 
+     * which yields:
+     * 
+     * <pre>
+     * http://example.com?a=1&b=2&c=3
+     * </pre>
+     * 
+     * All parameters will be encoded according to OAuth's percent encoding
+     * rules.
+     * 
+     * @param url
+     *        the URL
+     * @param kvPairs
+     *        the list of key/value pairs
+     * @return
+     */
     public static String addQueryParameters(String url, String... kvPairs) {
         String queryDelim = url.contains("?") ? "&" : "?";
         StringBuilder sb = new StringBuilder(url + queryDelim);

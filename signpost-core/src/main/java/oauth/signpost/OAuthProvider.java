@@ -17,16 +17,72 @@ package oauth.signpost;
 import java.io.Serializable;
 import java.util.Map;
 
+import oauth.signpost.basic.DefaultOAuthConsumer;
+import oauth.signpost.basic.DefaultOAuthProvider;
 import oauth.signpost.exception.OAuthCommunicationException;
 import oauth.signpost.exception.OAuthExpectationFailedException;
 import oauth.signpost.exception.OAuthMessageSignerException;
 import oauth.signpost.exception.OAuthNotAuthorizedException;
 
 /**
+ * <p>
  * Supplies an interface that can be used to retrieve request and access tokens
- * from an OAuth 1.0(a) service provider. A provider object is always bound to a
- * consumer object; after a token has been retrieved, the consumer is
- * automatically updated with the token and the corresponding secret.
+ * from an OAuth 1.0(a) service provider. A provider object requires an
+ * {@link OAuthConsumer} to sign the token request message; after a token has
+ * been retrieved, the consumer is automatically updated with the token and the
+ * corresponding secret.
+ * </p>
+ * <p>
+ * To initiate the token exchange, create a new provider instance and configure
+ * it with the URLs the service provider exposes for requesting tokens and
+ * resource authorization, e.g.:
+ * </p>
+ * 
+ * <pre>
+ * OAuthProvider provider = new DefaultOAuthProvider(&quot;http://twitter.com/oauth/request_token&quot;,
+ *     &quot;http://twitter.com/oauth/access_token&quot;, &quot;http://twitter.com/oauth/authorize&quot;);
+ * </pre>
+ * <p>
+ * Depending on the HTTP library you use, you may need a different provider
+ * type, refer to the website documentation for how to do that.
+ * </p>
+ * <p>
+ * To receive a request token which the user must authorize, you invoke it using
+ * a consumer instance and a callback URL:
+ * </p>
+ * <p>
+ * 
+ * <pre>
+ * String url = provider.retrieveRequestToken(consumer, &quot;http://www.example.com/callback&quot;);
+ * </pre>
+ * 
+ * </p>
+ * <p>
+ * That url must be opened in a Web browser, where the user can grant access to
+ * the resources in question. If that succeeds, the service provider will
+ * redirect to the callback URL and append the blessed request token.
+ * </p>
+ * <p>
+ * That token must now be exchanged for an access token, as such:
+ * </p>
+ * <p>
+ * 
+ * <pre>
+ * provider.retrieveAccessToken(consumer, nullOrVerifierCode);
+ * </pre>
+ * 
+ * </p>
+ * <p>
+ * where nullOrVerifierCode is either null if your provided a callback URL in
+ * the previous step, or the pin code issued by the service provider to the user
+ * if the request was out-of-band (cf. {@link OAuth#OUT_OF_BAND}.
+ * </p>
+ * <p>
+ * The consumer used during token handshakes is now ready for signing.
+ * </p>
+ * 
+ * @see DefaultOAuthProvider
+ * @see DefaultOAuthConsumer
  */
 public interface OAuthProvider extends Serializable {
 
@@ -68,8 +124,8 @@ public interface OAuthProvider extends Serializable {
      *         if server communication failed
      */
     public String retrieveRequestToken(OAuthConsumer consumer, String callbackUrl)
-			throws OAuthMessageSignerException, OAuthNotAuthorizedException,
-			OAuthExpectationFailedException, OAuthCommunicationException;
+            throws OAuthMessageSignerException, OAuthNotAuthorizedException,
+            OAuthExpectationFailedException, OAuthCommunicationException;
 
     /**
      * Queries the service provider for an access token.
@@ -104,17 +160,17 @@ public interface OAuthProvider extends Serializable {
      * @throws OAuthCommunicationException
      *         if server communication failed
      */
-	public void retrieveAccessToken(OAuthConsumer consumer, String oauthVerifier)
-			throws OAuthMessageSignerException, OAuthNotAuthorizedException,
-			OAuthExpectationFailedException, OAuthCommunicationException;
+    public void retrieveAccessToken(OAuthConsumer consumer, String oauthVerifier)
+            throws OAuthMessageSignerException, OAuthNotAuthorizedException,
+            OAuthExpectationFailedException, OAuthCommunicationException;
 
-	/**
-	 * Any additional non-OAuth parameters returned in the response body of a
-	 * token request can be obtained through this method. These parameters will
-	 * be preserved until the next token request is issued. The return value is
-	 * never null.
-	 */
-	public Map<String, String> getResponseParameters();
+    /**
+     * Any additional non-OAuth parameters returned in the response body of a
+     * token request can be obtained through this method. These parameters will
+     * be preserved until the next token request is issued. The return value is
+     * never null.
+     */
+    public Map<String, String> getResponseParameters();
 
     /**
      * Subclasses must use this setter to preserve any non-OAuth query
@@ -127,47 +183,47 @@ public interface OAuthProvider extends Serializable {
      */
     public void setResponseParameters(Map<String, String> parameters);
 
-	/**
-	 * Use this method to set custom HTTP headers to be used for the requests
-	 * which are sent to retrieve tokens.
-	 * 
-	 * @param header
-	 *            The header name (e.g. 'WWW-Authenticate')
-	 * @param value
-	 *            The header value (e.g. 'realm=www.example.com')
-	 */
-	public void setRequestHeader(String header, String value);
+    /**
+     * Use this method to set custom HTTP headers to be used for the requests
+     * which are sent to retrieve tokens.
+     * 
+     * @param header
+     *        The header name (e.g. 'WWW-Authenticate')
+     * @param value
+     *        The header value (e.g. 'realm=www.example.com')
+     */
+    public void setRequestHeader(String header, String value);
 
     /**
      * @return all request headers set via {@link #setRequestHeader}
      */
     public Map<String, String> getRequestHeaders();
 
-	/**
-	 * @param isOAuth10aProvider
-	 *            set to true if the service provider supports OAuth 1.0a. Note
-	 *            that you need only call this method if you reconstruct a
-	 *            provider object in between calls to retrieveRequestToken() and
-	 *            retrieveAccessToken() (i.e. if the object state isn't
-	 *            preserved). If instead those two methods are called on the
-	 *            same provider instance, this flag will be deducted
-	 *            automatically based on the server response during
-	 *            retrieveRequestToken(), so you can simply ignore this method.
-	 */
-	public void setOAuth10a(boolean isOAuth10aProvider);
+    /**
+     * @param isOAuth10aProvider
+     *        set to true if the service provider supports OAuth 1.0a. Note that
+     *        you need only call this method if you reconstruct a provider
+     *        object in between calls to retrieveRequestToken() and
+     *        retrieveAccessToken() (i.e. if the object state isn't preserved).
+     *        If instead those two methods are called on the same provider
+     *        instance, this flag will be deducted automatically based on the
+     *        server response during retrieveRequestToken(), so you can simply
+     *        ignore this method.
+     */
+    public void setOAuth10a(boolean isOAuth10aProvider);
 
-	/**
-	 * @return true if the service provider supports OAuth 1.0a. Note that the
-	 *         value returned here is only meaningful after you have already
-	 *         performed the token handshake, otherwise there is no way to
-	 *         determine what version of the OAuth protocol the service provider
-	 *         implements.
-	 */
-	public boolean isOAuth10a();
+    /**
+     * @return true if the service provider supports OAuth 1.0a. Note that the
+     *         value returned here is only meaningful after you have already
+     *         performed the token handshake, otherwise there is no way to
+     *         determine what version of the OAuth protocol the service provider
+     *         implements.
+     */
+    public boolean isOAuth10a();
 
-	public String getRequestTokenEndpointUrl();
+    public String getRequestTokenEndpointUrl();
 
-	public String getAccessTokenEndpointUrl();
+    public String getAccessTokenEndpointUrl();
 
-	public String getAuthorizationWebsiteUrl();
+    public String getAuthorizationWebsiteUrl();
 }

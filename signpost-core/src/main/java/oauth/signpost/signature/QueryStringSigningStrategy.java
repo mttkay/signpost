@@ -4,6 +4,11 @@ import oauth.signpost.OAuth;
 import oauth.signpost.http.HttpRequest;
 import oauth.signpost.http.RequestParameters;
 
+/**
+ * Writes to a URL query string.
+ * 
+ * @author Matthias Kaeppler
+ */
 public class QueryStringSigningStrategy implements SigningStrategy {
 
     private static final long serialVersionUID = 1L;
