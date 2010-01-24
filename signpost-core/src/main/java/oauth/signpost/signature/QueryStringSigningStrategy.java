@@ -5,7 +5,11 @@ import oauth.signpost.http.HttpRequest;
 import oauth.signpost.http.RequestParameters;
 
 /**
- * Writes to a URL query string.
+ * Writes to a URL query string. <strong>Note that this currently ONLY works
+ * when signing a URL directly, not with HTTP request objects.</strong> That's
+ * because most HTTP request implementations do not allow the client to change
+ * the URL once the request has been instantiated, so there is no way to append
+ * parameters to it.
  * 
  * @author Matthias Kaeppler
  */
