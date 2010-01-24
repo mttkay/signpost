@@ -111,6 +111,7 @@
       <url>http://repo2.maven.org/maven2</url>
       <layout>default</layout>
     </repository>
+    <!-- 
     <repository>
       <releases>
         <enabled>true</enabled>
@@ -126,7 +127,8 @@
       <name>Signpost Snapshot Repository</name>
       <url>http://oss.sonatype.org/content/repositories/signpost-snapshots/</url>
       <layout>default</layout>
-    </repository>    
+    </repository>
+     -->    
   </repositories>
 
   <distributionManagement>
@@ -134,7 +136,7 @@
       <id>signpost-releases</id>
       <name>Signpost Release Repository</name>
       <url>
-        http://oss.sonatype.org/content/repositories/signpost-releases/
+         http://oss.sonatype.org/service/local/staging/deploy/maven2
       </url>
     </repository>
     <snapshotRepository>
