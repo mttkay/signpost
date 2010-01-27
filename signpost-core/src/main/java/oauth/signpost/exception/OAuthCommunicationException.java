@@ -15,7 +15,7 @@
 package oauth.signpost.exception;
 
 @SuppressWarnings("serial")
-public class OAuthCommunicationException extends Exception {
+public class OAuthCommunicationException extends OAuthException {
 
     public OAuthCommunicationException(Exception cause) {
         super("Communication with the service provider failed: "
