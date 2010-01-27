@@ -90,7 +90,8 @@ public abstract class OAuthConsumerTest extends SignpostTestBase {
         when(request.getRequestUrl()).thenReturn("http://example.com?a=1");
         ByteArrayInputStream body = new ByteArrayInputStream("b=2".getBytes());
         when(request.getMessagePayload()).thenReturn(body);
-        when(request.getContentType()).thenReturn("application/x-www-form-urlencoded");
+        when(request.getContentType()).thenReturn(
+            "application/x-www-form-urlencoded; charset=ISO-8859-1");
         when(request.getHeader("Authorization")).thenReturn(
             "OAuth realm=www.example.com, oauth_signature=12345, oauth_version=1.1");
 

@@ -219,7 +219,7 @@ public abstract class AbstractOAuthConsumer implements OAuthConsumer {
 
         // collect x-www-form-urlencoded body params
         String contentType = request.getContentType();
-        if (contentType != null && contentType.equals(OAuth.FORM_ENCODED)) {
+        if (contentType != null && contentType.startsWith(OAuth.FORM_ENCODED)) {
             InputStream payload = request.getMessagePayload();
             out.putMap(OAuth.decodeForm(payload));
         }
