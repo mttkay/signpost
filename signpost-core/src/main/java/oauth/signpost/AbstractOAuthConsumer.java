@@ -17,6 +17,7 @@ package oauth.signpost;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
+import java.util.Random;
 
 import oauth.signpost.basic.UrlStringRequestAdapter;
 import oauth.signpost.exception.OAuthCommunicationException;
@@ -244,6 +245,6 @@ public abstract class AbstractOAuthConsumer implements OAuthConsumer {
     }
 
     protected String generateNonce() {
-        return Long.toString(System.nanoTime());
+        return Long.toString(new Random().nextLong());
     }
 }
