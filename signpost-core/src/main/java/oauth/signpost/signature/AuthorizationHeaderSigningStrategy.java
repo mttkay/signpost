@@ -13,7 +13,6 @@ public class AuthorizationHeaderSigningStrategy implements SigningStrategy {
 
     private static final long serialVersionUID = 1L;
 
-    @Override
     public String writeSignature(String signature, HttpRequest request,
             RequestParameters requestParameters) {
         StringBuilder sb = new StringBuilder();
