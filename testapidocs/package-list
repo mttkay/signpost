@@ -1,0 +1,6 @@
+oauth.signpost
+oauth.signpost.basic
+oauth.signpost.commonshttp
+oauth.signpost.http
+oauth.signpost.jetty
+oauth.signpost.signature
