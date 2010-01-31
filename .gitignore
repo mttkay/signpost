@@ -1,2 +1,5 @@
 .project
-
+signpost-core
+signpost-commonshttp4
+signpost-jetty6
+target
