@@ -1,0 +1,185 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>oauth.signpost</groupId>
+  <artifactId>oauth-signpost</artifactId>
+  <packaging>pom</packaging>
+  <version>1.2</version>
+  <name>oauth-signpost</name>
+  <description>
+    A simple, light-weight, and modular OAuth client library for the
+    Java platform.
+  </description>
+  <url>http://code.google.com/p/oauth-signpost/</url>
+
+  <issueManagement>
+    <system>Google Code Issue Tracker</system>
+    <url>http://code.google.com/p/oauth-signpost/issues/list</url>
+  </issueManagement>
+
+  <developers>
+    <developer>
+      <id>mk</id>
+      <name>Matthias Käppler</name>
+      <email>matthias@qype.com</email>
+      <url>http://matthiaskaeppler.de</url>
+      <organization>Qype GmbH</organization>
+      <organizationUrl>http://www.qype.com</organizationUrl>
+      <timezone>+1</timezone>
+    </developer>
+  </developers>
+
+  <modules>
+    <module>signpost-core</module>
+    <module>signpost-commonshttp4</module>
+    <module>signpost-jetty6</module>
+  </modules>
+
+  <licenses>
+    <license>
+      <name>The Apache Software License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+
+  <scm>
+    <url>http://github.com/kaeppler/signpost</url>
+    <connection>scm:git:git://github.com/kaeppler/signpost.git</connection>
+    <developerConnection>scm:git:git@github.com:kaeppler/signpost.git</developerConnection>
+  </scm>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.5</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+      <version>1.7</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <!-- build settings -->
+  <build>
+    <defaultGoal>package</defaultGoal>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <source>1.5</source>
+          <target>1.5</target>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>2.2</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>test-jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>2.6.1</version>
+      </plugin>
+      <plugin>
+        <artifactId>maven-release-plugin</artifactId>
+        <version>2.0-beta-9</version>
+        <!--
+          <configuration> <tagBase>
+          https://oauth-signpost.googlecode.com/svn/tags </tagBase>
+          </configuration>
+        -->
+      </plugin>
+      <plugin>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>site</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <configuration>
+              <tasks>
+                <move file="${build.directory}/site/*" todir="${project.basedir}" />
+              </tasks>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+
+  </build>
+
+  <distributionManagement>
+    <repository>
+      <id>signpost-releases</id>
+      <name>Signpost Release Repository</name>
+      <url>http://oss.sonatype.org/service/local/staging/deploy/maven2</url>
+    </repository>
+    <snapshotRepository>
+      <id>signpost-snapshots</id>
+      <name>Signpost Snapshot Repository</name>
+      <url>http://oss.sonatype.org/content/repositories/signpost-snapshots/</url>
+    </snapshotRepository>
+    <site>
+      <id>site-staging</id>
+      <url>site-preview</url>
+    </site>
+  </distributionManagement>
+
+  <reporting>
+    <plugins>
+      <plugin>
+        <artifactId>maven-javadoc-plugin</artifactId>
+      </plugin>
+    </plugins>
+  </reporting>
+
+  <profiles>
+    <profile>
+      <id>release-sign-artifacts</id>
+      <activation>
+        <property>
+          <name>performRelease</name>
+          <value>true</value>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-gpg-plugin</artifactId>
+            <version>1.0-alpha-4</version>
+            <executions>
+              <execution>
+                <id>sign-artifacts</id>
+                <phase>verify</phase>
+                <goals>
+                  <goal>sign</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+
+
+</project>
