@@ -7,7 +7,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import oauth.signpost.SignpostTestBase;
 import oauth.signpost.http.HttpRequest;
-import oauth.signpost.http.RequestParameters;
+import oauth.signpost.http.HttpParameters;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -62,37 +62,37 @@ public class SignatureBaseStringTest extends SignpostTestBase {
     public void shouldNormalizeParameters() throws Exception {
 
         // should ignore signature, callback, and realm params
-        RequestParameters params = new RequestParameters();
-        params.put("a", "1");
-        params.put("realm", "www.example.com");
-        params.put("oauth_signature", "12345");
+        HttpParameters params = new HttpParameters();
+        params.put("a", "1", true);
+        params.put("realm", "www.example.com", true);
+        params.put("oauth_signature", "12345", true);
         String result = new SignatureBaseString(httpGetMock, params).normalizeRequestParameters();
         assertEquals("a=1", result);
 
         // example from OAuth spec
-        params = new RequestParameters();
-        params.put("a", "1");
-        params.put("c", "hi there");
-        params.put("f", "25");
-        params.put("f", "50");
-        params.put("f", "a");
-        params.put("z", "p");
-        params.put("z", "t");
+        params = new HttpParameters();
+        params.put("a", "1", true);
+        params.put("c", "hi there", true);
+        params.put("f", "25", true);
+        params.put("f", "50", true);
+        params.put("f", "a", true);
+        params.put("z", "p", true);
+        params.put("z", "t", true);
         String expected = "a=1&c=hi%20there&f=25&f=50&f=a&z=p&z=t";
         result = new SignatureBaseString(httpGetMock, params).normalizeRequestParameters();
         assertEquals(expected, result);
 
         // examples from the official test cases on
         // http://oauth.pbwiki.com/TestCases
-        params = new RequestParameters();
-        params.put("a", "x!y");
-        params.put("a", "x y");
+        params = new HttpParameters();
+        params.put("a", "x!y", true);
+        params.put("a", "x y", true);
         expected = "a=x%20y&a=x%21y";
         result = new SignatureBaseString(httpGetMock, params).normalizeRequestParameters();
         assertEquals(expected, result);
 
-        params = new RequestParameters();
-        params.put("name", "");
+        params = new HttpParameters();
+        params.put("name", "", true);
         assertEquals("name=", new SignatureBaseString(httpGetMock, params)
             .normalizeRequestParameters());
         params.putNull("name", null);
@@ -106,7 +106,7 @@ public class SignatureBaseStringTest extends SignpostTestBase {
         when(request.getMethod()).thenReturn("GET");
         when(request.getRequestUrl()).thenReturn("http://example.com");
 
-        RequestParameters params = new RequestParameters();
+        HttpParameters params = new HttpParameters();
         params.put("a", "1");
 
         SignatureBaseString sbs = new SignatureBaseString(request, params);

@@ -21,6 +21,7 @@ import oauth.signpost.exception.OAuthCommunicationException;
 import oauth.signpost.exception.OAuthExpectationFailedException;
 import oauth.signpost.exception.OAuthMessageSignerException;
 import oauth.signpost.exception.OAuthNotAuthorizedException;
+import oauth.signpost.http.HttpParameters;
 
 /**
  * ABC for all provider implementations. If you're writing a custom provider,
@@ -39,7 +40,7 @@ public abstract class AbstractOAuthProvider implements OAuthProvider {
 
 	private String authorizationWebsiteUrl;
 
-	private Map<String, String> responseParameters;
+    private HttpParameters responseParameters;
 
 	private Map<String, String> defaultHeaders;
 
@@ -50,7 +51,7 @@ public abstract class AbstractOAuthProvider implements OAuthProvider {
         this.requestTokenEndpointUrl = requestTokenEndpointUrl;
         this.accessTokenEndpointUrl = accessTokenEndpointUrl;
         this.authorizationWebsiteUrl = authorizationWebsiteUrl;
-        this.responseParameters = new HashMap<String, String>();
+        this.responseParameters = new HttpParameters();
         this.defaultHeaders = new HashMap<String, String>();
     }
 
@@ -66,7 +67,7 @@ public abstract class AbstractOAuthProvider implements OAuthProvider {
         retrieveToken(consumer, OAuth.addQueryParameters(requestTokenEndpointUrl,
             OAuth.OAUTH_CALLBACK, callbackUrl));
 
-        String callbackConfirmed = responseParameters.get(OAuth.OAUTH_CALLBACK_CONFIRMED);
+        String callbackConfirmed = responseParameters.getFirst(OAuth.OAUTH_CALLBACK_CONFIRMED);
         responseParameters.remove(OAuth.OAUTH_CALLBACK_CONFIRMED);
         isOAuth10a = Boolean.TRUE.toString().equals(callbackConfirmed);
 
@@ -136,7 +137,7 @@ public abstract class AbstractOAuthProvider implements OAuthProvider {
 			throws OAuthMessageSignerException, OAuthCommunicationException,
 			OAuthNotAuthorizedException, OAuthExpectationFailedException;
 	
-	public Map<String, String> getResponseParameters() {
+    public HttpParameters getResponseParameters() {
 		return responseParameters;
 	}
 
@@ -150,10 +151,10 @@ public abstract class AbstractOAuthProvider implements OAuthProvider {
      * @return the parameter value
      */
     protected String getResponseParameter(String key) {
-        return responseParameters.get(key);
+        return responseParameters.getFirst(key);
     }
 
-    public void setResponseParameters(Map<String, String> parameters) {
+    public void setResponseParameters(HttpParameters parameters) {
         this.responseParameters = parameters;
     }
 

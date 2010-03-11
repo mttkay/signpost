@@ -14,11 +14,10 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.Map;
 
 import oauth.signpost.exception.OAuthExpectationFailedException;
 import oauth.signpost.http.HttpRequest;
-import oauth.signpost.http.RequestParameters;
+import oauth.signpost.http.HttpParameters;
 import oauth.signpost.signature.HmacSha1MessageSigner;
 import oauth.signpost.signature.OAuthMessageSigner;
 
@@ -76,10 +75,10 @@ public abstract class OAuthConsumerTest extends SignpostTestBase {
         assertEquals("parameters are missing", 2, parts.length);
         assertEquals("http://www.example.com", parts[0]);
 
-        Map<String, String> params = OAuth.decodeForm(parts[1]);
+        HttpParameters params = OAuth.decodeForm(parts[1]);
         assertAllOAuthParametersExist(params);
 
-        assertEquals("1", params.get("q"));
+        assertEquals("1", params.getFirst("q"));
     }
 
     @Test
@@ -102,9 +101,9 @@ public abstract class OAuthConsumerTest extends SignpostTestBase {
 
         // verify that all custom params are properly read and passed to the
         // message signer
-        ArgumentMatcher<RequestParameters> hasAllParameters = new ArgumentMatcher<RequestParameters>() {
+        ArgumentMatcher<HttpParameters> hasAllParameters = new ArgumentMatcher<HttpParameters>() {
             public boolean matches(Object argument) {
-                RequestParameters params = (RequestParameters) argument;
+                HttpParameters params = (HttpParameters) argument;
                 assertEquals("1", params.get("a").first());
                 assertEquals("2", params.get("b").first());
                 assertEquals("1.1", params.get("oauth_version").first());
@@ -173,14 +172,14 @@ public abstract class OAuthConsumerTest extends SignpostTestBase {
         }
     }
 
-    private void assertAllOAuthParametersExist(Map<String, String> params) {
-        assertNotNull(params.get("oauth_consumer_key"));
-        assertNotNull(params.get("oauth_token"));
-        assertNotNull(params.get("oauth_signature_method"));
-        assertNotNull(params.get("oauth_signature"));
-        assertNotNull(params.get("oauth_timestamp"));
-        assertNotNull(params.get("oauth_nonce"));
-        assertNotNull(params.get("oauth_version"));
+    private void assertAllOAuthParametersExist(HttpParameters params) {
+        assertNotNull(params.getFirst("oauth_consumer_key"));
+        assertNotNull(params.getFirst("oauth_token"));
+        assertNotNull(params.getFirst("oauth_signature_method"));
+        assertNotNull(params.getFirst("oauth_signature"));
+        assertNotNull(params.getFirst("oauth_timestamp"));
+        assertNotNull(params.getFirst("oauth_nonce"));
+        assertNotNull(params.getFirst("oauth_version"));
     }
 
     private class HasValuesPercentEncoded extends ArgumentMatcher<String> {
@@ -188,9 +187,9 @@ public abstract class OAuthConsumerTest extends SignpostTestBase {
         @Override
         public boolean matches(Object argument) {
             String oauthHeader = (String) argument;
-            Map<String, String> params = OAuth.oauthHeaderToParamsMap(oauthHeader);
-            assertEquals("\"1%252\"", params.get("oauth_consumer_key"));
-            assertEquals("\"3%204\"", params.get("oauth_token"));
+            HttpParameters params = OAuth.oauthHeaderToParamsMap(oauthHeader);
+            assertEquals("\"1%252\"", params.getFirst("oauth_consumer_key"));
+            assertEquals("\"3%204\"", params.getFirst("oauth_token"));
             return true;
         }
     }

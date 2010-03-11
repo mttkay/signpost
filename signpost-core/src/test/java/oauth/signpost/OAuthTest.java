@@ -8,6 +8,8 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import oauth.signpost.http.HttpParameters;
+
 import org.junit.Test;
 
 public class OAuthTest {
@@ -59,19 +61,18 @@ public class OAuthTest {
 
     @Test
     public void shouldCorrectlyFormDecodeParameters() {
-        Map<String, String> params = OAuth.decodeForm("one=" + reservedCharactersEncoded + "&"
+        HttpParameters params = OAuth.decodeForm("one=" + reservedCharactersEncoded
+                + "&" + "one=another&"
                 + reservedCharactersEncoded + "=" + rfc3986UnreservedCharacters);
 
-        assertTrue(params.size() == 2);
-        Iterator<Map.Entry<String, String>> iter = params.entrySet().iterator();
+        assertTrue(params.size() == 3);
 
-        Map.Entry<String, String> one = iter.next();
-        assertEquals("one", one.getKey());
-        assertEquals(rfc3986ReservedCharacters, one.getValue());
+        Iterator<String> iter1 = params.get("one").iterator();
+        assertEquals(rfc3986ReservedCharacters, iter1.next());
+        assertEquals("another", iter1.next());
 
-        Map.Entry<String, String> two = iter.next();
-        assertEquals(rfc3986ReservedCharacters, two.getKey());
-        assertEquals(rfc3986UnreservedCharacters, two.getValue());
+        Iterator<String> iter2 = params.get(rfc3986ReservedCharacters).iterator();
+        assertEquals(rfc3986UnreservedCharacters, iter2.next());
     }
 
     @Test

@@ -23,6 +23,7 @@ import oauth.signpost.exception.OAuthCommunicationException;
 import oauth.signpost.exception.OAuthExpectationFailedException;
 import oauth.signpost.exception.OAuthMessageSignerException;
 import oauth.signpost.exception.OAuthNotAuthorizedException;
+import oauth.signpost.http.HttpParameters;
 
 /**
  * <p>
@@ -170,7 +171,7 @@ public interface OAuthProvider extends Serializable {
      * be preserved until the next token request is issued. The return value is
      * never null.
      */
-    public Map<String, String> getResponseParameters();
+    public HttpParameters getResponseParameters();
 
     /**
      * Subclasses must use this setter to preserve any non-OAuth query
@@ -181,7 +182,7 @@ public interface OAuthProvider extends Serializable {
      *        the map of query parameters served by the service provider in the
      *        token response
      */
-    public void setResponseParameters(Map<String, String> parameters);
+    public void setResponseParameters(HttpParameters parameters);
 
     /**
      * Use this method to set custom HTTP headers to be used for the requests

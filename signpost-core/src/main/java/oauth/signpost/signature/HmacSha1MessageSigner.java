@@ -24,7 +24,7 @@ import javax.crypto.spec.SecretKeySpec;
 import oauth.signpost.OAuth;
 import oauth.signpost.exception.OAuthMessageSignerException;
 import oauth.signpost.http.HttpRequest;
-import oauth.signpost.http.RequestParameters;
+import oauth.signpost.http.HttpParameters;
 
 @SuppressWarnings("serial")
 public class HmacSha1MessageSigner extends OAuthMessageSigner {
@@ -37,7 +37,7 @@ public class HmacSha1MessageSigner extends OAuthMessageSigner {
     }
 
     @Override
-    public String sign(HttpRequest request, RequestParameters requestParams)
+    public String sign(HttpRequest request, HttpParameters requestParams)
             throws OAuthMessageSignerException {
         try {
             String keyString = OAuth.percentEncode(getConsumerSecret()) + '&'

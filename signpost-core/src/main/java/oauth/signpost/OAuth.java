@@ -25,6 +25,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import oauth.signpost.http.HttpParameters;
+
 import com.google.gdata.util.common.base.PercentEscaper;
 
 public class OAuth {
@@ -128,8 +130,8 @@ public class OAuth {
     }
 
     /** Parse a form-urlencoded document. */
-    public static Map<String, String> decodeForm(String form) {
-        HashMap<String, String> params = new HashMap<String, String>();
+    public static HttpParameters decodeForm(String form) {
+        HttpParameters params = new HttpParameters();
         if (isEmpty(form)) {
             return params;
         }
@@ -150,7 +152,7 @@ public class OAuth {
         return params;
     }
 
-    public static Map<String, String> decodeForm(InputStream content)
+    public static HttpParameters decodeForm(InputStream content)
             throws IOException {
         BufferedReader reader = new BufferedReader(new InputStreamReader(
                 content));
@@ -236,13 +238,13 @@ public class OAuth {
         return addQueryParameters(url, kvPairs);
     }
 
-    public static Map<String, String> oauthHeaderToParamsMap(String oauthHeader) {
+    public static HttpParameters oauthHeaderToParamsMap(String oauthHeader) {
+        HttpParameters params = new HttpParameters();
         if (oauthHeader == null || !oauthHeader.startsWith("OAuth ")) {
-            return new HashMap<String, String>();
+            return params;
         }
         oauthHeader = oauthHeader.substring("OAuth ".length());
         String[] elements = oauthHeader.split(",");
-        HashMap<String, String> params = new HashMap<String, String>();
         for (String keyValuePair : elements) {
             String[] keyValue = keyValuePair.split("=");
             params.put(keyValue[0].trim(), keyValue[1].trim());

@@ -2,7 +2,7 @@ package oauth.signpost.signature;
 
 import oauth.signpost.OAuth;
 import oauth.signpost.http.HttpRequest;
-import oauth.signpost.http.RequestParameters;
+import oauth.signpost.http.HttpParameters;
 
 /**
  * Writes to the HTTP Authorization header field.
@@ -14,7 +14,7 @@ public class AuthorizationHeaderSigningStrategy implements SigningStrategy {
     private static final long serialVersionUID = 1L;
 
     public String writeSignature(String signature, HttpRequest request,
-            RequestParameters requestParameters) {
+            HttpParameters requestParameters) {
         StringBuilder sb = new StringBuilder();
 
         sb.append("OAuth ");

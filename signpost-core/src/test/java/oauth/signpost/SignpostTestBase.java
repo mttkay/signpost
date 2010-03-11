@@ -2,7 +2,7 @@ package oauth.signpost;
 
 import static org.mockito.Mockito.when;
 import oauth.signpost.http.HttpRequest;
-import oauth.signpost.http.RequestParameters;
+import oauth.signpost.http.HttpParameters;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -33,9 +33,9 @@ public abstract class SignpostTestBase {
 
     public static final String AUTHORIZE_WEBSITE_URL = "http://www.test.com/authorize";
 
-    public static final RequestParameters OAUTH_PARAMS = new RequestParameters();
+    public static final HttpParameters OAUTH_PARAMS = new HttpParameters();
 
-    public static final RequestParameters EMPTY_PARAMS = new RequestParameters();
+    public static final HttpParameters EMPTY_PARAMS = new HttpParameters();
 
     @Mock
     protected HttpRequest httpGetMock;

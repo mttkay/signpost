@@ -18,13 +18,13 @@ import java.util.Iterator;
 import oauth.signpost.OAuth;
 import oauth.signpost.exception.OAuthMessageSignerException;
 import oauth.signpost.http.HttpRequest;
-import oauth.signpost.http.RequestParameters;
+import oauth.signpost.http.HttpParameters;
 
 public class SignatureBaseString {
 
     private HttpRequest request;
 
-    private RequestParameters requestParameters;
+    private HttpParameters requestParameters;
 
     /**
      * Constructs a new SBS instance that will operate on the given request
@@ -36,7 +36,7 @@ public class SignatureBaseString {
      *        the set of request parameters from the Authorization header, query
      *        string and form body
      */
-    public SignatureBaseString(HttpRequest request, RequestParameters requestParameters) {
+    public SignatureBaseString(HttpRequest request, HttpParameters requestParameters) {
         this.request = request;
         this.requestParameters = requestParameters;
     }

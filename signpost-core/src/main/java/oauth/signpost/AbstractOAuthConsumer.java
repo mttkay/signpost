@@ -16,7 +16,6 @@ package oauth.signpost;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Map;
 import java.util.Random;
 
 import oauth.signpost.basic.UrlStringRequestAdapter;
@@ -24,7 +23,7 @@ import oauth.signpost.exception.OAuthCommunicationException;
 import oauth.signpost.exception.OAuthExpectationFailedException;
 import oauth.signpost.exception.OAuthMessageSignerException;
 import oauth.signpost.http.HttpRequest;
-import oauth.signpost.http.RequestParameters;
+import oauth.signpost.http.HttpParameters;
 import oauth.signpost.signature.AuthorizationHeaderSigningStrategy;
 import oauth.signpost.signature.HmacSha1MessageSigner;
 import oauth.signpost.signature.OAuthMessageSigner;
@@ -50,7 +49,7 @@ public abstract class AbstractOAuthConsumer implements OAuthConsumer {
     private SigningStrategy signingStrategy;
 
     // these are the params which will be passed to the message signer
-    private RequestParameters requestParameters;
+    private HttpParameters requestParameters;
 
     private boolean sendEmptyTokens;
 
@@ -79,7 +78,7 @@ public abstract class AbstractOAuthConsumer implements OAuthConsumer {
             throw new OAuthExpectationFailedException("consumer secret not set");
         }
 
-        requestParameters = new RequestParameters();
+        requestParameters = new HttpParameters();
         try {
             collectHeaderParameters(request, requestParameters);
             collectQueryParameters(request, requestParameters);
@@ -170,30 +169,30 @@ public abstract class AbstractOAuthConsumer implements OAuthConsumer {
      * @param out
      *        the request parameter which should be completed
      */
-    protected void completeOAuthParameters(RequestParameters out) {
+    protected void completeOAuthParameters(HttpParameters out) {
         if (!out.containsKey(OAuth.OAUTH_CONSUMER_KEY)) {
-            out.put(OAuth.OAUTH_CONSUMER_KEY, consumerKey);
+            out.put(OAuth.OAUTH_CONSUMER_KEY, consumerKey, true);
         }
         if (!out.containsKey(OAuth.OAUTH_SIGNATURE_METHOD)) {
-            out.put(OAuth.OAUTH_SIGNATURE_METHOD, messageSigner.getSignatureMethod());
+            out.put(OAuth.OAUTH_SIGNATURE_METHOD, messageSigner.getSignatureMethod(), true);
         }
         if (!out.containsKey(OAuth.OAUTH_TIMESTAMP)) {
-            out.put(OAuth.OAUTH_TIMESTAMP, generateTimestamp());
+            out.put(OAuth.OAUTH_TIMESTAMP, generateTimestamp(), true);
         }
         if (!out.containsKey(OAuth.OAUTH_NONCE)) {
-            out.put(OAuth.OAUTH_NONCE, generateNonce());
+            out.put(OAuth.OAUTH_NONCE, generateNonce(), true);
         }
         if (!out.containsKey(OAuth.OAUTH_VERSION)) {
-            out.put(OAuth.OAUTH_VERSION, OAuth.VERSION_1_0);
+            out.put(OAuth.OAUTH_VERSION, OAuth.VERSION_1_0, true);
         }
         if (!out.containsKey(OAuth.OAUTH_TOKEN)) {
             if (token != null && !token.equals("") || sendEmptyTokens) {
-                out.put(OAuth.OAUTH_TOKEN, token);
+                out.put(OAuth.OAUTH_TOKEN, token, true);
             }
         }
     }
 
-    public RequestParameters getRequestParameters() {
+    public HttpParameters getRequestParameters() {
         return requestParameters;
     }
 
@@ -205,24 +204,24 @@ public abstract class AbstractOAuthConsumer implements OAuthConsumer {
      * Collects OAuth Authorization header parameters as per OAuth Core 1.0 spec
      * section 9.1.1
      */
-    protected void collectHeaderParameters(HttpRequest request, RequestParameters out) {
-        Map<String, String> headerParams = OAuth.oauthHeaderToParamsMap(request
+    protected void collectHeaderParameters(HttpRequest request, HttpParameters out) {
+        HttpParameters headerParams = OAuth.oauthHeaderToParamsMap(request
             .getHeader(OAuth.HTTP_AUTHORIZATION_HEADER));
-        out.putMap(headerParams);
+        out.putAll(headerParams, true);
     }
 
     /**
      * Collects x-www-form-urlencoded body parameters as per OAuth Core 1.0 spec
      * section 9.1.1
      */
-    protected void collectBodyParameters(HttpRequest request, RequestParameters out)
+    protected void collectBodyParameters(HttpRequest request, HttpParameters out)
             throws IOException {
 
         // collect x-www-form-urlencoded body params
         String contentType = request.getContentType();
         if (contentType != null && contentType.startsWith(OAuth.FORM_ENCODED)) {
             InputStream payload = request.getMessagePayload();
-            out.putMap(OAuth.decodeForm(payload));
+            out.putAll(OAuth.decodeForm(payload), true);
         }
     }
 
@@ -230,13 +229,13 @@ public abstract class AbstractOAuthConsumer implements OAuthConsumer {
      * Collects HTTP GET query string parameters as per OAuth Core 1.0 spec
      * section 9.1.1
      */
-    protected void collectQueryParameters(HttpRequest request, RequestParameters out) {
+    protected void collectQueryParameters(HttpRequest request, HttpParameters out) {
 
         String url = request.getRequestUrl();
         int q = url.indexOf('?');
         if (q >= 0) {
             // Combine the URL query string with the other parameters:
-            out.putMap(OAuth.decodeForm(url.substring(q + 1)));
+            out.putAll(OAuth.decodeForm(url.substring(q + 1)), true);
         }
     }
 

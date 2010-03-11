@@ -2,7 +2,7 @@ package oauth.signpost.signature;
 
 import oauth.signpost.OAuth;
 import oauth.signpost.http.HttpRequest;
-import oauth.signpost.http.RequestParameters;
+import oauth.signpost.http.HttpParameters;
 
 /**
  * Writes to a URL query string. <strong>Note that this currently ONLY works
@@ -18,7 +18,7 @@ public class QueryStringSigningStrategy implements SigningStrategy {
     private static final long serialVersionUID = 1L;
 
     public String writeSignature(String signature, HttpRequest request,
-            RequestParameters requestParameters) {
+            HttpParameters requestParameters) {
 
         // add the signature
         StringBuilder sb = new StringBuilder(OAuth.addQueryParameters(request.getRequestUrl(),

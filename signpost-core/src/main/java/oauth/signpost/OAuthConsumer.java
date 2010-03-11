@@ -20,7 +20,7 @@ import oauth.signpost.exception.OAuthCommunicationException;
 import oauth.signpost.exception.OAuthExpectationFailedException;
 import oauth.signpost.exception.OAuthMessageSignerException;
 import oauth.signpost.http.HttpRequest;
-import oauth.signpost.http.RequestParameters;
+import oauth.signpost.http.HttpParameters;
 import oauth.signpost.signature.AuthorizationHeaderSigningStrategy;
 import oauth.signpost.signature.HmacSha1MessageSigner;
 import oauth.signpost.signature.OAuthMessageSigner;
@@ -175,5 +175,5 @@ public interface OAuthConsumer extends Serializable {
      * 
      * @return the request parameters used for message signing
      */
-    public RequestParameters getRequestParameters();
+    public HttpParameters getRequestParameters();
 }

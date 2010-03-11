@@ -24,6 +24,7 @@ import oauth.signpost.exception.OAuthCommunicationException;
 import oauth.signpost.exception.OAuthExpectationFailedException;
 import oauth.signpost.exception.OAuthMessageSignerException;
 import oauth.signpost.exception.OAuthNotAuthorizedException;
+import oauth.signpost.http.HttpParameters;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -80,11 +81,11 @@ public class CommonsHttpOAuthProvider extends AbstractOAuthProvider {
                 throw new OAuthNotAuthorizedException();
             }
 
-            Map<String, String> responseParams = OAuth
+            HttpParameters responseParams = OAuth
                 .decodeForm(response.getEntity().getContent());
 
-            String token = responseParams.get(OAuth.OAUTH_TOKEN);
-            String secret = responseParams.get(OAuth.OAUTH_TOKEN_SECRET);
+            String token = responseParams.getFirst(OAuth.OAUTH_TOKEN);
+            String secret = responseParams.getFirst(OAuth.OAUTH_TOKEN_SECRET);
             responseParams.remove(OAuth.OAUTH_TOKEN);
             responseParams.remove(OAuth.OAUTH_TOKEN_SECRET);
 

@@ -3,7 +3,7 @@ package oauth.signpost.signature;
 import java.io.Serializable;
 
 import oauth.signpost.http.HttpRequest;
-import oauth.signpost.http.RequestParameters;
+import oauth.signpost.http.HttpParameters;
 
 /**
  * <p>
@@ -32,6 +32,6 @@ public interface SigningStrategy extends Serializable {
      * @return whatever has been written to the request, e.g. an Authorization
      *         header field
      */
-    String writeSignature(String signature, HttpRequest request, RequestParameters requestParameters);
+    String writeSignature(String signature, HttpRequest request, HttpParameters requestParameters);
     
 }

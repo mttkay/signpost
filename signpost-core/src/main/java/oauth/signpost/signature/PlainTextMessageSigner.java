@@ -17,7 +17,7 @@ package oauth.signpost.signature;
 import oauth.signpost.OAuth;
 import oauth.signpost.exception.OAuthMessageSignerException;
 import oauth.signpost.http.HttpRequest;
-import oauth.signpost.http.RequestParameters;
+import oauth.signpost.http.HttpParameters;
 
 @SuppressWarnings("serial")
 public class PlainTextMessageSigner extends OAuthMessageSigner {
@@ -28,7 +28,7 @@ public class PlainTextMessageSigner extends OAuthMessageSigner {
     }
 
     @Override
-    public String sign(HttpRequest request, RequestParameters requestParams)
+    public String sign(HttpRequest request, HttpParameters requestParams)
             throws OAuthMessageSignerException {
         return OAuth.percentEncode(getConsumerSecret()) + '&'
                 + OAuth.percentEncode(getTokenSecret());

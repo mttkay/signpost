@@ -26,6 +26,7 @@ import oauth.signpost.exception.OAuthExpectationFailedException;
 import oauth.signpost.exception.OAuthMessageSignerException;
 import oauth.signpost.exception.OAuthNotAuthorizedException;
 import oauth.signpost.http.HttpRequest;
+import oauth.signpost.http.HttpParameters;
 
 /**
  * This default implementation uses {@link java.net.HttpURLConnection} type GET
@@ -74,10 +75,10 @@ public class DefaultOAuthProvider extends AbstractOAuthProvider {
                 throw new OAuthNotAuthorizedException();
             }
 
-            Map<String, String> responseParams = OAuth.decodeForm(connection.getInputStream());
+            HttpParameters responseParams = OAuth.decodeForm(connection.getInputStream());
 
-            String token = responseParams.get(OAuth.OAUTH_TOKEN);
-            String secret = responseParams.get(OAuth.OAUTH_TOKEN_SECRET);
+            String token = responseParams.getFirst(OAuth.OAUTH_TOKEN);
+            String secret = responseParams.getFirst(OAuth.OAUTH_TOKEN_SECRET);
             responseParams.remove(OAuth.OAUTH_TOKEN);
             responseParams.remove(OAuth.OAUTH_TOKEN_SECRET);
 

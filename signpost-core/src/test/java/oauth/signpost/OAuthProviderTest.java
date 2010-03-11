@@ -12,11 +12,11 @@ import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.URL;
-import java.util.HashMap;
 
 import oauth.signpost.basic.DefaultOAuthConsumer;
 import oauth.signpost.exception.OAuthExpectationFailedException;
 import oauth.signpost.http.HttpRequest;
+import oauth.signpost.http.HttpParameters;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -129,7 +129,7 @@ public abstract class OAuthProviderTest extends SignpostTestBase {
 
         assertEquals(1, provider.getResponseParameters().size());
         assertTrue(provider.getResponseParameters().containsKey("a"));
-        assertEquals("1", provider.getResponseParameters().get("a"));
+        assertEquals("1", provider.getResponseParameters().getFirst("a"));
 
         mockConnection(provider, OAuth.OAUTH_TOKEN + "=" + TOKEN + "&" + OAuth.OAUTH_TOKEN_SECRET
                 + "=" + TOKEN_SECRET + "&b=2&c=3");
@@ -138,8 +138,8 @@ public abstract class OAuthProviderTest extends SignpostTestBase {
         assertEquals(2, provider.getResponseParameters().size());
         assertTrue(provider.getResponseParameters().containsKey("b"));
         assertTrue(provider.getResponseParameters().containsKey("c"));
-        assertEquals("2", provider.getResponseParameters().get("b"));
-        assertEquals("3", provider.getResponseParameters().get("c"));
+        assertEquals("2", provider.getResponseParameters().getFirst("b"));
+        assertEquals("3", provider.getResponseParameters().getFirst("c"));
     }
 
     @Test
@@ -153,7 +153,7 @@ public abstract class OAuthProviderTest extends SignpostTestBase {
         provider.setOAuth10a(true);
 
         // prepare a provider that has response params set
-        HashMap<String, String> params = new HashMap<String, String>();
+        HttpParameters params = new HttpParameters();
         params.put("a", "1");
         ((AbstractOAuthProvider) provider).setResponseParameters(params);
 
@@ -170,6 +170,6 @@ public abstract class OAuthProviderTest extends SignpostTestBase {
         assertEquals(AUTHORIZE_WEBSITE_URL, provider.getAuthorizationWebsiteUrl());
         assertEquals(true, provider.isOAuth10a());
         assertNotNull(provider.getResponseParameters());
-        assertEquals("1", provider.getResponseParameters().get("a"));
+        assertEquals("1", provider.getResponseParameters().getFirst("a"));
     }
 }
