@@ -66,8 +66,7 @@ public abstract class AbstractOAuthProvider implements OAuthProvider {
 
         // 1.0a expects the callback to be sent while getting the request token.
         // 1.0 service providers would simply ignore this parameter.
-        retrieveToken(consumer, OAuth.addQueryParameters(requestTokenEndpointUrl,
-            OAuth.OAUTH_CALLBACK, callbackUrl));
+        retrieveToken(consumer, requestTokenEndpointUrl, OAuth.OAUTH_CALLBACK, callbackUrl);
 
         String callbackConfirmed = responseParameters.getFirst(OAuth.OAUTH_CALLBACK_CONFIRMED);
         responseParameters.remove(OAuth.OAUTH_CALLBACK_CONFIRMED);
@@ -94,10 +93,11 @@ public abstract class AbstractOAuthProvider implements OAuthProvider {
                             + "Did you retrieve an authorized request token before?");
         }
 
-        String endpointUrl = isOAuth10a && oauthVerifier != null ? OAuth.addQueryParameters(
-            accessTokenEndpointUrl, OAuth.OAUTH_VERIFIER, oauthVerifier) : accessTokenEndpointUrl;
-
-        retrieveToken(consumer, endpointUrl);
+        if (isOAuth10a && oauthVerifier != null) {
+            retrieveToken(consumer, accessTokenEndpointUrl, OAuth.OAUTH_VERIFIER, oauthVerifier);
+        } else {
+            retrieveToken(consumer, accessTokenEndpointUrl);
+        }
     }
 
     /**
@@ -125,6 +125,12 @@ public abstract class AbstractOAuthProvider implements OAuthProvider {
      * @param endpointUrl
      *        the URL at which the service provider serves the OAuth token that
      *        is to be fetched
+     * @param additionalParameters
+     *        you can pass parameters here (typically OAuth parameters such as
+     *        oauth_callback or oauth_verifier) which will go directly into the
+     *        signer, i.e. you don't have to put them into the request first,
+     *        just so the consumer pull them out again. Pass them sequentially
+     *        in key/value order.
      * @throws OAuthMessageSignerException
      *         if signing the token request fails
      * @throws OAuthCommunicationException

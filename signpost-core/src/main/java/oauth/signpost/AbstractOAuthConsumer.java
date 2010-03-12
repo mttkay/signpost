@@ -108,6 +108,8 @@ public abstract class AbstractOAuthConsumer implements OAuthConsumer {
         OAuth.debugOut("signature", signature);
 
         signingStrategy.writeSignature(signature, request, requestParameters);
+        OAuth.debugOut("Auth header", request.getHeader("Authorization"));
+        OAuth.debugOut("Request URL", request.getRequestUrl());
 
         return request;
     }

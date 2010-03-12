@@ -68,6 +68,16 @@ public interface OAuthConsumer extends Serializable {
      */
     public void setMessageSigner(OAuthMessageSigner messageSigner);
 
+    /**
+     * Allows you to add parameters (typically OAuth parameters such as
+     * oauth_callback or oauth_verifier) which will go directly into the signer,
+     * i.e. you don't have to put them into the request first. The consumer's
+     * {@link SigningStrategy} will then take care of writing them to the
+     * correct part of the request before it is sent.
+     * 
+     * @param additionalParameters
+     *        the parameters
+     */
     public void setAdditionalParameters(HttpParameters additionalParameters);
 
     /**

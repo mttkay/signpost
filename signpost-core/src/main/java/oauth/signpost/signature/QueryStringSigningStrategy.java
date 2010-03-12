@@ -1,8 +1,8 @@
 package oauth.signpost.signature;
 
 import oauth.signpost.OAuth;
-import oauth.signpost.http.HttpRequest;
 import oauth.signpost.http.HttpParameters;
+import oauth.signpost.http.HttpRequest;
 
 /**
  * Writes to a URL query string. <strong>Note that this currently ONLY works
@@ -32,6 +32,10 @@ public class QueryStringSigningStrategy implements SigningStrategy {
         if (requestParameters.containsKey(OAuth.OAUTH_CALLBACK)) {
             sb.append("&");
             sb.append(requestParameters.getFormEncoded(OAuth.OAUTH_CALLBACK));
+        }
+        if (requestParameters.containsKey(OAuth.OAUTH_VERIFIER)) {
+            sb.append("&");
+            sb.append(requestParameters.getFormEncoded(OAuth.OAUTH_VERIFIER));
         }
 
         // add the remaining OAuth params
