@@ -7,6 +7,8 @@ public interface HttpResponse {
 
     int getStatusCode() throws IOException;
 
+    String getReasonPhrase() throws Exception;
+
     InputStream getContent() throws IOException;
 
     /**

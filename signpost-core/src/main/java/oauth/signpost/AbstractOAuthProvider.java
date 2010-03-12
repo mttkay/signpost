@@ -10,6 +10,8 @@
  */
 package oauth.signpost;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -170,8 +172,8 @@ public abstract class AbstractOAuthProvider implements OAuthProvider {
                 return;
             }
 
-            if (statusCode == 401) {
-                throw new OAuthNotAuthorizedException();
+            if (statusCode >= 300) {
+                handleUnexpectedResponse(statusCode, response);
             }
 
             HttpParameters responseParams = OAuth.decodeForm(response.getContent());
@@ -203,6 +205,28 @@ public abstract class AbstractOAuthProvider implements OAuthProvider {
             } catch (Exception e) {
                 throw new OAuthCommunicationException(e);
             }
+        }
+    }
+
+    protected void handleUnexpectedResponse(int statusCode, HttpResponse response) throws Exception {
+        if (response == null) {
+            return;
+        }
+        BufferedReader reader = new BufferedReader(new InputStreamReader(response.getContent()));
+        StringBuilder responseBody = new StringBuilder();
+
+        String line = reader.readLine();
+        while (line != null) {
+            responseBody.append(line);
+            line = reader.readLine();
+        }
+
+        switch (statusCode) {
+        case 401:
+            throw new OAuthNotAuthorizedException(responseBody.toString());
+        default:
+            throw new OAuthCommunicationException("Service provider responded in error: "
+                    + statusCode + " (" + response.getReasonPhrase() + ")", responseBody.toString());
         }
     }
 

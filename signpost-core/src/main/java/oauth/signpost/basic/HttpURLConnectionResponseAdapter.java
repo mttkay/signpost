@@ -22,6 +22,10 @@ public class HttpURLConnectionResponseAdapter implements HttpResponse {
         return connection.getResponseCode();
     }
 
+    public String getReasonPhrase() throws Exception {
+        return connection.getResponseMessage();
+    }
+
     public Object unwrap() {
         return connection;
     }

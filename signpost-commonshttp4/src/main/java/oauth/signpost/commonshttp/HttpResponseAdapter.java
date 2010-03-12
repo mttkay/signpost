@@ -21,6 +21,10 @@ public class HttpResponseAdapter implements HttpResponse {
         return response.getStatusLine().getStatusCode();
     }
 
+    public String getReasonPhrase() throws Exception {
+        return response.getStatusLine().getReasonPhrase();
+    }
+
     public Object unwrap() {
         return response;
     }

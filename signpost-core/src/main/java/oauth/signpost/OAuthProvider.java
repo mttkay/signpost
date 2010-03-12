@@ -80,6 +80,7 @@ import oauth.signpost.http.HttpParameters;
  * 
  * @see DefaultOAuthProvider
  * @see DefaultOAuthConsumer
+ * @see OAuthProviderListener
  */
 public interface OAuthProvider extends Serializable {
 
@@ -182,18 +183,23 @@ public interface OAuthProvider extends Serializable {
 
     /**
      * Use this method to set custom HTTP headers to be used for the requests
-     * which are sent to retrieve tokens.
+     * which are sent to retrieve tokens. @deprecated THIS METHOD HAS BEEN
+     * DEPRECATED. Use {@link OAuthProviderListener} to customize requests.
      * 
      * @param header
      *        The header name (e.g. 'WWW-Authenticate')
      * @param value
      *        The header value (e.g. 'realm=www.example.com')
      */
+    @Deprecated
     public void setRequestHeader(String header, String value);
 
     /**
+     * @deprecated THIS METHOD HAS BEEN DEPRECATED. Use
+     *             {@link OAuthProviderListener} to customize requests.
      * @return all request headers set via {@link #setRequestHeader}
      */
+    @Deprecated
     public Map<String, String> getRequestHeaders();
 
     /**
