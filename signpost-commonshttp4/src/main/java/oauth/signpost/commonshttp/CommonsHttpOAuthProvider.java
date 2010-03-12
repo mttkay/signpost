@@ -18,7 +18,7 @@ import oauth.signpost.http.HttpRequest;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.DefaultHttpClient;
 
@@ -55,7 +55,7 @@ public class CommonsHttpOAuthProvider extends AbstractOAuthProvider {
 
     @Override
     protected HttpRequest createRequest(String endpointUrl) throws Exception {
-        HttpGet request = new HttpGet(endpointUrl);
+        HttpPost request = new HttpPost(endpointUrl);
         return new HttpRequestAdapter(request);
     }
 
