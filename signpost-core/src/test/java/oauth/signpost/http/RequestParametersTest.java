@@ -45,5 +45,15 @@ public class RequestParametersTest {
         assertEquals("c d", params.getFirst("a%20b", true));
 
         assertEquals("x=", params.getFormEncoded("x"));
+
+        params.clear();
+        assertTrue(params.isEmpty());
+        assertEquals(0, params.size());
+        assertEquals(null, params.get("a"));
+
+        String[] kvPairs = new String[] { "a", "1", "b", "2" };
+        params.putAll(kvPairs, false);
+        assertEquals("1", params.getFirst("a"));
+        assertEquals("2", params.getFirst("b"));
     }
 }

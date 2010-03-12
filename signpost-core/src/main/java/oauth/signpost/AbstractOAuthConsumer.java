@@ -22,8 +22,8 @@ import oauth.signpost.basic.UrlStringRequestAdapter;
 import oauth.signpost.exception.OAuthCommunicationException;
 import oauth.signpost.exception.OAuthExpectationFailedException;
 import oauth.signpost.exception.OAuthMessageSignerException;
-import oauth.signpost.http.HttpRequest;
 import oauth.signpost.http.HttpParameters;
+import oauth.signpost.http.HttpRequest;
 import oauth.signpost.signature.AuthorizationHeaderSigningStrategy;
 import oauth.signpost.signature.HmacSha1MessageSigner;
 import oauth.signpost.signature.OAuthMessageSigner;
@@ -42,11 +42,15 @@ public abstract class AbstractOAuthConsumer implements OAuthConsumer {
 
     private String consumerKey, consumerSecret;
 
-	private String token;
+    private String token;
 
-	private OAuthMessageSigner messageSigner;
+    private OAuthMessageSigner messageSigner;
 
     private SigningStrategy signingStrategy;
+
+    // these are params that may be passed to the consumer directly (i.e.
+    // without going through the request object)
+    private HttpParameters additionalParameters;
 
     // these are the params which will be passed to the message signer
     private HttpParameters requestParameters;
@@ -69,6 +73,10 @@ public abstract class AbstractOAuthConsumer implements OAuthConsumer {
         this.signingStrategy = signingStrategy;
     }
 
+    public void setAdditionalParameters(HttpParameters additionalParameters) {
+        this.additionalParameters = additionalParameters;
+    }
+
     public HttpRequest sign(HttpRequest request) throws OAuthMessageSignerException,
             OAuthExpectationFailedException, OAuthCommunicationException {
         if (consumerKey == null) {
@@ -80,6 +88,9 @@ public abstract class AbstractOAuthConsumer implements OAuthConsumer {
 
         requestParameters = new HttpParameters();
         try {
+            if (additionalParameters != null) {
+                requestParameters.putAll(additionalParameters, true);
+            }
             collectHeaderParameters(request, requestParameters);
             collectQueryParameters(request, requestParameters);
             collectBodyParameters(request, requestParameters);
@@ -101,10 +112,10 @@ public abstract class AbstractOAuthConsumer implements OAuthConsumer {
         return request;
     }
 
-	public HttpRequest sign(Object request) throws OAuthMessageSignerException,
+    public HttpRequest sign(Object request) throws OAuthMessageSignerException,
             OAuthExpectationFailedException, OAuthCommunicationException {
-		return sign(wrap(request));
-	}
+        return sign(wrap(request));
+    }
 
     public String sign(String url) throws OAuthMessageSignerException,
             OAuthExpectationFailedException, OAuthCommunicationException {
@@ -130,28 +141,28 @@ public abstract class AbstractOAuthConsumer implements OAuthConsumer {
      *        the native HTTP request instance
      * @return the adapted request
      */
-	protected abstract HttpRequest wrap(Object request);
+    protected abstract HttpRequest wrap(Object request);
 
-	public void setTokenWithSecret(String token, String tokenSecret) {
-		this.token = token;
-		messageSigner.setTokenSecret(tokenSecret);
-	}
+    public void setTokenWithSecret(String token, String tokenSecret) {
+        this.token = token;
+        messageSigner.setTokenSecret(tokenSecret);
+    }
 
-	public String getToken() {
-		return token;
-	}
+    public String getToken() {
+        return token;
+    }
 
-	public String getTokenSecret() {
-		return messageSigner.getTokenSecret();
-	}
+    public String getTokenSecret() {
+        return messageSigner.getTokenSecret();
+    }
 
-	public String getConsumerKey() {
-		return this.consumerKey;
-	}
+    public String getConsumerKey() {
+        return this.consumerKey;
+    }
 
-	public String getConsumerSecret() {
-		return this.consumerSecret;
-	}
+    public String getConsumerSecret() {
+        return this.consumerSecret;
+    }
 
     /**
      * <p>
@@ -205,8 +216,7 @@ public abstract class AbstractOAuthConsumer implements OAuthConsumer {
      * section 9.1.1
      */
     protected void collectHeaderParameters(HttpRequest request, HttpParameters out) {
-        HttpParameters headerParams = OAuth.oauthHeaderToParamsMap(request
-            .getHeader(OAuth.HTTP_AUTHORIZATION_HEADER));
+        HttpParameters headerParams = OAuth.oauthHeaderToParamsMap(request.getHeader(OAuth.HTTP_AUTHORIZATION_HEADER));
         out.putAll(headerParams, true);
     }
 

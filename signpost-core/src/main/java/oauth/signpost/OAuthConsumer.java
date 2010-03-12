@@ -19,8 +19,8 @@ import java.io.Serializable;
 import oauth.signpost.exception.OAuthCommunicationException;
 import oauth.signpost.exception.OAuthExpectationFailedException;
 import oauth.signpost.exception.OAuthMessageSignerException;
-import oauth.signpost.http.HttpRequest;
 import oauth.signpost.http.HttpParameters;
+import oauth.signpost.http.HttpRequest;
 import oauth.signpost.signature.AuthorizationHeaderSigningStrategy;
 import oauth.signpost.signature.HmacSha1MessageSigner;
 import oauth.signpost.signature.OAuthMessageSigner;
@@ -67,6 +67,8 @@ public interface OAuthConsumer extends Serializable {
      * @see PlainTextMessageSigner
      */
     public void setMessageSigner(OAuthMessageSigner messageSigner);
+
+    public void setAdditionalParameters(HttpParameters additionalParameters);
 
     /**
      * Defines which strategy should be used to write a signature to an HTTP
@@ -123,7 +125,7 @@ public interface OAuthConsumer extends Serializable {
      * @throws OAuthExpectationFailedException
      * @throws OAuthCommunicationException
      */
-	public HttpRequest sign(Object request) throws OAuthMessageSignerException,
+    public HttpRequest sign(Object request) throws OAuthMessageSignerException,
             OAuthExpectationFailedException, OAuthCommunicationException;
 
     /**
@@ -155,15 +157,15 @@ public interface OAuthConsumer extends Serializable {
      * @param tokenSecret
      *        the token secret
      */
-	public void setTokenWithSecret(String token, String tokenSecret);
+    public void setTokenWithSecret(String token, String tokenSecret);
 
-	public String getToken();
+    public String getToken();
 
-	public String getTokenSecret();
+    public String getTokenSecret();
 
-	public String getConsumerKey();
+    public String getConsumerKey();
 
-	public String getConsumerSecret();
+    public String getConsumerSecret();
 
     /**
      * Returns all parameters collected from the HTTP request during message

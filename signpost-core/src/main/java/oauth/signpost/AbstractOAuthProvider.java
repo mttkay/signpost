@@ -135,9 +135,10 @@ public abstract class AbstractOAuthProvider implements OAuthProvider {
      *         if an expectation has failed, e.g. because the server didn't
      *         reply in the expected format
      */
-    protected void retrieveToken(OAuthConsumer consumer, String endpointUrl)
-            throws OAuthMessageSignerException, OAuthCommunicationException,
-            OAuthNotAuthorizedException, OAuthExpectationFailedException {
+    protected void retrieveToken(OAuthConsumer consumer, String endpointUrl,
+            String... additionalParameters) throws OAuthMessageSignerException,
+            OAuthCommunicationException, OAuthNotAuthorizedException,
+            OAuthExpectationFailedException {
         Map<String, String> defaultHeaders = getRequestHeaders();
 
         if (consumer.getConsumerKey() == null || consumer.getConsumerSecret() == null) {
@@ -155,6 +156,11 @@ public abstract class AbstractOAuthProvider implements OAuthProvider {
                 this.listener.prepareRequest(request);
             }
 
+            if (additionalParameters != null) {
+                HttpParameters httpParams = new HttpParameters();
+                httpParams.putAll(additionalParameters, true);
+                consumer.setAdditionalParameters(httpParams);
+            }
             consumer.sign(request);
 
             if (this.listener != null) {

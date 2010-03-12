@@ -127,6 +127,12 @@ public class HttpParameters implements Map<String, SortedSet<String>>, Serializa
         }
     }
 
+    public void putAll(String[] keyValuePairs, boolean percentEncode) {
+        for (int i = 0; i < keyValuePairs.length - 1; i += 2) {
+            this.put(keyValuePairs[i], keyValuePairs[i + 1], percentEncode);
+        }
+    }
+
     /**
      * Convenience method to merge a Map<String, List<String>>.
      * 

@@ -16,8 +16,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
 import oauth.signpost.exception.OAuthExpectationFailedException;
-import oauth.signpost.http.HttpRequest;
 import oauth.signpost.http.HttpParameters;
+import oauth.signpost.http.HttpRequest;
 import oauth.signpost.signature.HmacSha1MessageSigner;
 import oauth.signpost.signature.OAuthMessageSigner;
 
@@ -115,6 +115,36 @@ public abstract class OAuthConsumerTest extends SignpostTestBase {
     }
 
     @Test
+    public void shouldHonorManuallySetSigningParameters() throws Exception {
+
+        // mock a request that has custom query, body, and header params set
+        HttpRequest request = mock(HttpRequest.class);
+        when(request.getRequestUrl()).thenReturn("http://example.com?a=1");
+
+        OAuthMessageSigner signer = mock(HmacSha1MessageSigner.class);
+        consumer.setMessageSigner(signer);
+
+        HttpParameters params = new HttpParameters();
+        params.put("oauth_callback", "oob");
+        consumer.setAdditionalParameters(params);
+
+        consumer.sign(request);
+
+        // verify that all custom params are properly read and passed to the
+        // message signer
+        ArgumentMatcher<HttpParameters> hasParameters = new ArgumentMatcher<HttpParameters>() {
+            public boolean matches(Object argument) {
+                HttpParameters params = (HttpParameters) argument;
+                assertEquals("oob", params.getFirst("oauth_callback"));
+                assertEquals("1", params.getFirst("a"));
+                return true;
+            }
+        };
+
+        verify(signer).sign(same(request), argThat(hasParameters));
+    }
+
+    @Test
     public void shouldPercentEncodeOAuthParameters() throws Exception {
         OAuthConsumer consumer = buildConsumer("1%2", CONSUMER_SECRET, null);
         consumer.setTokenWithSecret("3 4", TOKEN_SECRET);
@@ -133,8 +163,8 @@ public abstract class OAuthConsumerTest extends SignpostTestBase {
         ObjectOutputStream ostream = new ObjectOutputStream(baos);
         ostream.writeObject(consumer);
 
-        ObjectInputStream istream = new ObjectInputStream(new ByteArrayInputStream(baos
-            .toByteArray()));
+        ObjectInputStream istream = new ObjectInputStream(new ByteArrayInputStream(
+                baos.toByteArray()));
         consumer = (OAuthConsumer) istream.readObject();
 
         assertEquals(CONSUMER_KEY, consumer.getConsumerKey());
@@ -160,8 +190,7 @@ public abstract class OAuthConsumerTest extends SignpostTestBase {
     // argThat(new IsCompleteListOfOAuthParameters()));
     // }
 
-    private class IsCompleteListOfOAuthParameters extends
-            ArgumentMatcher<String> {
+    private class IsCompleteListOfOAuthParameters extends ArgumentMatcher<String> {
 
         @Override
         public boolean matches(Object argument) {
