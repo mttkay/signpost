@@ -44,6 +44,8 @@ public abstract class AbstractOAuthProvider implements OAuthProvider {
 
     private boolean isOAuth10a;
 
+    private transient OAuthProviderListener listener;
+
     public AbstractOAuthProvider(String requestTokenEndpointUrl, String accessTokenEndpointUrl,
             String authorizationWebsiteUrl) {
         this.requestTokenEndpointUrl = requestTokenEndpointUrl;
@@ -147,12 +149,26 @@ public abstract class AbstractOAuthProvider implements OAuthProvider {
             for (String header : defaultHeaders.keySet()) {
                 request.setHeader(header, defaultHeaders.get(header));
             }
+            if (this.listener != null) {
+                this.listener.prepareRequest(request);
+            }
 
             consumer.sign(request);
 
-            response = sendRequest(request);
+            if (this.listener != null) {
+                this.listener.prepareSubmission(request);
+            }
 
+            response = sendRequest(request);
             int statusCode = response.getStatusCode();
+
+            boolean requestHandled = false;
+            if (this.listener != null) {
+                requestHandled = this.listener.onResponseReceived(request, response);
+            }
+            if (requestHandled) {
+                return;
+            }
 
             if (statusCode == 401) {
                 throw new OAuthNotAuthorizedException();
@@ -276,5 +292,13 @@ public abstract class AbstractOAuthProvider implements OAuthProvider {
 
     public Map<String, String> getRequestHeaders() {
         return defaultHeaders;
+    }
+
+    public void setListener(OAuthProviderListener listener) {
+        this.listener = listener;
+    }
+
+    public void removeListener(OAuthProviderListener listener) {
+        this.listener = null;
     }
 }

@@ -223,4 +223,8 @@ public interface OAuthProvider extends Serializable {
     public String getAccessTokenEndpointUrl();
 
     public String getAuthorizationWebsiteUrl();
+
+    public void setListener(OAuthProviderListener listener);
+
+    public void removeListener(OAuthProviderListener listener);
 }
