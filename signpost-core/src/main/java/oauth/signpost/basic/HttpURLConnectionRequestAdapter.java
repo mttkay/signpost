@@ -56,4 +56,8 @@ public class HttpURLConnectionRequestAdapter implements HttpRequest {
     public String getContentType() {
         return connection.getRequestProperty("Content-Type");
     }
+
+    public HttpURLConnection unwrap() {
+        return connection;
+    }
 }

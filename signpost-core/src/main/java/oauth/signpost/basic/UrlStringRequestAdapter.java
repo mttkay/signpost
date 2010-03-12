@@ -45,4 +45,8 @@ public class UrlStringRequestAdapter implements HttpRequest {
     public String getContentType() {
         return null;
     }
+
+    public Object unwrap() {
+        return url;
+    }
 }

@@ -34,4 +34,11 @@ public interface HttpRequest {
     InputStream getMessagePayload() throws IOException;
 
     String getContentType();
+
+    /**
+     * Returns the wrapped request object, in case you must work directly on it.
+     * 
+     * @return the wrapped request object
+     */
+    Object unwrap();
 }
