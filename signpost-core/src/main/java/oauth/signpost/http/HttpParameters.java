@@ -191,14 +191,14 @@ public class HttpParameters implements Map<String, SortedSet<String>>, Serializa
     }
 
     /**
-     * Returns an application/x-www-form-encoded string of all values for the
-     * given parameter.
+     * Concatenates all values for the given key to a list of key/value pairs
+     * suitable for use in a URL query string.
      * 
      * @param key
      *        the parameter name
-     * @return the form encoded value string
+     * @return the query string
      */
-    public String getFormEncoded(Object key) {
+    public String getAsQueryString(Object key) {
         StringBuilder sb = new StringBuilder();
         key = OAuth.percentEncode((String) key);
         Set<String> values = wrappedMap.get(key);

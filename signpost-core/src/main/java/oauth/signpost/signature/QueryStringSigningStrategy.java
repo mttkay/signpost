@@ -27,28 +27,28 @@ public class QueryStringSigningStrategy implements SigningStrategy {
         // add the optional OAuth parameters
         if (requestParameters.containsKey(OAuth.OAUTH_TOKEN)) {
             sb.append("&");
-            sb.append(requestParameters.getFormEncoded(OAuth.OAUTH_TOKEN));
+            sb.append(requestParameters.getAsQueryString(OAuth.OAUTH_TOKEN));
         }
         if (requestParameters.containsKey(OAuth.OAUTH_CALLBACK)) {
             sb.append("&");
-            sb.append(requestParameters.getFormEncoded(OAuth.OAUTH_CALLBACK));
+            sb.append(requestParameters.getAsQueryString(OAuth.OAUTH_CALLBACK));
         }
         if (requestParameters.containsKey(OAuth.OAUTH_VERIFIER)) {
             sb.append("&");
-            sb.append(requestParameters.getFormEncoded(OAuth.OAUTH_VERIFIER));
+            sb.append(requestParameters.getAsQueryString(OAuth.OAUTH_VERIFIER));
         }
 
         // add the remaining OAuth params
         sb.append("&");
-        sb.append(requestParameters.getFormEncoded(OAuth.OAUTH_CONSUMER_KEY));
+        sb.append(requestParameters.getAsQueryString(OAuth.OAUTH_CONSUMER_KEY));
         sb.append("&");
-        sb.append(requestParameters.getFormEncoded(OAuth.OAUTH_VERSION));
+        sb.append(requestParameters.getAsQueryString(OAuth.OAUTH_VERSION));
         sb.append("&");
-        sb.append(requestParameters.getFormEncoded(OAuth.OAUTH_SIGNATURE_METHOD));
+        sb.append(requestParameters.getAsQueryString(OAuth.OAUTH_SIGNATURE_METHOD));
         sb.append("&");
-        sb.append(requestParameters.getFormEncoded(OAuth.OAUTH_TIMESTAMP));
+        sb.append(requestParameters.getAsQueryString(OAuth.OAUTH_TIMESTAMP));
         sb.append("&");
-        sb.append(requestParameters.getFormEncoded(OAuth.OAUTH_NONCE));
+        sb.append(requestParameters.getAsQueryString(OAuth.OAUTH_NONCE));
 
         String signedUrl = sb.toString();
 

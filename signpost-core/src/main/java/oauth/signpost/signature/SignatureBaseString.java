@@ -110,7 +110,7 @@ public class SignatureBaseString {
                 sb.append("&");
             }
 
-            sb.append(requestParameters.getFormEncoded(param));
+            sb.append(requestParameters.getAsQueryString(param));
         }
         return sb.toString();
     }
