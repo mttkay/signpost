@@ -120,10 +120,12 @@
       <name>Signpost Snapshot Repository</name>
       <url>http://oss.sonatype.org/content/repositories/signpost-snapshots/</url>
     </snapshotRepository>
+    <!-- 
     <site>
       <id>site-staging</id>
       <url>site-preview</url>
     </site>
+     -->
   </distributionManagement>
 
   <reporting>
@@ -131,10 +133,12 @@
       <plugin>
         <artifactId>maven-javadoc-plugin</artifactId>
       </plugin>
+      <!-- 
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>jxr-maven-plugin</artifactId>
       </plugin>
+       -->
     </plugins>
   </reporting>
 
