@@ -1,8 +1,0 @@
-com.google.gdata.util.common.base
-oauth.signpost
-oauth.signpost.basic
-oauth.signpost.commonshttp
-oauth.signpost.exception
-oauth.signpost.http
-oauth.signpost.jetty
-oauth.signpost.signature
