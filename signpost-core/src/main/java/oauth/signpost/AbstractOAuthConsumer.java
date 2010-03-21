@@ -219,7 +219,7 @@ public abstract class AbstractOAuthConsumer implements OAuthConsumer {
      */
     protected void collectHeaderParameters(HttpRequest request, HttpParameters out) {
         HttpParameters headerParams = OAuth.oauthHeaderToParamsMap(request.getHeader(OAuth.HTTP_AUTHORIZATION_HEADER));
-        out.putAll(headerParams, true);
+        out.putAll(headerParams, false);
     }
 
     /**

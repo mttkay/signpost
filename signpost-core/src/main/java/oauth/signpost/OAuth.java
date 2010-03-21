@@ -238,6 +238,38 @@ public class OAuth {
         return addQueryParameters(url, kvPairs);
     }
 
+    /**
+     * Builds an OAuth header from the given list of header fields. All
+     * parameters starting in 'oauth_*' will be percent encoded.
+     * 
+     * <pre>
+     * String authHeader = OAuth.prepareOAuthHeader(&quot;realm&quot;, &quot;http://example.com&quot;, &quot;oauth_token&quot;, &quot;x%y&quot;);
+     * </pre>
+     * 
+     * which yields:
+     * 
+     * <pre>
+     * OAuth realm="http://example.com", oauth_token="x%25y"
+     * </pre>
+     * 
+     * @param kvPairs
+     *        the list of key/value pairs
+     * @return a string eligible to be used as an OAuth HTTP Authorization
+     *         header.
+     */
+    public static String prepareOAuthHeader(String... kvPairs) {
+        StringBuilder sb = new StringBuilder("OAuth ");
+        for (int i = 0; i < kvPairs.length; i += 2) {
+            if (i > 0) {
+                sb.append(", ");
+            }
+            String value = kvPairs[i].startsWith("oauth_") ? OAuth
+                .percentEncode(kvPairs[i + 1]) : kvPairs[i + 1];
+            sb.append(OAuth.percentEncode(kvPairs[i]) + "=\"" + value + "\"");
+        }
+        return sb.toString();
+    }
+
     public static HttpParameters oauthHeaderToParamsMap(String oauthHeader) {
         HttpParameters params = new HttpParameters();
         if (oauthHeader == null || !oauthHeader.startsWith("OAuth ")) {
@@ -247,7 +279,7 @@ public class OAuth {
         String[] elements = oauthHeader.split(",");
         for (String keyValuePair : elements) {
             String[] keyValue = keyValuePair.split("=");
-            params.put(keyValue[0].trim(), keyValue[1].trim());
+            params.put(keyValue[0].trim(), keyValue[1].replace("\"", "").trim());
         }
         return params;
     }

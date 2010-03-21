@@ -91,4 +91,20 @@ public class OAuthTest {
         assertEquals("http://www.example.com?x=1&a=1&b=2", OAuth.addQueryParameters(url2, params));
 
     }
+
+    @Test
+    public void shouldCorrectlyParseOAuthAuthorizationHeader() {
+        String header = "OAuth realm=\"http://xyz.com\", oauth_callback=\"oob\"";
+        HttpParameters params = OAuth.oauthHeaderToParamsMap(header);
+        assertEquals("http://xyz.com", params.getFirst("realm"));
+        assertEquals("oob", params.getFirst("oauth_callback"));
+    }
+
+    @Test
+    public void shouldCorrectlyPrepareOAuthHeader() {
+        assertEquals("OAuth realm=\"http://x.com\"", OAuth.prepareOAuthHeader("realm",
+            "http://x.com"));
+        assertEquals("OAuth realm=\"http://x.com\", oauth_token=\"x%25y\"", OAuth
+            .prepareOAuthHeader("realm", "http://x.com", "oauth_token", "x%y"));
+    }
 }

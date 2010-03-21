@@ -1,5 +1,6 @@
 package oauth.signpost;
 
+import static junit.framework.Assert.assertNull;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -86,13 +87,13 @@ public abstract class OAuthConsumerTest extends SignpostTestBase {
 
         // mock a request that has custom query, body, and header params set
         HttpRequest request = mock(HttpRequest.class);
-        when(request.getRequestUrl()).thenReturn("http://example.com?a=1");
-        ByteArrayInputStream body = new ByteArrayInputStream("b=2".getBytes());
+        when(request.getRequestUrl()).thenReturn("http://example.com?a=1+1");
+        ByteArrayInputStream body = new ByteArrayInputStream("b=2+2".getBytes());
         when(request.getMessagePayload()).thenReturn(body);
         when(request.getContentType()).thenReturn(
             "application/x-www-form-urlencoded; charset=ISO-8859-1");
         when(request.getHeader("Authorization")).thenReturn(
-            "OAuth realm=www.example.com, oauth_signature=12345, oauth_version=1.1");
+                "OAuth realm=\"http%3A%2F%2Fexample.com\", oauth_token=\"12%25345\", oauth_signature=\"1234\"");
 
         OAuthMessageSigner signer = mock(HmacSha1MessageSigner.class);
         consumer.setMessageSigner(signer);
@@ -104,9 +105,12 @@ public abstract class OAuthConsumerTest extends SignpostTestBase {
         ArgumentMatcher<HttpParameters> hasAllParameters = new ArgumentMatcher<HttpParameters>() {
             public boolean matches(Object argument) {
                 HttpParameters params = (HttpParameters) argument;
-                assertEquals("1", params.get("a").first());
-                assertEquals("2", params.get("b").first());
-                assertEquals("1.1", params.get("oauth_version").first());
+                assertEquals("1 1", params.getFirst("a", true));
+                assertEquals("2 2", params.getFirst("b", true));
+                assertEquals("http://example.com", params.getFirst("realm", true));
+                assertEquals("12%345", params.getFirst("oauth_token", true));
+                // signature should be dropped, not valid to pre-set
+                assertNull(params.getFirst("oauth_signature"));
                 return true;
             }
         };
@@ -217,8 +221,8 @@ public abstract class OAuthConsumerTest extends SignpostTestBase {
         public boolean matches(Object argument) {
             String oauthHeader = (String) argument;
             HttpParameters params = OAuth.oauthHeaderToParamsMap(oauthHeader);
-            assertEquals("\"1%252\"", params.getFirst("oauth_consumer_key"));
-            assertEquals("\"3%204\"", params.getFirst("oauth_token"));
+            assertEquals("1%252", params.getFirst("oauth_consumer_key"));
+            assertEquals("3%204", params.getFirst("oauth_token"));
             return true;
         }
     }
