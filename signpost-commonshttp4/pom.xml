@@ -2,7 +2,7 @@
   <parent>
     <artifactId>oauth-signpost</artifactId>
     <groupId>oauth.signpost</groupId>
-    <version>1.2.1.1-SNAPSHOT</version>
+    <version>1.2.1.1</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>signpost-commonshttp4</artifactId>
@@ -12,7 +12,7 @@
     <dependency>
       <groupId>oauth.signpost</groupId>
       <artifactId>signpost-core</artifactId>
-      <version>1.2.1.1-SNAPSHOT</version>
+      <version>1.2.1.1</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
@@ -30,7 +30,7 @@
     <dependency>
       <groupId>oauth.signpost</groupId>
       <artifactId>signpost-core</artifactId>
-      <version>1.2.1.1-SNAPSHOT</version>
+      <version>1.2.1.1</version>
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>    
