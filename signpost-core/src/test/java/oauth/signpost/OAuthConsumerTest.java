@@ -125,7 +125,7 @@ public abstract class OAuthConsumerTest extends SignpostTestBase {
         consumer.setMessageSigner(signer);
 
         HttpParameters params = new HttpParameters();
-        params.put("oauth_callback", "oob");
+        params.put("oauth_callback", "http://mycallback");
         consumer.setAdditionalParameters(params);
 
         consumer.sign(request);
@@ -135,7 +135,7 @@ public abstract class OAuthConsumerTest extends SignpostTestBase {
         ArgumentMatcher<HttpParameters> hasParameters = new ArgumentMatcher<HttpParameters>() {
             public boolean matches(Object argument) {
                 HttpParameters params = (HttpParameters) argument;
-                assertEquals("oob", params.getFirst("oauth_callback"));
+                assertEquals("http://mycallback", params.getFirst("oauth_callback"));
                 assertEquals("1", params.getFirst("a"));
                 return true;
             }

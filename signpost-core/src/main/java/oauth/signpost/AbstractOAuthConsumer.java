@@ -89,7 +89,7 @@ public abstract class AbstractOAuthConsumer implements OAuthConsumer {
         requestParameters = new HttpParameters();
         try {
             if (additionalParameters != null) {
-                requestParameters.putAll(additionalParameters, true);
+                requestParameters.putAll(additionalParameters, false);
             }
             collectHeaderParameters(request, requestParameters);
             collectQueryParameters(request, requestParameters);

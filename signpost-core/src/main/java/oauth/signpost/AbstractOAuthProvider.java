@@ -158,15 +158,16 @@ public abstract class AbstractOAuthProvider implements OAuthProvider {
             for (String header : defaultHeaders.keySet()) {
                 request.setHeader(header, defaultHeaders.get(header));
             }
-            if (this.listener != null) {
-                this.listener.prepareRequest(request);
-            }
-
             if (additionalParameters != null) {
                 HttpParameters httpParams = new HttpParameters();
                 httpParams.putAll(additionalParameters, true);
                 consumer.setAdditionalParameters(httpParams);
             }
+
+            if (this.listener != null) {
+                this.listener.prepareRequest(request);
+            }
+
             consumer.sign(request);
 
             if (this.listener != null) {
