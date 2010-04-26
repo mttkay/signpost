@@ -1,5 +1,7 @@
 package oauth.signpost.signature;
 
+import java.util.Iterator;
+
 import oauth.signpost.OAuth;
 import oauth.signpost.http.HttpParameters;
 import oauth.signpost.http.HttpRequest;
@@ -18,33 +20,25 @@ public class AuthorizationHeaderSigningStrategy implements SigningStrategy {
         StringBuilder sb = new StringBuilder();
 
         sb.append("OAuth ");
+
+        // add the realm parameter, if any
         if (requestParameters.containsKey("realm")) {
             sb.append(requestParameters.getAsHeaderElement("realm"));
             sb.append(", ");
         }
-        if (requestParameters.containsKey(OAuth.OAUTH_TOKEN)) {
-            sb.append(requestParameters.getAsHeaderElement(OAuth.OAUTH_TOKEN));
-            sb.append(", ");
+
+        // add all (x_)oauth parameters
+        HttpParameters oauthParams = requestParameters.getOAuthParameters();
+        oauthParams.put(OAuth.OAUTH_SIGNATURE, signature, true);
+
+        Iterator<String> iter = oauthParams.keySet().iterator();
+        while (iter.hasNext()) {
+            String key = iter.next();
+            sb.append(oauthParams.getAsHeaderElement(key));
+            if (iter.hasNext()) {
+                sb.append(", ");
+            }
         }
-        if (requestParameters.containsKey(OAuth.OAUTH_CALLBACK)) {
-            sb.append(requestParameters.getAsHeaderElement(OAuth.OAUTH_CALLBACK));
-            sb.append(", ");
-        }
-        if (requestParameters.containsKey(OAuth.OAUTH_VERIFIER)) {
-            sb.append(requestParameters.getAsHeaderElement(OAuth.OAUTH_VERIFIER));
-            sb.append(", ");
-        }
-        sb.append(requestParameters.getAsHeaderElement(OAuth.OAUTH_CONSUMER_KEY));
-        sb.append(", ");
-        sb.append(requestParameters.getAsHeaderElement(OAuth.OAUTH_VERSION));
-        sb.append(", ");
-        sb.append(requestParameters.getAsHeaderElement(OAuth.OAUTH_SIGNATURE_METHOD));
-        sb.append(", ");
-        sb.append(requestParameters.getAsHeaderElement(OAuth.OAUTH_TIMESTAMP));
-        sb.append(", ");
-        sb.append(requestParameters.getAsHeaderElement(OAuth.OAUTH_NONCE));
-        sb.append(", ");
-        sb.append(OAuth.toHeaderElement(OAuth.OAUTH_SIGNATURE, signature));
 
         String header = sb.toString();
         request.setHeader(OAuth.HTTP_AUTHORIZATION_HEADER, header);
