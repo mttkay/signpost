@@ -73,9 +73,11 @@ public interface OAuthConsumer extends Serializable {
      * oauth_callback or oauth_verifier) which will go directly into the signer,
      * i.e. you don't have to put them into the request first. The consumer's
      * {@link SigningStrategy} will then take care of writing them to the
-     * correct part of the request before it is sent. Note that these parameters
-     * are expected to already be percent encoded -- they will be simply merged
-     * as-is.
+     * correct part of the request before it is sent. This is useful if you want
+     * to pre-set custom OAuth parameters. Note that these parameters are
+     * expected to already be percent encoded -- they will be simply merged
+     * as-is. <b>BE CAREFUL WITH THIS METHOD! Your service provider may decide
+     * to ignore any non-standard OAuth params when computing the signature.</b>
      * 
      * @param additionalParameters
      *        the parameters
