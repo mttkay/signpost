@@ -249,7 +249,7 @@ public class OAuth {
      * which yields:
      * 
      * <pre>
-     * OAuth realm="http://example.com", oauth_token="x%25y"
+     * OAuth realm=&quot;http://example.com&quot;, oauth_token=&quot;x%25y&quot;
      * </pre>
      * 
      * @param kvPairs
@@ -263,8 +263,9 @@ public class OAuth {
             if (i > 0) {
                 sb.append(", ");
             }
-            String value = kvPairs[i].startsWith("oauth_") ? OAuth
-                .percentEncode(kvPairs[i + 1]) : kvPairs[i + 1];
+            boolean isOAuthElem = kvPairs[i].startsWith("oauth_")
+                    || kvPairs[i].startsWith("x_oauth_");
+            String value = isOAuthElem ? OAuth.percentEncode(kvPairs[i + 1]) : kvPairs[i + 1];
             sb.append(OAuth.percentEncode(kvPairs[i]) + "=\"" + value + "\"");
         }
         return sb.toString();
