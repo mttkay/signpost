@@ -106,6 +106,26 @@
         -->
       </plugin>
     </plugins>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <artifactId>maven-antrun-plugin</artifactId>
+          <executions>
+            <execution>
+              <phase>install</phase>
+              <goals>
+                <goal>run</goal>
+              </goals>
+              <configuration>
+                <tasks>
+                  <copy file="${build.directory}/${build.finalName}.${project.packaging}" todir="${copyTo}" />
+                </tasks>
+              </configuration>
+            </execution>
+          </executions>
+        </plugin>    
+      </plugins>
+    </pluginManagement>
   </build>
 
   <distributionManagement>

@@ -29,4 +29,13 @@
       <scope>test</scope>
     </dependency>        
   </dependencies>
+  
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-antrun-plugin</artifactId>
+      </plugin>    
+    </plugins>
+  </build>
+  
 </project>
