@@ -238,6 +238,13 @@ public class OAuth {
         return addQueryParameters(url, kvPairs);
     }
 
+    public static String addQueryString(String url, String queryString) {
+        String queryDelim = url.contains("?") ? "&" : "?";
+        StringBuilder sb = new StringBuilder(url + queryDelim);
+        sb.append(queryString);
+        return sb.toString();
+    }
+
     /**
      * Builds an OAuth header from the given list of header fields. All
      * parameters starting in 'oauth_*' will be percent encoded.
