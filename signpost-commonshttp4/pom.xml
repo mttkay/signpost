@@ -12,7 +12,7 @@
     <dependency>
       <groupId>oauth.signpost</groupId>
       <artifactId>signpost-core</artifactId>
-      <version>1.2.2-SNAPSHOT</version>
+      <version>${project.version}</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
@@ -30,7 +30,7 @@
     <dependency>
       <groupId>oauth.signpost</groupId>
       <artifactId>signpost-core</artifactId>
-      <version>1.2.2-SNAPSHOT</version>
+      <version>${project.version}</version>
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>    
