@@ -199,8 +199,24 @@ public class HttpParameters implements Map<String, SortedSet<String>>, Serializa
      * @return the query string
      */
     public String getAsQueryString(Object key) {
+    	return getAsQueryString(key, true);
+    }
+
+    /**
+     * Concatenates all values for the given key to a list of key/value pairs
+     * suitable for use in a URL query string.
+     * 
+     * @param key
+     *        the parameter name
+     * @param percentEncode
+     *        whether key should be percent encoded before being
+     *        used with the map
+     * @return the query string
+     */
+    public String getAsQueryString(Object key, boolean percentEncode) {
         StringBuilder sb = new StringBuilder();
-        key = OAuth.percentEncode((String) key);
+        if(percentEncode)
+        	key = OAuth.percentEncode((String) key);
         Set<String> values = wrappedMap.get(key);
         if (values == null) {
             return key + "=";
@@ -214,7 +230,7 @@ public class HttpParameters implements Map<String, SortedSet<String>>, Serializa
         }
         return sb.toString();
     }
-
+    
     public String getAsHeaderElement(String key) {
         String value = getFirst(key);
         if (value == null) {
