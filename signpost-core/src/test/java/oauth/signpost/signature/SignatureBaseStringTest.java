@@ -129,4 +129,20 @@ public class SignatureBaseStringTest extends SignpostTestBase {
         
         assertEquals("GET&http%3A%2F%2Fexamplebrackets.com%2F&a%255B%255D%3D1", sbs.generate());
     }
+
+
+    @Test
+    public void shouldWorkWithMultipleParametersWithBracketsOfSameName() throws Exception {
+        HttpRequest request = mock(HttpRequest.class);
+        when(request.getMethod()).thenReturn("GET");
+        when(request.getRequestUrl()).thenReturn("http://examplemultiple.com");
+
+        HttpParameters params = new HttpParameters();
+        params.put("a[]", "1", true);
+        params.put("a[]", "2", true);
+
+        SignatureBaseString sbs = new SignatureBaseString(request, params);
+        
+        assertEquals("GET&http%3A%2F%2Fexamplemultiple.com%2F&a%255B%255D%3D1%26a%255B%255D%3D2", sbs.generate());
+    }
 }
