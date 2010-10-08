@@ -32,6 +32,7 @@
     <module>signpost-core</module>
     <module>signpost-commonshttp4</module>
     <module>signpost-jetty6</module>
+    <module>signpost-appengine</module>
   </modules>
 
   <licenses>
