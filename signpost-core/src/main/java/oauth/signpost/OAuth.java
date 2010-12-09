@@ -38,6 +38,8 @@ public class OAuth {
     public static final String FORM_ENCODED = "application/x-www-form-urlencoded";
 
     public static final String HTTP_AUTHORIZATION_HEADER = "Authorization";
+    
+    public static final String HTTP_PROXY_AUTHORIZATION_HEADER = "Proxy-Authorization";
 
     public static final String OAUTH_CONSUMER_KEY = "oauth_consumer_key";
 

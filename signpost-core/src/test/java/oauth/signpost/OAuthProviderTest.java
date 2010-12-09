@@ -12,11 +12,13 @@ import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.URL;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import oauth.signpost.basic.DefaultOAuthConsumer;
 import oauth.signpost.exception.OAuthExpectationFailedException;
 import oauth.signpost.http.HttpParameters;
 import oauth.signpost.http.HttpRequest;
+import oauth.signpost.http.HttpResponse;
 import oauth.signpost.mocks.OAuthProviderMock;
 
 import org.junit.Before;
@@ -111,6 +113,34 @@ public abstract class OAuthProviderTest extends SignpostTestBase {
 
         verify(consumerMock).sign((HttpRequest) anyObject());
         verify(consumerMock).setTokenWithSecret(TOKEN, TOKEN_SECRET);
+    }
+    
+    @Test
+    public void shouldHonorAuthorizationHeader() throws Exception {
+
+    	final AtomicBoolean requestPrepared = new AtomicBoolean(false);
+        provider.setListener(new OAuthProviderListener() {
+			public void prepareSubmission(HttpRequest request) throws Exception {
+			}
+			
+			public void prepareRequest(HttpRequest request) throws Exception {
+				String realm = "realm=\"localhost\"";
+				request.setHeader(OAuth.HTTP_AUTHORIZATION_HEADER, realm);
+				request.setHeader(OAuth.HTTP_PROXY_AUTHORIZATION_HEADER, realm);
+				
+				assertEquals(realm, request.getHeader(OAuth.HTTP_AUTHORIZATION_HEADER));
+				assertEquals(realm, request.getHeader(OAuth.HTTP_PROXY_AUTHORIZATION_HEADER));
+				
+				requestPrepared.set(true);
+			}
+			
+			public boolean onResponseReceived(HttpRequest request, HttpResponse response)
+					throws Exception {
+				return false;
+			}
+		});
+        provider.retrieveAccessToken(consumerMock, null);
+        assertTrue(requestPrepared.get());
     }
 
     @Test
