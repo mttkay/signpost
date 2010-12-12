@@ -14,18 +14,22 @@ public class HttpResponseAdapter implements HttpResponse {
     }
 
     public InputStream getContent() throws IOException {
-        return response.getEntity().getContent();
+        return this.response.getEntity().getContent();
+    }
+    
+    public InputStream getErrorContent() throws IOException {
+    	return getContent();
     }
 
     public int getStatusCode() throws IOException {
-        return response.getStatusLine().getStatusCode();
+        return this.response.getStatusLine().getStatusCode();
     }
 
     public String getReasonPhrase() throws Exception {
-        return response.getStatusLine().getReasonPhrase();
+        return this.response.getStatusLine().getReasonPhrase();
     }
 
     public Object unwrap() {
-        return response;
+        return this.response;
     }
 }

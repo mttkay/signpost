@@ -28,22 +28,31 @@ import oauth.signpost.http.HttpResponse;
 public class DefaultOAuthProvider extends AbstractOAuthProvider {
 
     private static final long serialVersionUID = 1L;
+	private final String method;
 
     public DefaultOAuthProvider(String requestTokenEndpointUrl, String accessTokenEndpointUrl,
             String authorizationWebsiteUrl) {
-        super(requestTokenEndpointUrl, accessTokenEndpointUrl, authorizationWebsiteUrl);
+        this(requestTokenEndpointUrl, accessTokenEndpointUrl, authorizationWebsiteUrl, "POST");
+    }
+    
+    public DefaultOAuthProvider(String requestTokenEndpointUrl, String accessTokenEndpointUrl,
+    		String authorizationWebsiteUrl, String method) {
+    	super(requestTokenEndpointUrl, accessTokenEndpointUrl, authorizationWebsiteUrl);
+    	this.method = method;
     }
 
-    protected HttpRequest createRequest(String endpointUrl) throws MalformedURLException,
+    @Override
+	protected HttpRequest createRequest(String endpointUrl) throws MalformedURLException,
             IOException {
         HttpURLConnection connection = (HttpURLConnection) new URL(endpointUrl).openConnection();
-        connection.setRequestMethod("POST");
+        connection.setRequestMethod(this.method);
         connection.setAllowUserInteraction(false);
         connection.setRequestProperty("Content-Length", "0");
         return new HttpURLConnectionRequestAdapter(connection);
     }
 
-    protected HttpResponse sendRequest(HttpRequest request) throws IOException {
+    @Override
+	protected HttpResponse sendRequest(HttpRequest request) throws IOException {
         HttpURLConnection connection = (HttpURLConnection) request.unwrap();
         connection.connect();
         return new HttpURLConnectionResponseAdapter(connection);

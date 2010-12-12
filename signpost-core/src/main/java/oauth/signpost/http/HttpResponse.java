@@ -10,6 +10,8 @@ public interface HttpResponse {
     String getReasonPhrase() throws Exception;
 
     InputStream getContent() throws IOException;
+    
+    InputStream getErrorContent() throws IOException;
 
     /**
      * Returns the underlying response object, in case you need to work on it

@@ -11,6 +11,7 @@
 package oauth.signpost;
 
 import java.io.BufferedReader;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
@@ -66,19 +67,19 @@ public abstract class AbstractOAuthProvider implements OAuthProvider {
 
         // 1.0a expects the callback to be sent while getting the request token.
         // 1.0 service providers would simply ignore this parameter.
-        retrieveToken(consumer, requestTokenEndpointUrl, OAuth.OAUTH_CALLBACK, callbackUrl);
+        retrieveToken(consumer, this.requestTokenEndpointUrl, OAuth.OAUTH_CALLBACK, callbackUrl);
 
-        String callbackConfirmed = responseParameters.getFirst(OAuth.OAUTH_CALLBACK_CONFIRMED);
-        responseParameters.remove(OAuth.OAUTH_CALLBACK_CONFIRMED);
-        isOAuth10a = Boolean.TRUE.toString().equals(callbackConfirmed);
+        String callbackConfirmed = this.responseParameters.getFirst(OAuth.OAUTH_CALLBACK_CONFIRMED);
+        this.responseParameters.remove(OAuth.OAUTH_CALLBACK_CONFIRMED);
+        this.isOAuth10a = Boolean.TRUE.toString().equals(callbackConfirmed);
 
         // 1.0 service providers expect the callback as part of the auth URL,
         // Do not send when 1.0a.
-        if (isOAuth10a) {
-            return OAuth.addQueryParameters(authorizationWebsiteUrl, OAuth.OAUTH_TOKEN,
+        if (this.isOAuth10a) {
+            return OAuth.addQueryParameters(this.authorizationWebsiteUrl, OAuth.OAUTH_TOKEN,
                 consumer.getToken());
         } else {
-            return OAuth.addQueryParameters(authorizationWebsiteUrl, OAuth.OAUTH_TOKEN,
+            return OAuth.addQueryParameters(this.authorizationWebsiteUrl, OAuth.OAUTH_TOKEN,
                 consumer.getToken(), OAuth.OAUTH_CALLBACK, callbackUrl);
         }
     }
@@ -93,10 +94,10 @@ public abstract class AbstractOAuthProvider implements OAuthProvider {
                             + "Did you retrieve an authorized request token before?");
         }
 
-        if (isOAuth10a && oauthVerifier != null) {
-            retrieveToken(consumer, accessTokenEndpointUrl, OAuth.OAUTH_VERIFIER, oauthVerifier);
+        if (this.isOAuth10a && oauthVerifier != null) {
+            retrieveToken(consumer, this.accessTokenEndpointUrl, OAuth.OAUTH_VERIFIER, oauthVerifier);
         } else {
-            retrieveToken(consumer, accessTokenEndpointUrl);
+            retrieveToken(consumer, this.accessTokenEndpointUrl);
         }
     }
 
@@ -225,7 +226,11 @@ public abstract class AbstractOAuthProvider implements OAuthProvider {
         if (response == null) {
             return;
         }
-        BufferedReader reader = new BufferedReader(new InputStreamReader(response.getContent()));
+        InputStream content = response.getErrorContent();
+        if (content == null) {
+        	content = response.getContent();
+        }
+		BufferedReader reader = new BufferedReader(new InputStreamReader(content));
         StringBuilder responseBody = new StringBuilder();
 
         String line = reader.readLine();
@@ -238,8 +243,9 @@ public abstract class AbstractOAuthProvider implements OAuthProvider {
         case 401:
             throw new OAuthNotAuthorizedException(responseBody.toString());
         default:
-            throw new OAuthCommunicationException("Service provider responded in error: "
-                    + statusCode + " (" + response.getReasonPhrase() + ")", responseBody.toString());
+        	String msg = String.format("Service provider responded in error: %s (%s). Reponse Body: %s", 
+        			statusCode, response.getReasonPhrase(), responseBody.toString());
+        	throw new OAuthCommunicationException(msg);
         }
     }
 
@@ -283,7 +289,7 @@ public abstract class AbstractOAuthProvider implements OAuthProvider {
     }
 
     public HttpParameters getResponseParameters() {
-        return responseParameters;
+        return this.responseParameters;
     }
 
     /**
@@ -296,7 +302,7 @@ public abstract class AbstractOAuthProvider implements OAuthProvider {
      * @return the parameter value
      */
     protected String getResponseParameter(String key) {
-        return responseParameters.getFirst(key);
+        return this.responseParameters.getFirst(key);
     }
 
     public void setResponseParameters(HttpParameters parameters) {
@@ -308,7 +314,7 @@ public abstract class AbstractOAuthProvider implements OAuthProvider {
     }
 
     public boolean isOAuth10a() {
-        return isOAuth10a;
+        return this.isOAuth10a;
     }
 
     public String getRequestTokenEndpointUrl() {
@@ -324,11 +330,11 @@ public abstract class AbstractOAuthProvider implements OAuthProvider {
     }
 
     public void setRequestHeader(String header, String value) {
-        defaultHeaders.put(header, value);
+        this.defaultHeaders.put(header, value);
     }
 
     public Map<String, String> getRequestHeaders() {
-        return defaultHeaders;
+        return this.defaultHeaders;
     }
 
     public void setListener(OAuthProviderListener listener) {

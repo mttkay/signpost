@@ -24,12 +24,16 @@ public class OAuthCommunicationException extends OAuthException {
                 + cause.getLocalizedMessage(), cause);
     }
     
+    public OAuthCommunicationException(String message) {
+        super(message);
+    }
+    
     public OAuthCommunicationException(String message, String responseBody) {
         super(message);
         this.responseBody = responseBody;
     }
     
     public String getResponseBody() {
-        return responseBody;
+        return this.responseBody;
     }
 }

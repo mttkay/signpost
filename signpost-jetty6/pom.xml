@@ -12,8 +12,6 @@
     <dependency>
       <groupId>oauth.signpost</groupId>
       <artifactId>signpost-core</artifactId>
-      <version>1.2.1.1</version>
-      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.mortbay.jetty</groupId>

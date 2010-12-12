@@ -23,12 +23,17 @@ import javax.crypto.spec.SecretKeySpec;
 
 import oauth.signpost.OAuth;
 import oauth.signpost.exception.OAuthMessageSignerException;
-import oauth.signpost.http.HttpRequest;
 import oauth.signpost.http.HttpParameters;
+import oauth.signpost.http.HttpRequest;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @SuppressWarnings("serial")
 public class HmacSha1MessageSigner extends OAuthMessageSigner {
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(HmacSha1MessageSigner.class);
+	
 	private static final String MAC_NAME = "HmacSHA1";
 
 	@Override
@@ -49,7 +54,7 @@ public class HmacSha1MessageSigner extends OAuthMessageSigner {
             mac.init(key);
 
             String sbs = new SignatureBaseString(request, requestParams).generate();
-            OAuth.debugOut("SBS", sbs);
+            LOGGER.debug("SBS {}", sbs);
             byte[] text = sbs.getBytes(OAuth.ENCODING);
 
             return base64Encode(mac.doFinal(text)).trim();

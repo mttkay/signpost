@@ -301,9 +301,4 @@ public class OAuth {
         return OAuth.percentEncode(name) + "=\"" + OAuth.percentEncode(value) + "\"";
     }
 
-    public static void debugOut(String key, String value) {
-        if (System.getProperty("debug") != null) {
-            System.out.println("[SIGNPOST] " + key + ": " + value);
-        }
-    }
 }
