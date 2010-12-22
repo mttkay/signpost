@@ -286,7 +286,20 @@ public class HttpParameters implements Map<String, SortedSet<String>>, Serializa
         return wrappedMap.values();
     }
 
-    public Set<java.util.Map.Entry<String, SortedSet<String>>> entrySet() {
+    public Set<Entry<String, SortedSet<String>>> entrySet() {
         return wrappedMap.entrySet();
+    }
+
+    public HttpParameters getOAuthParameters() {
+        HttpParameters oauthParams = new HttpParameters();
+
+        for (Entry<String, SortedSet<String>> param : this.entrySet()) {
+            String key = param.getKey();
+            if (key.startsWith("oauth_") || key.startsWith("x_oauth_")) {
+                oauthParams.put(key, param.getValue());
+            }
+        }
+
+        return oauthParams;
     }
 }
