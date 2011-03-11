@@ -33,11 +33,16 @@ public class DefaultOAuthProvider extends AbstractOAuthProvider {
             String authorizationWebsiteUrl) {
         super(requestTokenEndpointUrl, accessTokenEndpointUrl, authorizationWebsiteUrl);
     }
+    
+    public DefaultOAuthProvider(String requestTokenEndpointUrl, String accessTokenEndpointUrl,
+            String authorizationWebsiteUrl, final String httpMethod) {
+        super(requestTokenEndpointUrl, accessTokenEndpointUrl, authorizationWebsiteUrl, httpMethod);
+    }
 
     protected HttpRequest createRequest(String endpointUrl) throws MalformedURLException,
             IOException {
         HttpURLConnection connection = (HttpURLConnection) new URL(endpointUrl).openConnection();
-        connection.setRequestMethod("POST");
+        connection.setRequestMethod(this.method);
         connection.setAllowUserInteraction(false);
         connection.setRequestProperty("Content-Length", "0");
         return new HttpURLConnectionRequestAdapter(connection);

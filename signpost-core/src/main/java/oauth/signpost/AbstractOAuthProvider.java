@@ -31,7 +31,6 @@ import oauth.signpost.http.HttpResponse;
  * @author Matthias Kaeppler
  */
 public abstract class AbstractOAuthProvider implements OAuthProvider {
-
     private static final long serialVersionUID = 1L;
 
     private String requestTokenEndpointUrl;
@@ -47,14 +46,25 @@ public abstract class AbstractOAuthProvider implements OAuthProvider {
     private boolean isOAuth10a;
 
     private transient OAuthProviderListener listener;
-
+    
+    protected final String method;
+    
     public AbstractOAuthProvider(String requestTokenEndpointUrl, String accessTokenEndpointUrl,
-            String authorizationWebsiteUrl) {
+            String authorizationWebsiteUrl, final String httpMethod) {
         this.requestTokenEndpointUrl = requestTokenEndpointUrl;
         this.accessTokenEndpointUrl = accessTokenEndpointUrl;
         this.authorizationWebsiteUrl = authorizationWebsiteUrl;
         this.responseParameters = new HttpParameters();
         this.defaultHeaders = new HashMap<String, String>();
+        if (null == httpMethod || !(httpMethod.toUpperCase().equals("GET") || httpMethod.toUpperCase().equals("POST"))) {
+        	throw new IllegalArgumentException("You must specify a valid httpMethod (GET or POST)");
+        } 
+    	this.method = httpMethod;
+    }
+
+    public AbstractOAuthProvider(String requestTokenEndpointUrl, String accessTokenEndpointUrl,
+            String authorizationWebsiteUrl) {
+    	this(requestTokenEndpointUrl, accessTokenEndpointUrl, authorizationWebsiteUrl, OAuthProvider.HTTP_POST);
     }
 
     public String retrieveRequestToken(OAuthConsumer consumer, String callbackUrl)

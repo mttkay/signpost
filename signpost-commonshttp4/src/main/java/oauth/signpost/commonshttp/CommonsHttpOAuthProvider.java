@@ -18,6 +18,7 @@ import oauth.signpost.http.HttpRequest;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -44,18 +45,30 @@ public class CommonsHttpOAuthProvider extends AbstractOAuthProvider {
     }
 
     public CommonsHttpOAuthProvider(String requestTokenEndpointUrl, String accessTokenEndpointUrl,
+    		String authorizationWebsiteUrl, final String httpMethod) {
+    	super(requestTokenEndpointUrl, accessTokenEndpointUrl, authorizationWebsiteUrl, httpMethod);
+    	this.httpClient = new DefaultHttpClient();
+    }
+
+    public CommonsHttpOAuthProvider(String requestTokenEndpointUrl, String accessTokenEndpointUrl,
             String authorizationWebsiteUrl, HttpClient httpClient) {
         super(requestTokenEndpointUrl, accessTokenEndpointUrl, authorizationWebsiteUrl);
         this.httpClient = httpClient;
     }
-
+    
+    public CommonsHttpOAuthProvider(String requestTokenEndpointUrl, String accessTokenEndpointUrl,
+    		String authorizationWebsiteUrl, HttpClient httpClient, String httpMethod) {
+    	super(requestTokenEndpointUrl, accessTokenEndpointUrl, authorizationWebsiteUrl, httpMethod);
+    	this.httpClient = httpClient;
+    }
+    
     public void setHttpClient(HttpClient httpClient) {
         this.httpClient = httpClient;
     }
 
     @Override
     protected HttpRequest createRequest(String endpointUrl) throws Exception {
-        HttpPost request = new HttpPost(endpointUrl);
+    	HttpUriRequest request = this.method.equals(HTTP_POST) ? new HttpPost(endpointUrl) : new HttpGet(endpointUrl);  
         return new HttpRequestAdapter(request);
     }
 

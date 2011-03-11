@@ -83,6 +83,8 @@ import oauth.signpost.http.HttpParameters;
  * @see OAuthProviderListener
  */
 public interface OAuthProvider extends Serializable {
+	public static final String HTTP_GET = "GET";
+	public static final String HTTP_POST = "POST";
 
     /**
      * Queries the service provider for a request token.
