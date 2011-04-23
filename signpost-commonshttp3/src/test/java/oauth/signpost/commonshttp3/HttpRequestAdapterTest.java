@@ -16,7 +16,7 @@ public class HttpRequestAdapterTest extends HttpRequestAdapterTestBase {
     public void prepareRequest() throws Exception {
         PostMethod method = new PostMethod(URL);
         method.setRequestHeader(HEADER_NAME, HEADER_VALUE);
-        RequestEntity body = new StringRequestEntity(PAYLOAD,CONTENT_TYPE,"UTF-8");
+        RequestEntity body = new StringRequestEntity(PAYLOAD,CONTENT_TYPE,null);
         method.setRequestEntity(body);
         request = new Http3RequestAdapter(method);
     }

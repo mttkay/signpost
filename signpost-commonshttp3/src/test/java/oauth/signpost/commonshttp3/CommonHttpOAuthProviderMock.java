@@ -10,6 +10,10 @@ import java.io.InputStream;
 
 import oauth.signpost.http.HttpRequest;
 import oauth.signpost.mocks.OAuthProviderMock;
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.HttpMethod;
+import org.apache.commons.httpclient.StatusLine;
+import org.apache.commons.httpclient.methods.PostMethod;
 
 import org.mockito.Mockito;
 
@@ -17,7 +21,7 @@ import org.mockito.Mockito;
 public class CommonHttpOAuthProviderMock extends CommonsHttp3OAuthProvider implements
         OAuthProviderMock {
 
-   // private HttpClient httpClientMock;
+	private HttpMethod httpMethodMock;
 
     public CommonHttpOAuthProviderMock(String requestTokenUrl, String accessTokenUrl,
             String websiteUrl) {
@@ -26,27 +30,20 @@ public class CommonHttpOAuthProviderMock extends CommonsHttp3OAuthProvider imple
 
     @Override
     protected oauth.signpost.http.HttpResponse sendRequest(HttpRequest request) throws Exception {
-		/*
-        HttpResponse resp = httpClientMock.execute((HttpUriRequest) request.unwrap());
-        return new Http3ResponseAdapter(resp);
-		 * 
-		 * 
-		 */
-		return null;
+
+        return new Http3ResponseAdapter(this.httpMethodMock);
     }
 
     public void mockConnection(String responseBody) throws Exception {
-		/*
-        HttpResponse response = mock(HttpResponse.class);
-        this.httpClientMock = mock(HttpClient.class);
-        InputStream is = new ByteArrayInputStream(responseBody.getBytes());
-        InputStreamEntity entity = new InputStreamEntity(is, responseBody.length());
-        StatusLine statusLine = new BasicStatusLine(new ProtocolVersion("HTTP", 1, 1), 200, "OK");
+		
 
-        when(response.getStatusLine()).thenReturn(statusLine);
-        when(response.getEntity()).thenReturn(entity);
-        when(httpClientMock.execute(Mockito.any(HttpUriRequest.class))).thenReturn(response);
-		 * 
-		 */
+        InputStream is = new ByteArrayInputStream(responseBody.getBytes());
+        StatusLine statusLine = new StatusLine("HTTP/1.1 200 OK");
+
+		this.httpMethodMock = mock(HttpMethod.class);
+	   
+        when(httpMethodMock.getStatusLine()).thenReturn(statusLine);
+        when(httpMethodMock.getStatusCode()).thenReturn(200);
+        when(httpMethodMock.getResponseBodyAsStream()).thenReturn(is);
     }
 }

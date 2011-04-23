@@ -58,8 +58,15 @@ public class Http3RequestAdapter implements oauth.signpost.http.HttpRequest {
     }
 
     public String getContentType() {
-		Header header = httpMethod.getRequestHeader("Content-Type");
-        return   (header == null) ? null : header.getValue();
+		String type = null;
+		if(httpMethod instanceof PostMethod){
+            PostMethod postMethod = (PostMethod) httpMethod;			
+			type = postMethod.getRequestEntity().getContentType();
+		}else{
+			Header header = httpMethod.getRequestHeader("Content-Type");
+            type =   (header == null) ? null : header.getValue();
+		}
+		return type;
     }
 
     public InputStream getMessagePayload() throws IOException {
