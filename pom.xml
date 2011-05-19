@@ -30,6 +30,7 @@
 
   <modules>
     <module>signpost-core</module>
+    <module>signpost-commonshttp3</module>
     <module>signpost-commonshttp4</module>
     <module>signpost-jetty6</module>
   </modules>
