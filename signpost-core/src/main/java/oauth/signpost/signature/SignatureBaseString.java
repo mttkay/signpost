@@ -110,6 +110,9 @@ public class SignatureBaseString {
                 sb.append("&");
             }
 
+			// Decode our parameters
+			param = OAuth.percentDecode(param);
+
             sb.append(requestParameters.getAsQueryString(param));
         }
         return sb.toString();
