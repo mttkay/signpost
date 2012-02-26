@@ -41,6 +41,7 @@ public class AuthorizationHeaderSigningStrategy implements SigningStrategy {
         }
 
         String header = sb.toString();
+        OAuth.debugOut("Auth Header", header);
         request.setHeader(OAuth.HTTP_AUTHORIZATION_HEADER, header);
 
         return header;
