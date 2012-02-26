@@ -15,7 +15,11 @@ public class HttpURLConnectionResponseAdapter implements HttpResponse {
     }
 
     public InputStream getContent() throws IOException {
-        return connection.getInputStream();
+        try {
+            return connection.getInputStream();
+        } catch (IOException e) {
+            return connection.getErrorStream();
+        }
     }
 
     public int getStatusCode() throws IOException {
