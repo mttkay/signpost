@@ -57,7 +57,7 @@ public abstract class AbstractOAuthProvider implements OAuthProvider {
         this.defaultHeaders = new HashMap<String, String>();
     }
 
-    public String retrieveRequestToken(OAuthConsumer consumer, String callbackUrl,
+    public synchronized String retrieveRequestToken(OAuthConsumer consumer, String callbackUrl,
             String... customOAuthParams) throws OAuthMessageSignerException,
             OAuthNotAuthorizedException, OAuthExpectationFailedException,
             OAuthCommunicationException {
@@ -88,7 +88,7 @@ public abstract class AbstractOAuthProvider implements OAuthProvider {
         }
     }
 
-    public void retrieveAccessToken(OAuthConsumer consumer, String oauthVerifier,
+    public synchronized void retrieveAccessToken(OAuthConsumer consumer, String oauthVerifier,
             String... customOAuthParams) throws OAuthMessageSignerException,
             OAuthNotAuthorizedException, OAuthExpectationFailedException,
             OAuthCommunicationException {
@@ -167,13 +167,13 @@ public abstract class AbstractOAuthProvider implements OAuthProvider {
             if (customOAuthParams != null && !customOAuthParams.isEmpty()) {
                 consumer.setAdditionalParameters(customOAuthParams);
             }
-
+            
             if (this.listener != null) {
                 this.listener.prepareRequest(request);
             }
 
             consumer.sign(request);
-
+            
             if (this.listener != null) {
                 this.listener.prepareSubmission(request);
             }

@@ -33,7 +33,7 @@ import oauth.signpost.signature.SigningStrategy;
 /**
  * ABC for consumer implementations. If you're developing a custom consumer you
  * will probably inherit from this class to save you a lot of work.
- * 
+ *
  * @author Matthias Kaeppler
  */
 public abstract class AbstractOAuthConsumer implements OAuthConsumer {
@@ -54,8 +54,10 @@ public abstract class AbstractOAuthConsumer implements OAuthConsumer {
 
     // these are the params which will be passed to the message signer
     private HttpParameters requestParameters;
-
+    
     private boolean sendEmptyTokens;
+    
+    final private Random random = new Random(System.nanoTime());
 
     public AbstractOAuthConsumer(String consumerKey, String consumerSecret) {
         this.consumerKey = consumerKey;
@@ -77,7 +79,7 @@ public abstract class AbstractOAuthConsumer implements OAuthConsumer {
         this.additionalParameters = additionalParameters;
     }
 
-    public HttpRequest sign(HttpRequest request) throws OAuthMessageSignerException,
+    public synchronized HttpRequest sign(HttpRequest request) throws OAuthMessageSignerException,
             OAuthExpectationFailedException, OAuthCommunicationException {
         if (consumerKey == null) {
             throw new OAuthExpectationFailedException("consumer key not set");
@@ -108,18 +110,17 @@ public abstract class AbstractOAuthConsumer implements OAuthConsumer {
         OAuth.debugOut("signature", signature);
 
         signingStrategy.writeSignature(signature, request, requestParameters);
-        OAuth.debugOut("Auth header", request.getHeader("Authorization"));
         OAuth.debugOut("Request URL", request.getRequestUrl());
 
         return request;
     }
 
-    public HttpRequest sign(Object request) throws OAuthMessageSignerException,
+    public synchronized HttpRequest sign(Object request) throws OAuthMessageSignerException,
             OAuthExpectationFailedException, OAuthCommunicationException {
         return sign(wrap(request));
     }
 
-    public String sign(String url) throws OAuthMessageSignerException,
+    public synchronized String sign(String url) throws OAuthMessageSignerException,
             OAuthExpectationFailedException, OAuthCommunicationException {
         HttpRequest request = new UrlStringRequestAdapter(url);
 
@@ -138,7 +139,7 @@ public abstract class AbstractOAuthConsumer implements OAuthConsumer {
     /**
      * Adapts the given request object to a Signpost {@link HttpRequest}. How
      * this is done depends on the consumer implementation.
-     * 
+     *
      * @param request
      *        the native HTTP request instance
      * @return the adapted request
@@ -178,7 +179,7 @@ public abstract class AbstractOAuthConsumer implements OAuthConsumer {
      * to generate different nonces or timestamps, override
      * {@link #generateNonce()} or {@link #generateTimestamp()} instead.
      * </p>
-     * 
+     *
      * @param out
      *        the request parameter which should be completed
      */
@@ -256,6 +257,6 @@ public abstract class AbstractOAuthConsumer implements OAuthConsumer {
     }
 
     protected String generateNonce() {
-        return Long.toString(new Random().nextLong());
+        return Long.toString(random.nextLong());
     }
 }
