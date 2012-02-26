@@ -16,7 +16,7 @@ public class HttpRequestAdapter implements oauth.signpost.http.HttpRequest {
 
     private HttpEntity entity;
 
-    public HttpRequestAdapter(HttpUriRequest request) {
+    public HttpRequestAdapter(org.apache.http.client.methods.HttpUriRequest request) {
         this.request = request;
         if (request instanceof HttpEntityEnclosingRequest) {
             entity = ((HttpEntityEnclosingRequest) request).getEntity();

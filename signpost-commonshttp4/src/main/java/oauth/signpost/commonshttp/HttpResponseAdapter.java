@@ -3,9 +3,8 @@ package oauth.signpost.commonshttp;
 import java.io.IOException;
 import java.io.InputStream;
 
-import oauth.signpost.http.HttpResponse;
 
-public class HttpResponseAdapter implements HttpResponse {
+public class HttpResponseAdapter implements oauth.signpost.http.HttpResponse {
 
     private org.apache.http.HttpResponse response;
 
