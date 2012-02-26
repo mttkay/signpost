@@ -23,13 +23,20 @@ public class SigningStrategyTest extends SignpostTestBase {
 
         strategy = new AuthorizationHeaderSigningStrategy();
         assertEquals(
-            "OAuth realm=\"http://x.com\", oauth_signature=\"123\", oauth_token=\"abc\", x_oauth_custom_param=\"cde\"",
-            strategy.writeSignature(signature, httpGetMock, params));
+                "OAuth realm=\"http://x.com\", oauth_signature=\"123\", oauth_token=\"abc\", x_oauth_custom_param=\"cde\"",
+                strategy.writeSignature(signature, httpGetMock, params));
+        assertEquals(
+                "OAuth realm=\"http://x.com\", oauth_signature=\"123\", oauth_token=\"abc\", x_oauth_custom_param=\"cde\"",
+                strategy.writeSignature(signature, httpGetMockWithQueryString, params));
 
         strategy = new QueryStringSigningStrategy();
         assertEquals(
-            "http://www.example.com?oauth_signature=123&oauth_token=abc&x_oauth_custom_param=cde",
-            strategy.writeSignature(signature, httpGetMock, params));
+                "http://www.example.com?oauth_signature=123&oauth_token=abc&x_oauth_custom_param=cde",
+                strategy.writeSignature(signature, httpGetMock, params));
+
+        assertEquals(
+                "http://www.example.com?foo=bar&oauth_signature=123&oauth_token=abc&x_oauth_custom_param=cde",
+                strategy.writeSignature(signature, httpGetMockWithQueryString, params));
 
     }
 }

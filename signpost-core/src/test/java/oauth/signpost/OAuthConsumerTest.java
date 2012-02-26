@@ -1,9 +1,7 @@
 package oauth.signpost;
 
-import static junit.framework.Assert.assertNull;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
+import static org.hamcrest.CoreMatchers.*;
 import static org.mockito.Matchers.argThat;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.same;
@@ -25,6 +23,7 @@ import oauth.signpost.signature.OAuthMessageSigner;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatcher;
+import org.mockito.ArgumentCaptor;
 import org.mockito.runners.MockitoJUnit44Runner;
 
 @RunWith(MockitoJUnit44Runner.class)
@@ -59,7 +58,7 @@ public abstract class OAuthConsumerTest extends SignpostTestBase {
         consumer.sign(httpGetMock);
 
         verify(httpGetMock).setHeader(eq("Authorization"),
-            argThat(new IsCompleteListOfOAuthParameters()));
+                argThat(new IsCompleteListOfOAuthParameters()));
     }
 
     @Test
@@ -91,7 +90,7 @@ public abstract class OAuthConsumerTest extends SignpostTestBase {
         ByteArrayInputStream body = new ByteArrayInputStream("b=2+2".getBytes());
         when(request.getMessagePayload()).thenReturn(body);
         when(request.getContentType()).thenReturn(
-            "application/x-www-form-urlencoded; charset=ISO-8859-1");
+                "application/x-www-form-urlencoded; charset=ISO-8859-1");
         when(request.getHeader("Authorization")).thenReturn(
                 "OAuth realm=\"http%3A%2F%2Fexample.com\", oauth_token=\"12%25345\", oauth_signature=\"1234\"");
 
@@ -180,6 +179,50 @@ public abstract class OAuthConsumerTest extends SignpostTestBase {
         consumer.sign(httpGetMock);
     }
 
+    @Test
+    public void shoudNotCllideOnMultiThread() throws Exception {
+        for (int i = 0; i < 10; i++) {
+            initRequestMocks();
+
+            final OAuthConsumer consumer = buildConsumer(CONSUMER_KEY, CONSUMER_SECRET, null);
+            consumer.setTokenWithSecret(TOKEN, TOKEN_SECRET);
+            Thread t1 = new Thread() {
+
+                @Override
+                public void run() {
+                    try {
+                        consumer.sign(httpGetMock);
+                    } catch (Exception e) {
+                        throw new RuntimeException("sign error", e);
+                    }
+                }
+            };
+            Thread t2 = new Thread() {
+
+                @Override
+                public void run() {
+                    try {
+                        consumer.sign(httpGetMockWithQueryString);
+                    } catch (Exception e) {
+                        throw new RuntimeException("sign error", e);
+                    }
+                }
+            };
+            t1.start();
+            t2.start();
+            t1.join();
+            t2.join();
+
+            ArgumentCaptor<String> arg1 = ArgumentCaptor.forClass(String.class);
+            ArgumentCaptor<String> arg2 = ArgumentCaptor.forClass(String.class);
+
+            verify(httpGetMock).setHeader(eq("Authorization"), arg1.capture());
+            verify(httpGetMockWithQueryString).setHeader(eq("Authorization"), arg2.capture());
+            HttpParameters headerMap1 = OAuth.oauthHeaderToParamsMap(arg1.getValue());
+            HttpParameters headerMap2 = OAuth.oauthHeaderToParamsMap(arg2.getValue());
+            assertThat(headerMap1.getFirst(OAuth.OAUTH_NONCE), not(equalTo(headerMap2.getFirst(OAuth.OAUTH_NONCE))));
+        }
+    }
     // @Test
     // public void shouldSupport2LeggedOAuth() throws Exception {
     // OAuthConsumer consumer = buildConsumer(CONSUMER_KEY, CONSUMER_SECRET,
