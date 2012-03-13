@@ -107,6 +107,11 @@ public interface OAuthProvider extends Serializable {
      *        will fail authorization if you pass a callback URL but register
      *        your application as a desktop app (which would only be able to
      *        handle OOB requests).
+     * @param customOAuthParams
+     *        you can pass custom OAuth parameters here which will go directly
+     *        into the signer, i.e. you don't have to put them into the request
+     *        first. This is useful for pre-setting OAuth params for signing.
+     *        Pass them sequentially in key/value order.
      * @return The URL to which the user must be sent in order to authorize the
      *         consumer. It includes the unauthorized request token (and in the
      *         case of OAuth 1.0, the callback URL -- 1.0a clients send along
@@ -121,9 +126,10 @@ public interface OAuthProvider extends Serializable {
      * @throws OAuthCommunicationException
      *         if server communication failed
      */
-    public String retrieveRequestToken(OAuthConsumer consumer, String callbackUrl)
-            throws OAuthMessageSignerException, OAuthNotAuthorizedException,
-            OAuthExpectationFailedException, OAuthCommunicationException;
+    public String retrieveRequestToken(OAuthConsumer consumer, String callbackUrl,
+            String... customOAuthParams) throws OAuthMessageSignerException,
+            OAuthNotAuthorizedException, OAuthExpectationFailedException,
+            OAuthCommunicationException;
 
     /**
      * Queries the service provider for an access token.
@@ -148,6 +154,11 @@ public interface OAuthProvider extends Serializable {
      *        {@link OAuth.OUT_OF_BAND}, then you must ask the user for this
      *        value. If your app has received a callback, the verfication code
      *        was passed as part of that request instead.
+     * @param customOAuthParams
+     *        you can pass custom OAuth parameters here which will go directly
+     *        into the signer, i.e. you don't have to put them into the request
+     *        first. This is useful for pre-setting OAuth params for signing.
+     *        Pass them sequentially in key/value order.
      * @throws OAuthMessageSignerException
      *         if signing the request failed
      * @throws OAuthNotAuthorizedException
@@ -158,9 +169,10 @@ public interface OAuthProvider extends Serializable {
      * @throws OAuthCommunicationException
      *         if server communication failed
      */
-    public void retrieveAccessToken(OAuthConsumer consumer, String oauthVerifier)
-            throws OAuthMessageSignerException, OAuthNotAuthorizedException,
-            OAuthExpectationFailedException, OAuthCommunicationException;
+    public void retrieveAccessToken(OAuthConsumer consumer, String oauthVerifier,
+            String... customOAuthParams) throws OAuthMessageSignerException,
+            OAuthNotAuthorizedException, OAuthExpectationFailedException,
+            OAuthCommunicationException;
 
     /**
      * Any additional non-OAuth parameters returned in the response body of a

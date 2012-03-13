@@ -13,7 +13,7 @@ import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnit44Runner;
 
 @RunWith(MockitoJUnit44Runner.class)
-public class RequestParametersTest {
+public class HttpParametersTest {
 
     @Test
     public void testBasicBehavior() {
@@ -55,5 +55,19 @@ public class RequestParametersTest {
         params.putAll(kvPairs, false);
         assertEquals("1", params.getFirst("a"));
         assertEquals("2", params.getFirst("b"));
+    }
+
+    @Test
+    public void testGetOAuthParameters() {
+        HttpParameters params = new HttpParameters();
+
+        params.put("a", "5");
+        params.put("oauth_token", "1");
+        params.put("x_oauth_token", "1");
+
+        HttpParameters oauthParams = params.getOAuthParameters();
+        assertFalse(oauthParams.containsKey("a"));
+        assertTrue(oauthParams.containsKey("oauth_token"));
+        assertTrue(oauthParams.containsKey("x_oauth_token"));
     }
 }

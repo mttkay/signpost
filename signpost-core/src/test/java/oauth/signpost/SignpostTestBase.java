@@ -41,6 +41,8 @@ public abstract class SignpostTestBase {
     protected HttpRequest httpGetMock;
 
     @Mock
+    protected HttpRequest httpGetMockWithQueryString;
+    @Mock
     protected HttpRequest httpPostMock;
 
     @BeforeClass
@@ -60,8 +62,10 @@ public abstract class SignpostTestBase {
         when(httpGetMock.getMethod()).thenReturn("GET");
         when(httpGetMock.getRequestUrl()).thenReturn("http://www.example.com");
 
+        when(httpGetMockWithQueryString.getMethod()).thenReturn("GET");
+        when(httpGetMockWithQueryString.getRequestUrl()).thenReturn("http://www.example.com?foo=bar");
+
         when(httpPostMock.getMethod()).thenReturn("POST");
         when(httpPostMock.getRequestUrl()).thenReturn("http://www.example.com");
     }
-
 }

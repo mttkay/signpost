@@ -57,16 +57,21 @@ public abstract class AbstractOAuthProvider implements OAuthProvider {
         this.defaultHeaders = new HashMap<String, String>();
     }
 
-    public String retrieveRequestToken(OAuthConsumer consumer, String callbackUrl)
-            throws OAuthMessageSignerException, OAuthNotAuthorizedException,
-            OAuthExpectationFailedException, OAuthCommunicationException {
+    public synchronized String retrieveRequestToken(OAuthConsumer consumer, String callbackUrl,
+            String... customOAuthParams) throws OAuthMessageSignerException,
+            OAuthNotAuthorizedException, OAuthExpectationFailedException,
+            OAuthCommunicationException {
 
         // invalidate current credentials, if any
         consumer.setTokenWithSecret(null, null);
 
         // 1.0a expects the callback to be sent while getting the request token.
         // 1.0 service providers would simply ignore this parameter.
-        retrieveToken(consumer, requestTokenEndpointUrl, OAuth.OAUTH_CALLBACK, callbackUrl);
+        HttpParameters params = new HttpParameters();
+        params.putAll(customOAuthParams, true);
+        params.put(OAuth.OAUTH_CALLBACK, callbackUrl, true);
+
+        retrieveToken(consumer, requestTokenEndpointUrl, params);
 
         String callbackConfirmed = responseParameters.getFirst(OAuth.OAUTH_CALLBACK_CONFIRMED);
         responseParameters.remove(OAuth.OAUTH_CALLBACK_CONFIRMED);
@@ -83,9 +88,10 @@ public abstract class AbstractOAuthProvider implements OAuthProvider {
         }
     }
 
-    public void retrieveAccessToken(OAuthConsumer consumer, String oauthVerifier)
-            throws OAuthMessageSignerException, OAuthNotAuthorizedException,
-            OAuthExpectationFailedException, OAuthCommunicationException {
+    public synchronized void retrieveAccessToken(OAuthConsumer consumer, String oauthVerifier,
+            String... customOAuthParams) throws OAuthMessageSignerException,
+            OAuthNotAuthorizedException, OAuthExpectationFailedException,
+            OAuthCommunicationException {
 
         if (consumer.getToken() == null || consumer.getTokenSecret() == null) {
             throw new OAuthExpectationFailedException(
@@ -93,11 +99,13 @@ public abstract class AbstractOAuthProvider implements OAuthProvider {
                             + "Did you retrieve an authorized request token before?");
         }
 
+        HttpParameters params = new HttpParameters();
+        params.putAll(customOAuthParams, true);
+
         if (isOAuth10a && oauthVerifier != null) {
-            retrieveToken(consumer, accessTokenEndpointUrl, OAuth.OAUTH_VERIFIER, oauthVerifier);
-        } else {
-            retrieveToken(consumer, accessTokenEndpointUrl);
+            params.put(OAuth.OAUTH_VERIFIER, oauthVerifier, true);
         }
+        retrieveToken(consumer, accessTokenEndpointUrl, params);
     }
 
     /**
@@ -125,12 +133,10 @@ public abstract class AbstractOAuthProvider implements OAuthProvider {
      * @param endpointUrl
      *        the URL at which the service provider serves the OAuth token that
      *        is to be fetched
-     * @param additionalParameters
-     *        you can pass parameters here (typically OAuth parameters such as
-     *        oauth_callback or oauth_verifier) which will go directly into the
-     *        signer, i.e. you don't have to put them into the request first,
-     *        just so the consumer pull them out again. Pass them sequentially
-     *        in key/value order.
+     * @param customOAuthParams
+     *        you can pass custom OAuth parameters here (such as oauth_callback
+     *        or oauth_verifier) which will go directly into the signer, i.e.
+     *        you don't have to put them into the request first.
      * @throws OAuthMessageSignerException
      *         if signing the token request fails
      * @throws OAuthCommunicationException
@@ -142,7 +148,7 @@ public abstract class AbstractOAuthProvider implements OAuthProvider {
      *         reply in the expected format
      */
     protected void retrieveToken(OAuthConsumer consumer, String endpointUrl,
-            String... additionalParameters) throws OAuthMessageSignerException,
+            HttpParameters customOAuthParams) throws OAuthMessageSignerException,
             OAuthCommunicationException, OAuthNotAuthorizedException,
             OAuthExpectationFailedException {
         Map<String, String> defaultHeaders = getRequestHeaders();
@@ -158,18 +164,16 @@ public abstract class AbstractOAuthProvider implements OAuthProvider {
             for (String header : defaultHeaders.keySet()) {
                 request.setHeader(header, defaultHeaders.get(header));
             }
-            if (additionalParameters != null) {
-                HttpParameters httpParams = new HttpParameters();
-                httpParams.putAll(additionalParameters, true);
-                consumer.setAdditionalParameters(httpParams);
+            if (customOAuthParams != null && !customOAuthParams.isEmpty()) {
+                consumer.setAdditionalParameters(customOAuthParams);
             }
-
+            
             if (this.listener != null) {
                 this.listener.prepareRequest(request);
             }
 
             consumer.sign(request);
-
+            
             if (this.listener != null) {
                 this.listener.prepareSubmission(request);
             }

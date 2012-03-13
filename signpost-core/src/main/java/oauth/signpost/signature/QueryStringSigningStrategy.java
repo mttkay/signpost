@@ -1,5 +1,7 @@
 package oauth.signpost.signature;
 
+import java.util.Iterator;
+
 import oauth.signpost.OAuth;
 import oauth.signpost.http.HttpParameters;
 import oauth.signpost.http.HttpRequest;
@@ -20,35 +22,22 @@ public class QueryStringSigningStrategy implements SigningStrategy {
     public String writeSignature(String signature, HttpRequest request,
             HttpParameters requestParameters) {
 
-        // add the signature
-        StringBuilder sb = new StringBuilder(OAuth.addQueryParameters(request.getRequestUrl(),
-            OAuth.OAUTH_SIGNATURE, signature));
+        // add all (x_)oauth parameters
+        HttpParameters oauthParams = requestParameters.getOAuthParameters();
+        oauthParams.put(OAuth.OAUTH_SIGNATURE, signature, true);
 
-        // add the optional OAuth parameters
-        if (requestParameters.containsKey(OAuth.OAUTH_TOKEN)) {
-            sb.append("&");
-            sb.append(requestParameters.getAsQueryString(OAuth.OAUTH_TOKEN));
-        }
-        if (requestParameters.containsKey(OAuth.OAUTH_CALLBACK)) {
-            sb.append("&");
-            sb.append(requestParameters.getAsQueryString(OAuth.OAUTH_CALLBACK));
-        }
-        if (requestParameters.containsKey(OAuth.OAUTH_VERIFIER)) {
-            sb.append("&");
-            sb.append(requestParameters.getAsQueryString(OAuth.OAUTH_VERIFIER));
-        }
+        Iterator<String> iter = oauthParams.keySet().iterator();
 
-        // add the remaining OAuth params
-        sb.append("&");
-        sb.append(requestParameters.getAsQueryString(OAuth.OAUTH_CONSUMER_KEY));
-        sb.append("&");
-        sb.append(requestParameters.getAsQueryString(OAuth.OAUTH_VERSION));
-        sb.append("&");
-        sb.append(requestParameters.getAsQueryString(OAuth.OAUTH_SIGNATURE_METHOD));
-        sb.append("&");
-        sb.append(requestParameters.getAsQueryString(OAuth.OAUTH_TIMESTAMP));
-        sb.append("&");
-        sb.append(requestParameters.getAsQueryString(OAuth.OAUTH_NONCE));
+        // add the first query parameter (we always have at least the signature)
+        String firstKey = iter.next();
+        StringBuilder sb = new StringBuilder(OAuth.addQueryString(request.getRequestUrl(),
+            oauthParams.getAsQueryString(firstKey)));
+
+        while (iter.hasNext()) {
+            sb.append("&");
+            String key = iter.next();
+            sb.append(oauthParams.getAsQueryString(key));
+        }
 
         String signedUrl = sb.toString();
 

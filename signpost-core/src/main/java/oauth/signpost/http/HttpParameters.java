@@ -86,18 +86,20 @@ public class HttpParameters implements Map<String, SortedSet<String>>, Serializa
      * @return the value
      */
     public String put(String key, String value, boolean percentEncode) {
-        SortedSet<String> values = wrappedMap.get(key);
-        if (values == null) {
-            values = new TreeSet<String>();
-            wrappedMap.put(percentEncode ? OAuth.percentEncode(key) : key, values);
-        }
-        if (value != null) {
-            value = percentEncode ? OAuth.percentEncode(value) : value;
-            values.add(value);
-        }
+         // fix contributed by Bjorn Roche - key should be encoded before wrappedMap.get
+         key = percentEncode ? OAuth.percentEncode(key) : key;
+         SortedSet<String> values = wrappedMap.get(key);
+         if (values == null) {
+             values = new TreeSet<String>();
+             wrappedMap.put( key, values);
+         }
+         if (value != null) {
+             value = percentEncode ? OAuth.percentEncode(value) : value;
+             values.add(value);
+         }
 
-        return value;
-    }
+         return value;
+     }
 
     /**
      * Convenience method to allow for storing null values. {@link #put} doesn't
@@ -199,8 +201,28 @@ public class HttpParameters implements Map<String, SortedSet<String>>, Serializa
      * @return the query string
      */
     public String getAsQueryString(Object key) {
+    	return getAsQueryString(key, true);
+    }
+
+    /**
+     * Concatenates all values for the given key to a list of key/value pairs
+     * suitable for use in a URL query string.
+     * 
+     * @param key
+     *        the parameter name
+     * @param percentEncode
+     *        whether key should be percent encoded before being
+     *        used with the map
+     * @return the query string
+     */
+     public String getAsQueryString(Object key, boolean percentEncode) {
+        // fix contributed by Stjepan Rajko - we need the percentEncode parameter
+        // because some places (like SignatureBaseString.normalizeRequestParameters)
+        // need to supply the parameter percent encoded
+
         StringBuilder sb = new StringBuilder();
-        key = OAuth.percentEncode((String) key);
+        if(percentEncode)
+        	key = OAuth.percentEncode((String) key);
         Set<String> values = wrappedMap.get(key);
         if (values == null) {
             return key + "=";
@@ -214,7 +236,7 @@ public class HttpParameters implements Map<String, SortedSet<String>>, Serializa
         }
         return sb.toString();
     }
-
+    
     public String getAsHeaderElement(String key) {
         String value = getFirst(key);
         if (value == null) {
@@ -264,7 +286,20 @@ public class HttpParameters implements Map<String, SortedSet<String>>, Serializa
         return wrappedMap.values();
     }
 
-    public Set<java.util.Map.Entry<String, SortedSet<String>>> entrySet() {
+    public Set<Entry<String, SortedSet<String>>> entrySet() {
         return wrappedMap.entrySet();
+    }
+
+    public HttpParameters getOAuthParameters() {
+        HttpParameters oauthParams = new HttpParameters();
+
+        for (Entry<String, SortedSet<String>> param : this.entrySet()) {
+            String key = param.getKey();
+            if (key.startsWith("oauth_") || key.startsWith("x_oauth_")) {
+                oauthParams.put(key, param.getValue());
+            }
+        }
+
+        return oauthParams;
     }
 }

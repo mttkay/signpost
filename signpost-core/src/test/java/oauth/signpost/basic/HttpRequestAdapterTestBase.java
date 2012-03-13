@@ -50,7 +50,7 @@ public abstract class HttpRequestAdapterTestBase {
         assertTrue(request.getAllHeaders().containsKey(HEADER_NAME));
         assertTrue(request.getAllHeaders().containsKey("a"));
     }
-
+    
     @Test
     public void shouldReturnCorrectContentType() {
         assertEquals(CONTENT_TYPE, request.getContentType());

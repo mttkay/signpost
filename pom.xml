@@ -3,7 +3,7 @@
   <groupId>oauth.signpost</groupId>
   <artifactId>oauth-signpost</artifactId>
   <packaging>pom</packaging>
-  <version>1.2.1.1</version>
+  <version>1.2.1.2</version>
   <name>oauth-signpost</name>
   <description>
     A simple, light-weight, and modular OAuth client library for the
@@ -63,7 +63,7 @@
     <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-core</artifactId>
-      <version>1.7</version>
+      <version>1.9.0</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
@@ -145,6 +145,37 @@
   </reporting>
 
   <profiles>
+    <profile>
+      <id>copy-jar</id>
+      <activation>
+        <property>
+            <name>copyTo</name>
+        </property>
+      </activation>
+      <build>
+        <pluginManagement>
+          <plugins>
+            <plugin>
+              <artifactId>maven-antrun-plugin</artifactId>
+              <executions>
+                <execution>
+                  <phase>install</phase>
+                  <goals>
+                    <goal>run</goal>
+                  </goals>
+                  <configuration>
+                    <tasks>
+                      <copy file="${build.directory}/${build.finalName}.${project.packaging}" todir="${copyTo}" />
+                    </tasks>
+                  </configuration>
+                </execution>
+              </executions>
+            </plugin>        
+          </plugins>
+        </pluginManagement>
+      </build>
+    </profile>
+  
     <profile>
       <id>release-sign-artifacts</id>
       <activation>

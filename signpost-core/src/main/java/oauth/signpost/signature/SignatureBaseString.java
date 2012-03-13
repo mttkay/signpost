@@ -110,7 +110,9 @@ public class SignatureBaseString {
                 sb.append("&");
             }
 
-            sb.append(requestParameters.getAsQueryString(param));
+            // fix contributed by Stjepan Rajko
+            // since param should already be encoded, we supply false for percentEncode
+            sb.append(requestParameters.getAsQueryString(param, false));  
         }
         return sb.toString();
     }
