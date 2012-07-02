@@ -17,8 +17,8 @@ import java.util.Iterator;
 
 import oauth.signpost.OAuth;
 import oauth.signpost.exception.OAuthMessageSignerException;
-import oauth.signpost.http.HttpRequest;
 import oauth.signpost.http.HttpParameters;
+import oauth.signpost.http.HttpRequest;
 
 public class SignatureBaseString {
 
@@ -79,7 +79,7 @@ public class SignatureBaseString {
             path = "/"; // conforms to RFC 2616 section 3.2.2
         }
         // we know that there is no query and no fragment here.
-        return scheme + "://" + authority + path;
+        return OAuth.percentDecode(scheme + "://" + authority + path);
     }
 
     /**
