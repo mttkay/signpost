@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Iterator;
+import java.util.Locale;
 
 import oauth.signpost.OAuth;
 import oauth.signpost.exception.OAuthMessageSignerException;
@@ -63,8 +64,8 @@ public class SignatureBaseString {
 
     public String normalizeRequestUrl() throws URISyntaxException {
         URI uri = new URI(request.getRequestUrl());
-        String scheme = uri.getScheme().toLowerCase();
-        String authority = uri.getAuthority().toLowerCase();
+        String scheme = uri.getScheme().toLowerCase(Locale.US);
+        String authority = uri.getAuthority().toLowerCase(Locale.US);
         boolean dropPort = (scheme.equals("http") && uri.getPort() == 80)
                 || (scheme.equals("https") && uri.getPort() == 443);
         if (dropPort) {
