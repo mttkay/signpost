@@ -1,8 +1,8 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <parent>
     <artifactId>oauth-signpost</artifactId>
-    <groupId>oauth.signpost</groupId>
-    <version>1.2.1.1</version>
+    <groupId>com.meetup.signpost</groupId>
+    <version>1.2.1.2</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>signpost-commonshttp3</artifactId>
@@ -10,15 +10,15 @@
 
   <dependencies>
     <dependency>
-      <groupId>oauth.signpost</groupId>
+      <groupId>com.meetup.signpost</groupId>
       <artifactId>signpost-core</artifactId>
-      <version>1.2.1.1</version>
+      <version>1.2.1.2</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>oauth.signpost</groupId>
+      <groupId>com.meetup.signpost</groupId>
       <artifactId>signpost-core</artifactId>
-      <version>1.2.1.1</version>
+      <version>1.2.1.2</version>
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>

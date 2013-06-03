@@ -17,25 +17,17 @@ package oauth.signpost.signature;
 import java.io.IOException;
 import java.io.Serializable;
 
+import com.fasterxml.jackson.core.Base64Variants;
 import oauth.signpost.exception.OAuthMessageSignerException;
 import oauth.signpost.http.HttpRequest;
 import oauth.signpost.http.HttpParameters;
 
-import org.apache.commons.codec.binary.Base64;
-
 public abstract class OAuthMessageSigner implements Serializable {
-
     private static final long serialVersionUID = 4445779788786131202L;
-
-    private transient Base64 base64;
 
     private String consumerSecret;
 
     private String tokenSecret;
-
-    public OAuthMessageSigner() {
-        this.base64 = new Base64();
-    }
 
     public abstract String sign(HttpRequest request, HttpParameters requestParameters)
             throws OAuthMessageSignerException;
@@ -58,17 +50,12 @@ public abstract class OAuthMessageSigner implements Serializable {
         this.tokenSecret = tokenSecret;
     }
 
-    protected byte[] decodeBase64(String s) {
-        return base64.decode(s.getBytes());
-    }
-
     protected String base64Encode(byte[] b) {
-        return new String(base64.encode(b));
+        return Base64Variants.MIME_NO_LINEFEEDS.encode(b);
     }
 
     private void readObject(java.io.ObjectInputStream stream)
             throws IOException, ClassNotFoundException {
         stream.defaultReadObject();
-        this.base64 = new Base64();
     }
 }
