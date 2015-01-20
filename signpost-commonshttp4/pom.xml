@@ -7,6 +7,7 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>signpost-commonshttp4</artifactId>
   <name>signpost-commonshttp4</name>
+  <version>1.2.2</version>
 
   <dependencies>
     <dependency>
