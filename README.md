@@ -4,7 +4,7 @@ Signpost
 What is Signpost?
 ------------
 
-Signpost is the easy and intuitive solution for signing HTTP messages on the Java platform in conformance with the [OAuth Core 1.0a](http://oauth.net/core/1.0a) standard. Signpost follows a modular and flexible design, allowing you to combine it with different HTTP messaging layers. Click here for a [list of supported HTTP libraries](https://code.google.com/p/oauth-signpost/wiki/SupportedHttpLibraries).
+Signpost is the easy and intuitive solution for signing HTTP messages on the Java platform in conformance with the [OAuth Core 1.0a](http://oauth.net/core/1.0a) standard. Signpost follows a modular and flexible design, allowing you to combine it with different HTTP messaging layers. Click here for a [list of supported HTTP libraries](docs/SupportedHttpLibraries.md).
 
 Goals of Signpost
 ------------
@@ -28,7 +28,7 @@ Using Signpost is as simple as it could possibly get -- all actions are executed
 
 Signpost exposes a minimalistic API designed for two purposes: Signing HTTP messages and requesting tokens from an OAuth service provider. Everything else is beyond the scope of the OAuth specification, and is thus left to the HTTP messaging layer, where it belongs.
 
-For more exhaustive examples, please refer to [GettingStarted](https://code.google.com/p/oauth-signpost/wiki/GettingStarted).
+For more exhaustive examples, please refer to [GettingStarted](docs/GettingStarted.md).
 
 ### Unobtrusiveness
 Signpost tries to be as unobtrusive as possible. Unlike other implementations, Signpost does not wrap the entire HTTP layer and hides its features from the client. Instead, you simply pass an HttpRequest object to it, and Signpost will sign the message using the credentials it was configured with.
@@ -63,10 +63,8 @@ OAuth Service Providers
 ------------
 If neither Signpost nor the OAuth service providers out there would be buggy, then Signpost would work with all of them. That's quite an optimistic expectation though, so on a slightly more conservative note, here's a list of service providers that have been tested to work with Signpost:
 
-  * [Twitter](http://apiwiki.twitter.com) ([instructions](https://code.google.com/p/oauth-signpost/wiki/TwitterAndSignpost), [code](https://github.com/mttkay/signpost-examples/tree/master/OAuthTwitterExample example))
-  * [YAHOO! Fire Eagle](http://fireeagle.yahoo.net/developer) ([example code](https://github.com/mttkay/signpost-examples/tree/master/OAuthFireEagleExample))
+  * [Twitter](http://apiwiki.twitter.com) ([instructions](docs/TwitterAndSignpost.md), [code](https://github.com/mttkay/signpost-examples/tree/master/OAuthTwitterExample example))
   * [Google services](http://code.google.com/apis/accounts/docs/OAuth.html) ([example code](https://github.com/mttkay/signpost-examples/tree/master/OAuthGoogleExample))
-  * [Qype](http://www.qype.co.uk/developers/api)
   * [Netflix](https://github.com/mttkay/signpost-examples/tree/master/OAuthNetflixExample)
 
 

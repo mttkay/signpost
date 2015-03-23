@@ -1,3 +1,3 @@
   * Java HttpURLConnection
-  * [ApacheCommonsHttp4 Apache Commons HTTP 4.x]
-  * [JettyHttp6 Jetty HTTP Client v6.x]
+  * [Apache Commons HTTP 4.x](ApacheCommonsHttp4.md)
+  * [Jetty HTTP Client v6.x](JettyHttp6.md)
