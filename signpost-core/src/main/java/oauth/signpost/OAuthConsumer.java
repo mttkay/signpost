@@ -64,6 +64,7 @@ public interface OAuthConsumer extends Serializable {
      * @param messageSigner
      *        the signer
      * @see HmacSha1MessageSigner
+     * @see HmacSha256MessageSigner
      * @see PlainTextMessageSigner
      */
     public void setMessageSigner(OAuthMessageSigner messageSigner);

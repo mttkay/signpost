@@ -43,4 +43,24 @@ public class OAuthMessageSignerTest extends SignpostTestBase {
 
         assertEquals("tR3+Ty81lMeYAr/Fid0kMTYa/WM=", signer.sign(request, params));
     }
+
+    @Test
+    public void shouldComputeCorrectHmacSha256Signature() throws Exception {
+        // based on the reference test case from
+        // http://oauth.pbwiki.com/TestCases
+        OAuthMessageSigner signer = new HmacSha256MessageSigner();
+        signer.setConsumerSecret(CONSUMER_SECRET);
+        signer.setTokenSecret(TOKEN_SECRET);
+
+        HttpRequest request = mock(HttpRequest.class);
+        when(request.getRequestUrl()).thenReturn("http://photos.example.net/photos");
+        when(request.getMethod()).thenReturn("GET");
+
+        HttpParameters params = new HttpParameters();
+        params.putAll(OAUTH_PARAMS);
+        params.put("file", "vacation.jpg");
+        params.put("size", "original");
+
+        assertEquals("0gCtTYQAxqCKhIE0sltgx7UgHkAs10vrpuYE7xpRBnE=", signer.sign(request, params));
+    }
 }
