@@ -63,7 +63,7 @@ OAuth Service Providers
 ------------
 If neither Signpost nor the OAuth service providers out there would be buggy, then Signpost would work with all of them. That's quite an optimistic expectation though, so on a slightly more conservative note, here's a list of service providers that have been tested to work with Signpost:
 
-  * [Twitter](http://apiwiki.twitter.com) ([instructions](docs/TwitterAndSignpost.md), [code](https://github.com/mttkay/signpost-examples/tree/master/OAuthTwitterExample example))
+  * [Twitter](http://apiwiki.twitter.com) ([instructions](docs/TwitterAndSignpost.md), [example code](https://github.com/mttkay/signpost-examples/tree/master/OAuthTwitterExample))
   * [Google services](http://code.google.com/apis/accounts/docs/OAuth.html) ([example code](https://github.com/mttkay/signpost-examples/tree/master/OAuthGoogleExample))
   * [Netflix](https://github.com/mttkay/signpost-examples/tree/master/OAuthNetflixExample)
 
