@@ -7,6 +7,7 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>signpost-jetty6</artifactId>
   <name>signpost-jetty6</name>
+  <version>1.2.2</version>
 
   <dependencies>
     <dependency>

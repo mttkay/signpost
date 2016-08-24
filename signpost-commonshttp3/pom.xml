@@ -2,23 +2,24 @@
   <parent>
     <artifactId>oauth-signpost</artifactId>
     <groupId>oauth.signpost</groupId>
-    <version>1.2.1.1</version>
+    <version>1.2.1.2</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>signpost-commonshttp3</artifactId>
   <name>signpost-commonshttp3</name>
+  <version>1.2.2</version>
 
   <dependencies>
     <dependency>
       <groupId>oauth.signpost</groupId>
       <artifactId>signpost-core</artifactId>
-      <version>1.2.1.1</version>
+      <version>${project.version}</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>oauth.signpost</groupId>
       <artifactId>signpost-core</artifactId>
-      <version>1.2.1.1</version>
+      <version>${project.version}</version>
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>
