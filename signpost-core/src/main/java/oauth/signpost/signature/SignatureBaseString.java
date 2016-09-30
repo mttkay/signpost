@@ -14,11 +14,12 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Iterator;
+import java.util.Locale;
 
 import oauth.signpost.OAuth;
 import oauth.signpost.exception.OAuthMessageSignerException;
-import oauth.signpost.http.HttpRequest;
 import oauth.signpost.http.HttpParameters;
+import oauth.signpost.http.HttpRequest;
 
 public class SignatureBaseString {
 
@@ -63,8 +64,8 @@ public class SignatureBaseString {
 
     public String normalizeRequestUrl() throws URISyntaxException {
         URI uri = new URI(request.getRequestUrl());
-        String scheme = uri.getScheme().toLowerCase();
-        String authority = uri.getAuthority().toLowerCase();
+        String scheme = uri.getScheme().toLowerCase(Locale.US);
+        String authority = uri.getAuthority().toLowerCase(Locale.US);
         boolean dropPort = (scheme.equals("http") && uri.getPort() == 80)
                 || (scheme.equals("https") && uri.getPort() == 443);
         if (dropPort) {
@@ -79,7 +80,7 @@ public class SignatureBaseString {
             path = "/"; // conforms to RFC 2616 section 3.2.2
         }
         // we know that there is no query and no fragment here.
-        return scheme + "://" + authority + path;
+        return OAuth.percentDecode(scheme + "://" + authority + path);
     }
 
     /**

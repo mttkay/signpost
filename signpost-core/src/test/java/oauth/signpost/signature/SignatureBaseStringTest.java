@@ -56,6 +56,10 @@ public class SignatureBaseStringTest extends SignpostTestBase {
         when(httpGetMock.getRequestUrl()).thenReturn("https://example.com:443");
         assertEquals("https://example.com/", new SignatureBaseString(httpGetMock, EMPTY_PARAMS)
             .normalizeRequestUrl());
+
+        // check percent-un-escaping
+        when(httpGetMock.getRequestUrl()).thenReturn("http://example.com/test%7c!string");
+        assertEquals("http://example.com/test|!string", new SignatureBaseString(httpGetMock, EMPTY_PARAMS).normalizeRequestUrl());
     }
 
     @Test
@@ -144,5 +148,18 @@ public class SignatureBaseStringTest extends SignpostTestBase {
         SignatureBaseString sbs = new SignatureBaseString(request, params);
         
         assertEquals("GET&http%3A%2F%2Fexamplemultiple.com%2F&a%255B%255D%3D1%26a%255B%255D%3D2", sbs.generate());
+    }
+
+    @Test
+    public void shouldWorkWithFunnyCharactersInUrl() throws Exception {
+        HttpRequest request = mock(HttpRequest.class);
+        when(request.getMethod()).thenReturn("GET");
+        when(request.getRequestUrl()).thenReturn("http://examplespecial.com/test%7c!url");
+
+        HttpParameters params = new HttpParameters();
+        params.put("a", "1", true);
+
+        SignatureBaseString sbs = new SignatureBaseString(request, params);
+        assertEquals("GET&http%3A%2F%2Fexamplespecial.com%2Ftest%7C%21url&a%3D1", sbs.generate());
     }
 }
