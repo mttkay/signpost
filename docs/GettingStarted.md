@@ -52,12 +52,6 @@ The snapshots are kindly hosted by [Sonatype](http://oss.sonatype.org).
 
 # Setting up Signpost
 
-If you downloaded the JARs manually, you must also have the following libraries in your project's build path if you want to use Signpost:
-
-  * [Apache Commons Codec 1.3](http://commons.apache.org/codec/) (or newer)
-
-If you built Signpost using Maven in the previous step, then you do not need to manually install dependencies, since Maven will do that for you.
-
 By default, Signpost supports signing HTTP requests of type java.net.HttpURLConnection. If you only need that, then you're good to go and you can skip to the next section. If you want to use a different HTTP messaging system, you must download an adapter module that supports adapting request objects of that library for Signpost being able to sign them. The adapter module must be added to your project's build path.
 
 For a list of available adapter modules, refer to [SupportedHttpLibraries](SupportedHttpLibraries.md).

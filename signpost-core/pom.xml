@@ -8,16 +8,6 @@
   <artifactId>signpost-core</artifactId>
   <name>signpost-core</name>
    
-  <!-- dependencies -->
-  <dependencies>
-    <dependency>
-      <groupId>commons-codec</groupId>
-      <artifactId>commons-codec</artifactId>
-      <version>1.3</version>
-      <scope>compile</scope>
-    </dependency>
-  </dependencies>
-
   <build>
     <plugins>
       <plugin>
