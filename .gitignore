@@ -3,3 +3,7 @@ target
 /signpost-commonshttp4/.settings/
 /signpost-core/.settings/
 .DS_Store
+.classpath
+.project
+.settings
+bin
