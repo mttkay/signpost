@@ -4,9 +4,9 @@ Get the latest Signpost build from the [download page](http://code.google.com/p/
 
 OR
 
-[checkout the source code](http://github.com/kaeppler/signpost) using Git:
+[checkout the source code](http://github.com/mttkay/signpost) using Git:
 
-`git clone git://github.com/kaeppler/signpost.git`
+`git clone git://github.com/mttkay/signpost.git`
 
 Now `cd signpost/` and run:
 
