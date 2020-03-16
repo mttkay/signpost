@@ -9,11 +9,11 @@
     A simple, light-weight, and modular OAuth client library for the
     Java platform.
   </description>
-  <url>http://code.google.com/p/oauth-signpost/</url>
+  <url>https://github.com/mttkay/signpost/releases</url>
 
   <issueManagement>
     <system>Google Code Issue Tracker</system>
-    <url>http://code.google.com/p/oauth-signpost/issues/list</url>
+    <url>https://github.com/mttkay/signpost/pulls</url>
   </issueManagement>
 
   <developers>

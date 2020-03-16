@@ -1,6 +1,6 @@
 # Getting Signpost
 
-Get the latest Signpost build from the [download page](http://code.google.com/p/oauth-signpost/downloads/list)
+Get the latest Signpost build from the [download page](https://github.com/mttkay/signpost/releases)
 
 OR
 
