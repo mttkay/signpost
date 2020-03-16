@@ -165,7 +165,7 @@
                   </goals>
                   <configuration>
                     <tasks>
-                      <copy file="${build.directory}/${build.finalName}.${project.packaging}" todir="${copyTo}" />
+                      <copy file="${project.build.directory}/${project.build.finalName}.${project.packaging}" todir="${copyTo}" />
                     </tasks>
                   </configuration>
                 </execution>
