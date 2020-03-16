@@ -2,7 +2,7 @@
 You can get a consumer key and secret for your Twitter application [here](http://twitter.com/oauth_clients).
 
 ## Simple Example - Setting up authentication and GET'ing mentions
-```
+```java
         OAuthConsumer consumer = new DefaultOAuthConsumer(
                 // the consumer key of this app (replace this with yours)
                 "iIlNngv1KdV6XzNYkoLA",
@@ -92,7 +92,7 @@ _Thanks Kerry for sharing this [via our Google group](http://groups.google.com/g
 
 We'll need to tweak some of HttpClient's defaults, like so:
 
-```
+```java
     public HttpParams getParams() {
         // Tweak further as needed for your app
         HttpParams params = new BasicHttpParams();
@@ -158,7 +158,7 @@ First off you'll need to make your own adapter for the MultipartPostMethod (or i
 
 Something along the lines of:
 
-```
+```java
     public class HttpClient2OAuthConsumer extends AbstractOAuthConsumer {
         public HttpClient2OAuthConsumer(String consumerKey,
                 String consumerSecret, SignatureMethod signatureMethod) {
@@ -177,7 +177,7 @@ Something along the lines of:
 
 And:
 
-```
+```java
     public class HttpRequestAdapter implements oauth.signpost.http.HttpRequest {
 
         private MultipartPostMethod method;
@@ -221,7 +221,7 @@ And:
 
 This method will look very similar.
 
-```
+```java
     public void updateProfileBackgroundHttpCommons(User user, File file) {
         try {
             HttpClient client = new HttpClient();
