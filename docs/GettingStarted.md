@@ -37,7 +37,7 @@ If you need to depend on an unreleased version, you have to add the Signpost sna
     <repositories>
         <repository>
             <id>signpost-snapshots</id>
-            <url>http://oss.sonatype.org/content/repositories/signpost-snapshots</url>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
             <releases>
               <enabled>false</enabled>
             </releases>

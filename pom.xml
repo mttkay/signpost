@@ -119,7 +119,7 @@
     <snapshotRepository>
       <id>signpost-snapshots</id>
       <name>Signpost Snapshot Repository</name>
-      <url>https://oss.sonatype.org/content/repositories/signpost-snapshots/</url>
+      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
     </snapshotRepository>
     <!-- 
     <site>
