@@ -34,7 +34,7 @@ import java.io.IOException;
  *
  * <p><b>Note:</b> This class is similar to {@link CharEscaper} but with one
  * very important difference. A CharEscaper can only process Java
- * <a href="http://en.wikipedia.org/wiki/UTF-16">UTF16</a> characters in
+ * <a href="https://en.wikipedia.org/wiki/UTF-16">UTF16</a> characters in
  * isolation and may not cope when it encounters surrogate pairs. This class
  * facilitates the correct escaping of all Unicode characters.
  *
@@ -123,7 +123,7 @@ public abstract class UnicodeEscaper implements Escaper {
    * generally safe to use this method. If an input string ends with an
    * unmatched high surrogate character, then this method will throw
    * {@link IllegalArgumentException}. You should either ensure your input is
-   * valid <a href="http://en.wikipedia.org/wiki/UTF-16">UTF-16</a> before
+   * valid <a href="https://en.wikipedia.org/wiki/UTF-16">UTF-16</a> before
    * calling this method or use an escaped {@link Appendable} (as returned by
    * {@link #escape(Appendable)}) which can cope with arbitrarily split input.
    *
@@ -233,7 +233,7 @@ public abstract class UnicodeEscaper implements Escaper {
    * <p>The methods of the returned object will propagate any exceptions thrown
    * by the underlying {@code Appendable}.
    *
-   * <p>For well formed <a href="http://en.wikipedia.org/wiki/UTF-16">UTF-16</a>
+   * <p>For well formed <a href="https://en.wikipedia.org/wiki/UTF-16">UTF-16</a>
    * the escaping behavior is identical to that of {@link #escape(String)} and
    * the following code is equivalent to (but much slower than)
    * {@code escaper.escape(string)}: <pre>{@code

@@ -21,7 +21,7 @@
       <id>mk</id>
       <name>Matthias Käppler</name>
       <email>matthias@qype.com</email>
-      <url>http://matthiaskaeppler.de</url>
+      <url>https://github.com/mttkay</url>
       <organization>Qype GmbH</organization>
       <organizationUrl>http://www.qype.com</organizationUrl>
       <timezone>+1</timezone>
@@ -44,7 +44,7 @@
   </licenses>
 
   <scm>
-    <url>http://github.com/mttkay/signpost</url>
+    <url>https://github.com/mttkay/signpost</url>
     <connection>scm:git:git://github.com/mttkay/signpost.git</connection>
     <developerConnection>scm:git:git@github.com:mttkay/signpost.git</developerConnection>
   </scm>

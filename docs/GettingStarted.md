@@ -4,19 +4,19 @@ Get the latest Signpost build from the [download page](https://github.com/mttkay
 
 OR
 
-[checkout the source code](http://github.com/mttkay/signpost) using Git:
+[checkout the source code](https://github.com/mttkay/signpost) using Git:
 
-`git clone git://github.com/mttkay/signpost.git`
+`git clone https://github.com/mttkay/signpost.git`
 
 Now `cd signpost/` and run:
 
 `mvn install`
 
-This will download all dependencies and create a JAR in the target/ folder. Note that this step requires that you have the [Apache Maven](http://maven.apache.org) build system and [Git](http://www.git-scm.com) installed on your system.
+This will download all dependencies and create a JAR in the target/ folder. Note that this step requires that you have the [Apache Maven](https://maven.apache.org/) build system and [Git](https://www.git-scm.com/) installed on your system.
 
 OR
 
-If you use [Apache Maven](http://maven.apache.org) for project management yourself, you can simply declare Signpost as a dependency in your pom.xml:
+If you use [Apache Maven](https://maven.apache.org/) for project management yourself, you can simply declare Signpost as a dependency in your pom.xml:
 
 ```xml
     <dependencies>
@@ -48,7 +48,7 @@ If you need to depend on an unreleased version, you have to add the Signpost sna
     </repositories>
 ```
 
-The snapshots are kindly hosted by [Sonatype](http://oss.sonatype.org).
+The snapshots are kindly hosted by [Sonatype](https://oss.sonatype.org/).
 
 # Setting up Signpost
 

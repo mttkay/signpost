@@ -4,7 +4,7 @@ Signpost
 What is Signpost?
 ------------
 
-Signpost is the easy and intuitive solution for signing HTTP messages on the Java platform in conformance with the [OAuth Core 1.0a](http://oauth.net/core/1.0a) standard. Signpost follows a modular and flexible design, allowing you to combine it with different HTTP messaging layers. Click here for a [list of supported HTTP libraries](docs/SupportedHttpLibraries.md).
+Signpost is the easy and intuitive solution for signing HTTP messages on the Java platform in conformance with the [OAuth Core 1.0a](https://oauth.net/core/1.0a/) standard. Signpost follows a modular and flexible design, allowing you to combine it with different HTTP messaging layers. Click here for a [list of supported HTTP libraries](docs/SupportedHttpLibraries.md).
 
 Goals of Signpost
 ------------
@@ -36,16 +36,16 @@ Signpost tries to be as unobtrusive as possible. Unlike other implementations, S
 This means that all the power and flexibility of the underlying HTTP engine is still at your fingertips!
 
 ### Modularity
-Since version 1.1, Signpost comes in modules. Apart from the core module, which you always need, you can download additional modules to support other HTTP messaging libraries than the one coming with the standard Java platform (which would be [java.net.HttpURLConnection](http://java.sun.com/javase/6/docs/api/java/net/HttpURLConnection.html)).
+Since version 1.1, Signpost comes in modules. Apart from the core module, which you always need, you can download additional modules to support other HTTP messaging libraries than the one coming with the standard Java platform (which would be [java.net.HttpURLConnection](https://docs.oracle.com/javase/8/docs/api/java/net/HttpURLConnection.html)).
 
-Apart from HttpURLConnection, Signpost currently has modules for [Apache Commons HTTP](http://hc.apache.org/) version 4, and [Jetty HTTP Client](http://docs.codehaus.org/display/JETTY/Jetty+HTTP+Client) version 6.
+Apart from HttpURLConnection, Signpost currently has modules for [Apache Commons HTTP](https://hc.apache.org/) version 4, and [Jetty HTTP Client](https://www.eclipse.org/jetty/documentation/current/http-client-api.html) version 6.
 
 Limitations
 ------------
 Signpost strives to be a simple library. In order to reduce API and implementation complexity, Signpost does currently not support the following things:
 
   * Message signing using public key encryption (as per [section 9.3](http://oauth.net/core/1.0#anchor19)) is currently unsupported. Message signing using the PLAINTEXT and HMAC-SHA1 methods is supported, however.
-  * Writing OAuth protocol params to the [WWW-Authenticate](http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.47) header field
+  * Writing OAuth protocol params to the [WWW-Authenticate](https://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.47) header field
 
 I believe that even with those restrictions in place, Signpost will work for the majority of its users. Trading in rarely used features for more simplicity and ease of use was a design decision. If that doesn't work for your setup, Signpost is probably not the best choice for you.
 
@@ -63,16 +63,16 @@ OAuth Service Providers
 ------------
 If neither Signpost nor the OAuth service providers out there would be buggy, then Signpost would work with all of them. That's quite an optimistic expectation though, so on a slightly more conservative note, here's a list of service providers that have been tested to work with Signpost:
 
-  * [Twitter](http://apiwiki.twitter.com) ([instructions](docs/TwitterAndSignpost.md), [example code](https://github.com/mttkay/signpost-examples/tree/master/OAuthTwitterExample))
-  * [Google services](http://code.google.com/apis/accounts/docs/OAuth.html) ([example code](https://github.com/mttkay/signpost-examples/tree/master/OAuthGoogleExample))
+  * [Twitter](https://developer.twitter.com/en) ([instructions](docs/TwitterAndSignpost.md), [example code](https://github.com/mttkay/signpost-examples/tree/master/OAuthTwitterExample))
+  * [Google services](https://code.google.com/apis/accounts/docs/OAuth.html) ([example code](https://github.com/mttkay/signpost-examples/tree/master/OAuthGoogleExample))
   * [Netflix](https://github.com/mttkay/signpost-examples/tree/master/OAuthNetflixExample)
 
 
 Support and discussions
 ------------
-- API docs: http://mttkay.github.com/signpost/index.html
-- Example code: http://github.com/mttkay/signpost-examples
-- Please use the [Signpost Google Group](http://groups.google.com/group/signpost-users) for questions, feedback and discussion.
+- API docs: https://mttkay.github.io/signpost/
+- Example code: https://github.com/mttkay/signpost-examples
+- Please use the [Signpost Google Group](https://groups.google.com/forum/#!forum/signpost-users) for questions, feedback and discussion.
 
 License
 ------------

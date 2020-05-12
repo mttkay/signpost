@@ -45,7 +45,7 @@ public interface Escaper {
    * the specific escaper implementation.
    * <ul>
    * <li>{@link UnicodeEscaper} handles
-   * <a href="http://en.wikipedia.org/wiki/UTF-16">UTF-16</a> correctly,
+   * <a href="https://en.wikipedia.org/wiki/UTF-16">UTF-16</a> correctly,
    * including surrogate character pairs. If the input is badly formed the
    * escaper should throw {@link IllegalArgumentException}.
    * <li>{@link CharEscaper} handles Java characters independently and does not
@@ -71,7 +71,7 @@ public interface Escaper {
    * the specific escaper implementation.
    * <ul>
    * <li>{@link UnicodeEscaper} handles
-   * <a href="http://en.wikipedia.org/wiki/UTF-16">UTF-16</a> correctly,
+   * <a href="https://en.wikipedia.org/wiki/UTF-16">UTF-16</a> correctly,
    * including surrogate character pairs. If the input is badly formed the
    * escaper should throw {@link IllegalArgumentException}.
    * <li>{@link CharEscaper} handles Java characters independently and does not

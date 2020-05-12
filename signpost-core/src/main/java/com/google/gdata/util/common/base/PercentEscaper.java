@@ -22,7 +22,7 @@ package com.google.gdata.util.common.base;
  * remain unescaped) can be specified on construction.
  *
  * <p>For details on escaping URIs for use in web pages, see section 2.4 of
- * <a href="http://www.ietf.org/rfc/rfc3986.txt">RFC 3986</a>.
+ * <a href="https://www.ietf.org/rfc/rfc3986.txt">RFC 3986</a>.
  *
  * <p>In most cases this class should not need to be used directly. If you
  * have no special requirements for escaping your URIs, you should use either
@@ -53,7 +53,7 @@ package com.google.gdata.util.common.base;
  * this class is UTF-8.
  *
  * <p><b>Note</b>: This escaper produces uppercase hexidecimal sequences. From
- * <a href="http://www.ietf.org/rfc/rfc3986.txt">RFC 3986</a>:<br>
+ * <a href="https://www.ietf.org/rfc/rfc3986.txt">RFC 3986</a>:<br>
  * <i>"URI producers and normalizers should use uppercase hexadecimal digits
  * for all percent-encodings."</i>
  *

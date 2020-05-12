@@ -33,7 +33,7 @@ import java.util.NoSuchElementException;
  *
  * Note that the sense of the expression is inverted; with {@code Preconditions}
  * you declare what you expect to be <i>true</i>, just as you do with an
- * <a href="http://java.sun.com/j2se/1.5.0/docs/guide/language/assert.html">
+ * <a href="https://docs.oracle.com/javase/8/docs/technotes/guides/language/assert.html">
  * {@code assert}</a> or a JUnit {@code assertTrue()} call.
  *
  * <p>Take care not to confuse precondition checking with other similar types
