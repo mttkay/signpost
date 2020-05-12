@@ -7,3 +7,5 @@ target
 .project
 .settings
 bin
+*iml
+.idea/
