@@ -112,13 +112,11 @@
 
   <distributionManagement>
     <repository>
-      <id>signpost-releases</id>
-      <name>Signpost Release Repository</name>
+      <id>ossrh</id>
       <url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
     </repository>
     <snapshotRepository>
-      <id>signpost-snapshots</id>
-      <name>Signpost Snapshot Repository</name>
+      <id>ossrh</id>
       <url>https://oss.sonatype.org/content/repositories/snapshots</url>
     </snapshotRepository>
     <!-- 
