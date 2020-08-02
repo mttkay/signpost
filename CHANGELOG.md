@@ -1,5 +1,7 @@
 # Release History
 
+## 2.1.1 (2020-08-02)
+
 - Add minimal Base64 implementation for Android compatibility
 
 ## 2.0.0 (2020-05-12)
