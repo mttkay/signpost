@@ -3,7 +3,7 @@
   <groupId>oauth.signpost</groupId>
   <artifactId>oauth-signpost</artifactId>
   <packaging>pom</packaging>
-  <version>2.0.1-SNAPSHOT</version>
+  <version>2.1.0</version>
   <name>oauth-signpost</name>
   <description>
     A simple, light-weight, and modular OAuth client library for the
@@ -47,6 +47,7 @@
     <url>https://github.com/mttkay/signpost</url>
     <connection>scm:git:git://github.com/mttkay/signpost.git</connection>
     <developerConnection>scm:git:git@github.com:mttkay/signpost.git</developerConnection>
+    <tag>oauth-signpost-2.1.0</tag>
   </scm>
 
   <properties>
