@@ -21,13 +21,12 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
 import oauth.signpost.http.HttpParameters;
-
-import com.google.gdata.util.common.base.PercentEscaper;
 
 public class OAuth {
 
@@ -73,14 +72,18 @@ public class OAuth {
      */
     public static final String OUT_OF_BAND = "oob";
 
-    private static final PercentEscaper percentEncoder = new PercentEscaper(
-            "-._~", false);
-
     public static String percentEncode(String s) {
         if (s == null) {
             return "";
         }
-        return percentEncoder.escape(s);
+        try {
+            return URLEncoder.encode(s, ENCODING)
+                    .replace("+", "%20") // space
+                    .replace("*", "%2A") // escape asterisk
+                    .replace("%7E", "~"); // unescape tilde
+        } catch (java.io.UnsupportedEncodingException wow) {
+            throw new RuntimeException(wow.getMessage(), wow);
+        }
     }
 
     public static String percentDecode(String s) {

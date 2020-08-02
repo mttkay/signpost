@@ -38,6 +38,8 @@ public class OAuthTest {
         assertEquals("%20", OAuth.percentEncode(" "));
         // percent encode %
         assertEquals("%25", OAuth.percentEncode("%"));
+        // 'SEE-NO-EVIL MONKEY' (U+1F648)
+        assertEquals("%F0%9F%99%88", OAuth.percentEncode("\uD83D\uDE48"));
     }
 
     @Test
