@@ -1,5 +1,7 @@
 # Release History
 
+- Add minimal Base64 implementation for Android compatibility
+
 ## 2.0.0 (2020-05-12)
 
 - Require Java 8 ([9cd4256](https://github.com/mttkay/signpost/commit/9cd425629900190e2f07ced369bfc0d609041a34))
