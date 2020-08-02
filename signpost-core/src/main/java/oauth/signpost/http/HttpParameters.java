@@ -229,7 +229,7 @@ public class HttpParameters implements Map<String, SortedSet<String>>, Serializa
         }
         Iterator<String> iter = values.iterator();
         while (iter.hasNext()) {
-            sb.append(key + "=" + iter.next());
+            sb.append(key).append("=").append(iter.next());
             if (iter.hasNext()) {
                 sb.append("&");
             }

@@ -221,8 +221,7 @@ public class OAuth {
             if (i > 0) {
                 sb.append("&");
             }
-            sb.append(OAuth.percentEncode(kvPairs[i]) + "="
-                    + OAuth.percentEncode(kvPairs[i + 1]));
+            sb.append(OAuth.percentEncode(kvPairs[i])).append("=").append(OAuth.percentEncode(kvPairs[i + 1]));
         }
         return sb.toString();
     }
@@ -273,7 +272,7 @@ public class OAuth {
             boolean isOAuthElem = kvPairs[i].startsWith("oauth_")
                     || kvPairs[i].startsWith("x_oauth_");
             String value = isOAuthElem ? OAuth.percentEncode(kvPairs[i + 1]) : kvPairs[i + 1];
-            sb.append(OAuth.percentEncode(kvPairs[i]) + "=\"" + value + "\"");
+            sb.append(OAuth.percentEncode(kvPairs[i])).append("=\"").append(value).append("\"");
         }
         return sb.toString();
     }

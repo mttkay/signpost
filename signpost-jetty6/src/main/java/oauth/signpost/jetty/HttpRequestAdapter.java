@@ -81,7 +81,7 @@ public class HttpRequestAdapter implements HttpRequest {
     // reconstruct it here.
     private void buildRequestUrl() {
         StringBuilder sb = new StringBuilder();
-        sb.append(request.getScheme() + "://");
+        sb.append(request.getScheme()).append("://");
         sb.append(request.getAddress().toString().replaceAll(":\\d+", ""));
         if (request.getURI() != null) {
             // the "URI" in Jetty is actually the path... WTF?!
