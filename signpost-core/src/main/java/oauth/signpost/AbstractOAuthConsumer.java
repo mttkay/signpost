@@ -115,9 +115,50 @@ public abstract class AbstractOAuthConsumer implements OAuthConsumer {
         return request;
     }
 
+    public synchronized HttpRequest sign(HttpRequest request, boolean addEmptyParameters) throws OAuthMessageSignerException,
+        OAuthExpectationFailedException, OAuthCommunicationException {
+        if (consumerKey == null) {
+            throw new OAuthExpectationFailedException("consumer key not set");
+        }
+        if (consumerSecret == null) {
+            throw new OAuthExpectationFailedException("consumer secret not set");
+        }
+
+        requestParameters = new HttpParameters();
+        try {
+            if (additionalParameters != null) {
+                requestParameters.putAll(additionalParameters, false);
+            }
+            collectHeaderParameters(request, requestParameters);
+            collectQueryParameters(request, requestParameters, addEmptyParameters);
+            collectBodyParameters(request, requestParameters);
+
+            // add any OAuth params that haven't already been set
+            completeOAuthParameters(requestParameters);
+
+            requestParameters.remove(OAuth.OAUTH_SIGNATURE);
+
+        } catch (IOException e) {
+            throw new OAuthCommunicationException(e);
+        }
+
+        String signature = messageSigner.sign(request, requestParameters);
+        OAuth.debugOut("signature", signature);
+
+        signingStrategy.writeSignature(signature, request, requestParameters);
+        OAuth.debugOut("Request URL", request.getRequestUrl());
+
+        return request;
+    }
+
     public synchronized HttpRequest sign(Object request) throws OAuthMessageSignerException,
             OAuthExpectationFailedException, OAuthCommunicationException {
         return sign(wrap(request));
+    }
+
+    public synchronized HttpRequest sign(Object request, boolean addEmptyParameters) throws OAuthMessageSignerException,
+        OAuthExpectationFailedException, OAuthCommunicationException {
+        return sign(wrap(request), addEmptyParameters);
     }
 
     public synchronized String sign(String url) throws OAuthMessageSignerException,
@@ -249,6 +290,16 @@ public abstract class AbstractOAuthConsumer implements OAuthConsumer {
         if (q >= 0) {
             // Combine the URL query string with the other parameters:
             out.putAll(OAuth.decodeForm(url.substring(q + 1)), true);
+        }
+    }
+
+    protected void collectQueryParameters(HttpRequest request, HttpParameters out, boolean addEmptyParameters) {
+
+        String url = request.getRequestUrl();
+        int q = url.indexOf('?');
+        if (q >= 0) {
+            // Combine the URL query string with the other parameters:
+            out.putAll(OAuth.decodeForm(url.substring(q + 1), addEmptyParameters), true);
         }
     }
 

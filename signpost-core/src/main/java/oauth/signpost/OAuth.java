@@ -146,6 +146,29 @@ public class OAuth {
                 name = percentDecode(nvp.substring(0, equals));
                 value = percentDecode(nvp.substring(equals + 1));
             }
+            params.put(name, value);
+        }
+        return params;
+    }
+
+    /** Parse a form-urlencoded document. */
+    public static HttpParameters decodeForm(String form, boolean addEmptyParameters) {
+        HttpParameters params = new HttpParameters();
+        if (isEmpty(form)) {
+            return params;
+        }
+
+        for (String nvp : form.split("\\&")) {
+            int equals = nvp.indexOf('=');
+            String name;
+            String value;
+            if (equals < 0) {
+                name = percentDecode(nvp);
+                value = (addEmptyParameters) ? "" : null;
+            } else {
+                name = percentDecode(nvp.substring(0, equals));
+                value = percentDecode(nvp.substring(equals + 1));
+            }
 
             params.put(name, value);
         }
