@@ -17,7 +17,7 @@ package oauth.signpost.commonshttp5;
 import oauth.signpost.AbstractOAuthConsumer;
 import oauth.signpost.http.HttpRequest;
 import org.apache.hc.client5.http.classic.methods.HttpUriRequest;
-import org.apache.hc.core5.http.ClassicHttpRequest;
+import org.apache.hc.core5.http.message.BasicClassicHttpRequest;
 
 /**
  * Supports signing HTTP requests of type {@link HttpUriRequest}.
@@ -34,13 +34,13 @@ public class CommonsHttpOAuthConsumer extends AbstractOAuthConsumer {
 
     @Override
     protected HttpRequest wrap(Object request) {
-        if (!(request instanceof ClassicHttpRequest)) {
+        if (!(request instanceof BasicClassicHttpRequest)) {
             throw new IllegalArgumentException(
                     "This consumer expects requests of type "
-                            + ClassicHttpRequest.class.getCanonicalName());
+                            + BasicClassicHttpRequest.class.getCanonicalName());
         }
 
-        return new HttpRequestAdapter((ClassicHttpRequest) request);
+        return new HttpRequestAdapter((BasicClassicHttpRequest) request);
     }
 
 }

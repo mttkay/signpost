@@ -1,8 +1,8 @@
 package oauth.signpost.commonshttp5;
 
-import org.apache.hc.core5.http.ClassicHttpRequest;
 import org.apache.hc.core5.http.Header;
 import org.apache.hc.core5.http.HttpEntity;
+import org.apache.hc.core5.http.message.BasicClassicHttpRequest;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -11,13 +11,14 @@ import java.util.Map;
 
 public class HttpRequestAdapter implements oauth.signpost.http.HttpRequest {
 
-    private ClassicHttpRequest request;
+    private BasicClassicHttpRequest request;
 
     private HttpEntity entity;
 
-    public HttpRequestAdapter(ClassicHttpRequest request) {
+    public HttpRequestAdapter(BasicClassicHttpRequest request) {
         this.request = request;
         this.entity = request.getEntity();
+        this.request.setAbsoluteRequestUri(true);
     }
 
     public String getMethod() {
