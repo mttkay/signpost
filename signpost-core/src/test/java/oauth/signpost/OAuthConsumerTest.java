@@ -1,38 +1,33 @@
 package oauth.signpost;
 
-import static org.junit.Assert.*;
-import static org.hamcrest.CoreMatchers.*;
-import static org.mockito.Matchers.argThat;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Matchers.same;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import oauth.signpost.exception.OAuthExpectationFailedException;
+import oauth.signpost.http.HttpParameters;
+import oauth.signpost.http.HttpRequest;
+import oauth.signpost.signature.HmacSha1MessageSigner;
+import oauth.signpost.signature.OAuthMessageSigner;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.ArgumentMatcher;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
-import oauth.signpost.exception.OAuthExpectationFailedException;
-import oauth.signpost.http.HttpParameters;
-import oauth.signpost.http.HttpRequest;
-import oauth.signpost.signature.HmacSha1MessageSigner;
-import oauth.signpost.signature.OAuthMessageSigner;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.not;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.ArgumentMatcher;
-import org.mockito.ArgumentCaptor;
-import org.mockito.runners.MockitoJUnit44Runner;
-
-@RunWith(MockitoJUnit44Runner.class)
+@RunWith(MockitoJUnitRunner.class)
 public abstract class OAuthConsumerTest extends SignpostTestBase {
 
     protected OAuthConsumer consumer;
 
     protected abstract OAuthConsumer buildConsumer(String consumerKey, String consumerSecret,
-            OAuthMessageSigner messageSigner);
+                                                   OAuthMessageSigner messageSigner);
 
     @Test(expected = OAuthExpectationFailedException.class)
     public void shouldThrowIfConsumerKeyNotSet() throws Exception {
@@ -101,17 +96,14 @@ public abstract class OAuthConsumerTest extends SignpostTestBase {
 
         // verify that all custom params are properly read and passed to the
         // message signer
-        ArgumentMatcher<HttpParameters> hasAllParameters = new ArgumentMatcher<HttpParameters>() {
-            public boolean matches(Object argument) {
-                HttpParameters params = (HttpParameters) argument;
-                assertEquals("1 1", params.getFirst("a", true));
-                assertEquals("2 2", params.getFirst("b", true));
-                assertEquals("http://example.com", params.getFirst("realm", true));
-                assertEquals("12%345", params.getFirst("oauth_token", true));
-                // signature should be dropped, not valid to pre-set
-                assertNull(params.getFirst("oauth_signature"));
-                return true;
-            }
+        ArgumentMatcher<HttpParameters> hasAllParameters = params -> {
+            assertEquals("1 1", params.getFirst("a", true));
+            assertEquals("2 2", params.getFirst("b", true));
+            assertEquals("http://example.com", params.getFirst("realm", true));
+            assertEquals("12%345", params.getFirst("oauth_token", true));
+            // signature should be dropped, not valid to pre-set
+            assertNull(params.getFirst("oauth_signature"));
+            return true;
         };
 
         verify(signer).sign(same(request), argThat(hasAllParameters));
@@ -135,13 +127,10 @@ public abstract class OAuthConsumerTest extends SignpostTestBase {
 
         // verify that all custom params are properly read and passed to the
         // message signer
-        ArgumentMatcher<HttpParameters> hasParameters = new ArgumentMatcher<HttpParameters>() {
-            public boolean matches(Object argument) {
-                HttpParameters params = (HttpParameters) argument;
-                assertEquals("http://mycallback", params.getFirst("oauth_callback"));
-                assertEquals("1", params.getFirst("a"));
-                return true;
-            }
+        ArgumentMatcher<HttpParameters> hasParameters = params1 -> {
+            assertEquals("http://mycallback", params1.getFirst("oauth_callback"));
+            assertEquals("1", params1.getFirst("a"));
+            return true;
         };
 
         verify(signer).sign(same(request), argThat(hasParameters));
@@ -237,11 +226,10 @@ public abstract class OAuthConsumerTest extends SignpostTestBase {
     // argThat(new IsCompleteListOfOAuthParameters()));
     // }
 
-    private class IsCompleteListOfOAuthParameters extends ArgumentMatcher<String> {
+    private class IsCompleteListOfOAuthParameters implements ArgumentMatcher<String> {
 
         @Override
-        public boolean matches(Object argument) {
-            String oauthHeader = (String) argument;
+        public boolean matches(String oauthHeader) {
             assertTrue(oauthHeader.startsWith("OAuth "));
             assertAllOAuthParametersExist(OAuth.oauthHeaderToParamsMap(oauthHeader));
             return true;
@@ -258,10 +246,10 @@ public abstract class OAuthConsumerTest extends SignpostTestBase {
         assertNotNull(params.getFirst("oauth_version"));
     }
 
-    private class HasValuesPercentEncoded extends ArgumentMatcher<String> {
+    private class HasValuesPercentEncoded implements ArgumentMatcher<String> {
 
         @Override
-        public boolean matches(Object argument) {
+        public boolean matches(String argument) {
             String oauthHeader = (String) argument;
             HttpParameters params = OAuth.oauthHeaderToParamsMap(oauthHeader);
             assertEquals("1%252", params.getFirst("oauth_consumer_key"));

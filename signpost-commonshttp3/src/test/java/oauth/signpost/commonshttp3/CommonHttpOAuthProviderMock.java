@@ -2,8 +2,6 @@ package oauth.signpost.commonshttp3;
 
 import oauth.signpost.commonshttp3.Http3ResponseAdapter;
 import oauth.signpost.commonshttp3.CommonsHttp3OAuthProvider;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -16,6 +14,8 @@ import org.apache.commons.httpclient.StatusLine;
 import org.apache.commons.httpclient.methods.PostMethod;
 
 import org.mockito.Mockito;
+
+import static org.mockito.Mockito.*;
 
 @SuppressWarnings("serial")
 public class CommonHttpOAuthProviderMock extends CommonsHttp3OAuthProvider implements
@@ -42,8 +42,8 @@ public class CommonHttpOAuthProviderMock extends CommonsHttp3OAuthProvider imple
 
 		this.httpMethodMock = mock(HttpMethod.class);
 	   
-        when(httpMethodMock.getStatusLine()).thenReturn(statusLine);
-        when(httpMethodMock.getStatusCode()).thenReturn(200);
-        when(httpMethodMock.getResponseBodyAsStream()).thenReturn(is);
+        lenient().when(httpMethodMock.getStatusLine()).thenReturn(statusLine);
+        lenient().when(httpMethodMock.getStatusCode()).thenReturn(200);
+        lenient().when(httpMethodMock.getResponseBodyAsStream()).thenReturn(is);
     }
 }

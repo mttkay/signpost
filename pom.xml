@@ -32,6 +32,7 @@
     <module>signpost-core</module>
     <module>signpost-commonshttp3</module>
     <module>signpost-commonshttp4</module>
+    <module>signpost-commonshttp5</module>
     <module>signpost-jetty6</module>
   </modules>
 
@@ -99,13 +100,13 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>4.5</version>
+      <version>4.13.2</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.mockito</groupId>
-      <artifactId>mockito-core</artifactId>
-      <version>1.9.0</version>
+      <artifactId>mockito-inline</artifactId>
+      <version>4.3.1</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
@@ -115,10 +116,6 @@
       <id>ossrh</id>
       <url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
     </repository>
-    <snapshotRepository>
-      <id>ossrh</id>
-      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-    </snapshotRepository>
   </distributionManagement>
 
 </project>

@@ -1,17 +1,17 @@
 package oauth.signpost.signature;
 
+import oauth.signpost.SignpostTestBase;
+import oauth.signpost.http.HttpParameters;
+import oauth.signpost.http.HttpRequest;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.junit.MockitoJUnitRunner;
+
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import oauth.signpost.SignpostTestBase;
-import oauth.signpost.http.HttpRequest;
-import oauth.signpost.http.HttpParameters;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnit44Runner;
-
-@RunWith(MockitoJUnit44Runner.class)
+@RunWith(MockitoJUnitRunner.class)
 public class OAuthMessageSignerTest extends SignpostTestBase {
 
     @Test

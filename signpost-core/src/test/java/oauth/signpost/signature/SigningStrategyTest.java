@@ -1,14 +1,14 @@
 package oauth.signpost.signature;
 
-import static org.junit.Assert.assertEquals;
 import oauth.signpost.SignpostTestBase;
 import oauth.signpost.http.HttpParameters;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnit44Runner;
+import org.mockito.junit.MockitoJUnitRunner;
 
-@RunWith(MockitoJUnit44Runner.class)
+import static org.junit.Assert.assertEquals;
+
+@RunWith(MockitoJUnitRunner.class)
 public class SigningStrategyTest extends SignpostTestBase {
 
     @Test

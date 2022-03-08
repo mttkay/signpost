@@ -1,14 +1,14 @@
 package oauth.signpost.basic;
 
-import static org.junit.Assert.assertTrue;
+import org.junit.runner.RunWith;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnit44Runner;
+import static org.junit.Assert.assertTrue;
 
-@RunWith(MockitoJUnit44Runner.class)
+@RunWith(MockitoJUnitRunner.class)
 public class HttpRequestAdapterTest extends HttpRequestAdapterTestBase {
 
     @Override

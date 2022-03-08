@@ -6,9 +6,9 @@ import oauth.signpost.signature.OAuthMessageSigner;
 
 import org.junit.Before;
 import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnit44Runner;
+import org.mockito.junit.MockitoJUnitRunner;
 
-@RunWith(MockitoJUnit44Runner.class)
+@RunWith(MockitoJUnitRunner.class)
 public class DefaultOAuthConsumerTest extends OAuthConsumerTest {
 
     @Before

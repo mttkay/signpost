@@ -1,13 +1,12 @@
 package oauth.signpost.commonshttp;
 
 import oauth.signpost.basic.HttpRequestAdapterTestBase;
-
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnit44Runner;
+import org.mockito.junit.MockitoJUnitRunner;
 
-@RunWith(MockitoJUnit44Runner.class)
+@RunWith(MockitoJUnitRunner.class)
 public class HttpRequestAdapterTest extends HttpRequestAdapterTestBase {
 
     @Override

@@ -1,11 +1,16 @@
 package oauth.signpost;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.anyObject;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import oauth.signpost.basic.DefaultOAuthConsumer;
+import oauth.signpost.exception.OAuthExpectationFailedException;
+import oauth.signpost.http.HttpParameters;
+import oauth.signpost.http.HttpRequest;
+import oauth.signpost.mocks.OAuthProviderMock;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -13,20 +18,12 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.URL;
 
-import oauth.signpost.basic.DefaultOAuthConsumer;
-import oauth.signpost.exception.OAuthExpectationFailedException;
-import oauth.signpost.http.HttpParameters;
-import oauth.signpost.http.HttpRequest;
-import oauth.signpost.mocks.OAuthProviderMock;
+import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.mockito.runners.MockitoJUnit44Runner;
-
-@RunWith(MockitoJUnit44Runner.class)
+@RunWith(MockitoJUnitRunner.class)
 public abstract class OAuthProviderTest extends SignpostTestBase {
 
     protected OAuthProvider provider;
@@ -46,26 +43,26 @@ public abstract class OAuthProviderTest extends SignpostTestBase {
         when(consumerMock.getTokenSecret()).thenReturn(TOKEN_SECRET);
 
         provider = buildProvider(REQUEST_TOKEN_ENDPOINT_URL, ACCESS_TOKEN_ENDPOINT_URL,
-            AUTHORIZE_WEBSITE_URL, true);
+                AUTHORIZE_WEBSITE_URL, true);
     }
 
     protected abstract OAuthProvider buildProvider(String requestTokenUrl, String accessTokenUrl,
-            String websiteUrl, boolean mockConnection) throws Exception;
+                                                   String websiteUrl, boolean mockConnection) throws Exception;
 
     @Test(expected = OAuthExpectationFailedException.class)
     public void shouldThrowExpectationFailedIfConsumerKeyNotSet() throws Exception {
         provider = buildProvider(REQUEST_TOKEN_ENDPOINT_URL, ACCESS_TOKEN_ENDPOINT_URL,
-            AUTHORIZE_WEBSITE_URL, true);
+                AUTHORIZE_WEBSITE_URL, true);
         provider.retrieveRequestToken(new DefaultOAuthConsumer(null, CONSUMER_SECRET),
-            REQUEST_TOKEN_ENDPOINT_URL);
+                REQUEST_TOKEN_ENDPOINT_URL);
     }
 
     @Test(expected = OAuthExpectationFailedException.class)
     public void shouldThrowExpectationFailedIfConsumerSecretNotSet() throws Exception {
         provider = buildProvider(REQUEST_TOKEN_ENDPOINT_URL, ACCESS_TOKEN_ENDPOINT_URL,
-            AUTHORIZE_WEBSITE_URL, true);
+                AUTHORIZE_WEBSITE_URL, true);
         provider.retrieveRequestToken(new DefaultOAuthConsumer(CONSUMER_KEY, null),
-            REQUEST_TOKEN_ENDPOINT_URL);
+                REQUEST_TOKEN_ENDPOINT_URL);
     }
 
     @Test
@@ -74,7 +71,7 @@ public abstract class OAuthProviderTest extends SignpostTestBase {
         String callbackUrl = "http://www.example.com";
         String result = provider.retrieveRequestToken(consumerMock, callbackUrl);
 
-        verify(consumerMock).sign((HttpRequest) anyObject());
+        verify(consumerMock).sign((HttpRequest) any());
         verify(consumerMock).setTokenWithSecret(TOKEN, TOKEN_SECRET);
 
         assertEquals(AUTHORIZE_WEBSITE_URL + "?" + OAuth.OAUTH_TOKEN + "=" + TOKEN + "&"
@@ -84,7 +81,7 @@ public abstract class OAuthProviderTest extends SignpostTestBase {
     @Test
     public void shouldRespectCustomQueryParametersInAuthWebsiteUrl() throws Exception {
         provider = buildProvider(REQUEST_TOKEN_ENDPOINT_URL, ACCESS_TOKEN_ENDPOINT_URL,
-            "http://provider.com/authorize?q=1", true);
+                "http://provider.com/authorize?q=1", true);
 
         String callbackUrl = "http://www.example.com";
         // the URL ctor checks for URL validity
@@ -109,7 +106,7 @@ public abstract class OAuthProviderTest extends SignpostTestBase {
 
         provider.retrieveAccessToken(consumerMock, null);
 
-        verify(consumerMock).sign((HttpRequest) anyObject());
+        verify(consumerMock).sign((HttpRequest) any());
         verify(consumerMock).setTokenWithSecret(TOKEN, TOKEN_SECRET);
     }
 
@@ -144,7 +141,7 @@ public abstract class OAuthProviderTest extends SignpostTestBase {
         consumer.setTokenWithSecret(TOKEN, TOKEN_SECRET);
 
         provider = buildProvider(REQUEST_TOKEN_ENDPOINT_URL, ACCESS_TOKEN_ENDPOINT_URL,
-            AUTHORIZE_WEBSITE_URL, false);
+                AUTHORIZE_WEBSITE_URL, false);
         provider.setOAuth10a(true);
 
         // prepare a provider that has response params set

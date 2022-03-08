@@ -1,13 +1,12 @@
 package oauth.signpost.jetty;
 
 import oauth.signpost.basic.HttpRequestAdapterTestBase;
-
 import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnit44Runner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.mortbay.io.ByteArrayBuffer;
 import org.mortbay.jetty.client.HttpExchange;
 
-@RunWith(MockitoJUnit44Runner.class)
+@RunWith(MockitoJUnitRunner.class)
 public class HttpRequestAdapterTest extends HttpRequestAdapterTestBase {
 
     @Override

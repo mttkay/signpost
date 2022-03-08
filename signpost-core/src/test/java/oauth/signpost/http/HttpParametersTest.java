@@ -1,18 +1,16 @@
 package oauth.signpost.http;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertTrue;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnit44Runner;
+import static junit.framework.Assert.*;
 
-@RunWith(MockitoJUnit44Runner.class)
+@RunWith(MockitoJUnitRunner.class)
 public class HttpParametersTest {
 
     @Test
@@ -51,7 +49,7 @@ public class HttpParametersTest {
         assertEquals(0, params.size());
         assertEquals(null, params.get("a"));
 
-        String[] kvPairs = new String[] { "a", "1", "b", "2" };
+        String[] kvPairs = new String[]{"a", "1", "b", "2"};
         params.putAll(kvPairs, false);
         assertEquals("1", params.getFirst("a"));
         assertEquals("2", params.getFirst("b"));

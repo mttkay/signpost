@@ -38,7 +38,7 @@ This means that all the power and flexibility of the underlying HTTP engine is s
 ### Modularity
 Since version 1.1, Signpost comes in modules. Apart from the core module, which you always need, you can download additional modules to support other HTTP messaging libraries than the one coming with the standard Java platform (which would be [java.net.HttpURLConnection](https://docs.oracle.com/javase/8/docs/api/java/net/HttpURLConnection.html)).
 
-Apart from HttpURLConnection, Signpost currently has modules for [Apache Commons HTTP](https://hc.apache.org/) version 4, and [Jetty HTTP Client](https://www.eclipse.org/jetty/documentation/current/http-client-api.html) version 6.
+Apart from HttpURLConnection, Signpost currently has modules for [Apache Commons HTTP](https://hc.apache.org/) version 4 and version 5 as well as [Jetty HTTP Client](https://www.eclipse.org/jetty/documentation/current/http-client-api.html) version 6.
 
 Limitations
 ------------
