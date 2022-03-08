@@ -1,5 +1,6 @@
 package oauth.signpost;
 
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
 import oauth.signpost.http.HttpRequest;
 import oauth.signpost.http.HttpParameters;
@@ -59,13 +60,13 @@ public abstract class SignpostTestBase {
     public void initRequestMocks() {
         MockitoAnnotations.initMocks(this);
 
-        when(httpGetMock.getMethod()).thenReturn("GET");
-        when(httpGetMock.getRequestUrl()).thenReturn("http://www.example.com");
+        lenient().when(httpGetMock.getMethod()).thenReturn("GET");
+        lenient().when(httpGetMock.getRequestUrl()).thenReturn("http://www.example.com");
 
-        when(httpGetMockWithQueryString.getMethod()).thenReturn("GET");
-        when(httpGetMockWithQueryString.getRequestUrl()).thenReturn("http://www.example.com?foo=bar");
+        lenient().when(httpGetMockWithQueryString.getMethod()).thenReturn("GET");
+        lenient().when(httpGetMockWithQueryString.getRequestUrl()).thenReturn("http://www.example.com?foo=bar");
 
-        when(httpPostMock.getMethod()).thenReturn("POST");
-        when(httpPostMock.getRequestUrl()).thenReturn("http://www.example.com");
+        lenient().when(httpPostMock.getMethod()).thenReturn("POST");
+        lenient().when(httpPostMock.getRequestUrl()).thenReturn("http://www.example.com");
     }
 }

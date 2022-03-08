@@ -1,4 +1,4 @@
-package oauth.signpost.commonshttp5;
+package oauth.signpost.commonshttp5.sync;
 
 import oauth.signpost.http.HttpRequest;
 import oauth.signpost.mocks.OAuthProviderMock;
@@ -19,19 +19,19 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @SuppressWarnings("serial")
-public class CommonHttpOAuthProviderMock extends CommonsHttpOAuthProvider implements
+public class CommonHttpSyncOAuthProviderMock extends CommonsHttpSyncOAuthProvider implements
         OAuthProviderMock {
 
     private HttpClient httpClientMock;
 
-    public CommonHttpOAuthProviderMock(String requestTokenUrl, String accessTokenUrl, String websiteUrl) {
+    public CommonHttpSyncOAuthProviderMock(String requestTokenUrl, String accessTokenUrl, String websiteUrl) {
         super(requestTokenUrl, accessTokenUrl, websiteUrl);
     }
 
     @Override
     protected oauth.signpost.http.HttpResponse sendRequest(HttpRequest request) throws Exception {
-        ClassicHttpResponse resp = (ClassicHttpResponse) httpClientMock.execute((ClassicHttpRequest) request.unwrap());
-        return new HttpResponseAdapter(resp);
+        ClassicHttpResponse response = (ClassicHttpResponse) httpClientMock.execute((ClassicHttpRequest) request.unwrap());
+        return new HttpSyncResponseAdapter(response);
     }
 
     public void mockConnection(String responseBody) throws Exception {
@@ -41,7 +41,6 @@ public class CommonHttpOAuthProviderMock extends CommonsHttpOAuthProvider implem
         InputStreamEntity entity = new InputStreamEntity(is, responseBody.length(), ContentType.APPLICATION_JSON);
         StatusLine statusLine = new StatusLine(new ProtocolVersion("HTTP", 1, 1), 200, "OK");
 
-//        when(response.getStatusLine()).thenReturn(statusLine);
         when(response.getEntity()).thenReturn(entity);
         when(httpClientMock.execute(Mockito.any(HttpUriRequest.class))).thenReturn(response);
     }

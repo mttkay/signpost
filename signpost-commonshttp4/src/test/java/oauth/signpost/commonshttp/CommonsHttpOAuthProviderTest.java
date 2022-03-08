@@ -3,16 +3,15 @@ package oauth.signpost.commonshttp;
 import oauth.signpost.OAuth;
 import oauth.signpost.OAuthProvider;
 import oauth.signpost.OAuthProviderTest;
-
 import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnit44Runner;
+import org.mockito.junit.MockitoJUnitRunner;
 
-@RunWith(MockitoJUnit44Runner.class)
+@RunWith(MockitoJUnitRunner.class)
 public class CommonsHttpOAuthProviderTest extends OAuthProviderTest {
 
     @Override
     protected OAuthProvider buildProvider(String requestTokenUrl, String accessTokenUrl,
-            String websiteUrl, boolean mockConnection) throws Exception {
+                                          String websiteUrl, boolean mockConnection) throws Exception {
         if (mockConnection) {
             CommonHttpOAuthProviderMock provider = new CommonHttpOAuthProviderMock(requestTokenUrl,
                     accessTokenUrl, websiteUrl);

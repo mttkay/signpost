@@ -12,35 +12,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package oauth.signpost.commonshttp5;
+package oauth.signpost.commonshttp5.async;
 
 import oauth.signpost.AbstractOAuthConsumer;
 import oauth.signpost.http.HttpRequest;
-import org.apache.hc.client5.http.classic.methods.HttpUriRequest;
-import org.apache.hc.core5.http.message.BasicClassicHttpRequest;
+import org.apache.hc.client5.http.async.methods.SimpleHttpRequest;
 
 /**
- * Supports signing HTTP requests of type {@link HttpUriRequest}.
+ * Supports signing HTTP requests of type {@link SimpleHttpRequest}.
  *
- * @author Matthias Kaeppler
+ * @author Kristof Jozsa
  */
-public class CommonsHttpOAuthConsumer extends AbstractOAuthConsumer {
+public class CommonsHttpAsyncOAuthConsumer extends AbstractOAuthConsumer {
 
     private static final long serialVersionUID = 1L;
 
-    public CommonsHttpOAuthConsumer(String consumerKey, String consumerSecret) {
+    public CommonsHttpAsyncOAuthConsumer(String consumerKey, String consumerSecret) {
         super(consumerKey, consumerSecret);
     }
 
     @Override
     protected HttpRequest wrap(Object request) {
-        if (!(request instanceof BasicClassicHttpRequest)) {
-            throw new IllegalArgumentException(
-                    "This consumer expects requests of type "
-                            + BasicClassicHttpRequest.class.getCanonicalName());
+        if (!(request instanceof SimpleHttpRequest)) {
+            throw new IllegalArgumentException("This consumer expects requests of type " + SimpleHttpRequest.class.getCanonicalName());
         }
 
-        return new HttpRequestAdapter((BasicClassicHttpRequest) request);
+        return new HttpAsyncRequestAdapter((SimpleHttpRequest) request);
     }
 
 }

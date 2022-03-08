@@ -8,7 +8,7 @@
  * KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package oauth.signpost.commonshttp5;
+package oauth.signpost.commonshttp5.sync;
 
 import oauth.signpost.AbstractOAuthProvider;
 import oauth.signpost.http.HttpRequest;
@@ -24,27 +24,24 @@ import java.io.IOException;
 
 /**
  * This implementation uses the Apache Commons {@link org.apache.hc.client5.http.classic.HttpClient} 5.x HTTP
- * implementation to fetch OAuth tokens from a service provider. Android users
- * should use this provider implementation in favor of the default one, since
- * the latter is known to cause problems with Android's Apache Harmony
- * underpinnings.
+ * implementation to fetch OAuth tokens from a service provider.
  *
- * @author Matthias Kaeppler
+ * @author Kristof Jozsa
  */
-public class CommonsHttpOAuthProvider extends AbstractOAuthProvider {
+public class CommonsHttpSyncOAuthProvider extends AbstractOAuthProvider {
 
     private static final long serialVersionUID = 1L;
 
     private transient CloseableHttpClient httpClient;
 
-    public CommonsHttpOAuthProvider(String requestTokenEndpointUrl, String accessTokenEndpointUrl,
-                                    String authorizationWebsiteUrl) {
+    public CommonsHttpSyncOAuthProvider(String requestTokenEndpointUrl, String accessTokenEndpointUrl,
+                                        String authorizationWebsiteUrl) {
         super(requestTokenEndpointUrl, accessTokenEndpointUrl, authorizationWebsiteUrl);
         this.httpClient = HttpClients.createDefault();
     }
 
-    public CommonsHttpOAuthProvider(String requestTokenEndpointUrl, String accessTokenEndpointUrl,
-                                    String authorizationWebsiteUrl, CloseableHttpClient httpClient) {
+    public CommonsHttpSyncOAuthProvider(String requestTokenEndpointUrl, String accessTokenEndpointUrl,
+                                        String authorizationWebsiteUrl, CloseableHttpClient httpClient) {
         super(requestTokenEndpointUrl, accessTokenEndpointUrl, authorizationWebsiteUrl);
         this.httpClient = httpClient;
     }
@@ -56,13 +53,13 @@ public class CommonsHttpOAuthProvider extends AbstractOAuthProvider {
     @Override
     protected HttpRequest createRequest(String endpointUrl) throws Exception {
         HttpPost request = new HttpPost(endpointUrl);
-        return new HttpRequestAdapter(request);
+        return new HttpSyncRequestAdapter(request);
     }
 
     @Override
     protected oauth.signpost.http.HttpResponse sendRequest(HttpRequest request) throws Exception {
         ClassicHttpResponse response = httpClient.execute((ClassicHttpRequest) request.unwrap());
-        return new HttpResponseAdapter(response);
+        return new HttpSyncResponseAdapter(response);
     }
 
     @Override

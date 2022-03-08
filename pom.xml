@@ -100,13 +100,13 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>4.5</version>
+      <version>4.13.2</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.mockito</groupId>
-      <artifactId>mockito-core</artifactId>
-      <version>1.9.0</version>
+      <artifactId>mockito-inline</artifactId>
+      <version>4.3.1</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
@@ -117,8 +117,9 @@
       <url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
     </repository>
     <snapshotRepository>
-      <id>ossrh</id>
-      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+      <id>libs-snapshot-local</id>
+      <name>ip-172-16-11-83-snapshots</name>
+      <url>http://artifact.central.tech/artifactory/libs-snapshot-local</url>
     </snapshotRepository>
   </distributionManagement>
 

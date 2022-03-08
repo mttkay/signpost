@@ -1,4 +1,4 @@
-package oauth.signpost.commonshttp5;
+package oauth.signpost.commonshttp5.sync;
 
 import org.apache.hc.core5.http.Header;
 import org.apache.hc.core5.http.HttpEntity;
@@ -9,13 +9,13 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
-public class HttpRequestAdapter implements oauth.signpost.http.HttpRequest {
+public class HttpSyncRequestAdapter implements oauth.signpost.http.HttpRequest {
 
     private BasicClassicHttpRequest request;
 
     private HttpEntity entity;
 
-    public HttpRequestAdapter(BasicClassicHttpRequest request) {
+    public HttpSyncRequestAdapter(BasicClassicHttpRequest request) {
         this.request = request;
         this.entity = request.getEntity();
         this.request.setAbsoluteRequestUri(true);

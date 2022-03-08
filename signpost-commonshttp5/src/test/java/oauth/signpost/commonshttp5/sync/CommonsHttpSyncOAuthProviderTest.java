@@ -1,25 +1,24 @@
-package oauth.signpost.commonshttp5;
+package oauth.signpost.commonshttp5.sync;
 
 import oauth.signpost.OAuth;
 import oauth.signpost.OAuthProvider;
 import oauth.signpost.OAuthProviderTest;
-
 import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnit44Runner;
+import org.mockito.junit.MockitoJUnitRunner;
 
-@RunWith(MockitoJUnit44Runner.class)
-public class CommonsHttpOAuthProviderTest extends OAuthProviderTest {
+@RunWith(MockitoJUnitRunner.class)
+public class CommonsHttpSyncOAuthProviderTest extends OAuthProviderTest {
 
     @Override
     protected OAuthProvider buildProvider(String requestTokenUrl, String accessTokenUrl,
-            String websiteUrl, boolean mockConnection) throws Exception {
+                                          String websiteUrl, boolean mockConnection) throws Exception {
         if (mockConnection) {
-            oauth.signpost.commonshttp5.CommonHttpOAuthProviderMock provider = new CommonHttpOAuthProviderMock(requestTokenUrl,
+            CommonHttpSyncOAuthProviderMock provider = new CommonHttpSyncOAuthProviderMock(requestTokenUrl,
                     accessTokenUrl, websiteUrl);
             provider.mockConnection(OAuth.OAUTH_TOKEN + "=" + TOKEN + "&"
                     + OAuth.OAUTH_TOKEN_SECRET + "=" + TOKEN_SECRET);
             return provider;
         }
-        return new CommonsHttpOAuthProvider(requestTokenUrl, accessTokenUrl, websiteUrl);
+        return new CommonsHttpSyncOAuthProvider(requestTokenUrl, accessTokenUrl, websiteUrl);
     }
 }

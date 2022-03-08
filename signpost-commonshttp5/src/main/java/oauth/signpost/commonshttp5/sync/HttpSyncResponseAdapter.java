@@ -1,17 +1,16 @@
-package oauth.signpost.commonshttp5;
+package oauth.signpost.commonshttp5.sync;
 
 import org.apache.hc.core5.http.ClassicHttpResponse;
-import org.apache.hc.core5.http.HttpResponse;
 
 import java.io.IOException;
 import java.io.InputStream;
 
 
-public class HttpResponseAdapter implements oauth.signpost.http.HttpResponse {
+public class HttpSyncResponseAdapter implements oauth.signpost.http.HttpResponse {
 
     private ClassicHttpResponse response;
 
-    public HttpResponseAdapter(ClassicHttpResponse response) {
+    public HttpSyncResponseAdapter(ClassicHttpResponse response) {
         this.response = response;
     }
 
